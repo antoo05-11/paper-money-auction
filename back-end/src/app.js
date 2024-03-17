@@ -2,14 +2,10 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import http from "http";
-import dotenv from "dotenv";
 import { createHandler } from "graphql-http/lib/use/express"
 import { buildSchema } from "graphql"
 import { ruruHTML } from "ruru/server"
-
-dotenv.config();
-const PORT = process.env.PORT || 5050;
-const HOSTNAME = process.env.HOSTNAME || 'localhost';
+import { PORT, HOSTNAME } from "../config/environment";
 
 var app = express();
 // Register middleware

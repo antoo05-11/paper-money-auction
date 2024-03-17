@@ -8,7 +8,7 @@ front-end/package-lock.json
 # Build files
 back-end/dist/
 
-# Config files
+# Environmental variables
 .env
 
 # Vscode config files
