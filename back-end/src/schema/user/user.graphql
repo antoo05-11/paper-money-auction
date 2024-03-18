@@ -2,6 +2,12 @@
 type User { 
   id: ID!
   name: String!
+  password: String!
+  role: String!
+  phone: String!
+  email: String!
+  address: String!
+  balance: Int!
 }
 
 # Query
@@ -13,10 +19,20 @@ extend type Query {
 # Inputs
 input UserCreateInput {
   name: String!
+  password: String!
+  role: String!
+  phone: String!
+  email: String!
+  address: String!
 }
 
 input UserUpdateInput {
   name: String
+  password: String
+  role: String
+  phone: String
+  email: String
+  address: String
 }
 
 # Mutaion
