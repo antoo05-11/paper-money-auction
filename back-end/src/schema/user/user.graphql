@@ -1,0 +1,26 @@
+# Schema
+type User { 
+  id: ID!
+  name: String!
+}
+
+# Query
+extend type Query {
+  users: [User]!
+  user(id: ID!): User
+}
+
+# Inputs
+input UserCreateInput {
+  name: String!
+}
+
+input UserUpdateInput {
+  name: String
+}
+
+# Mutaion
+extend type Mutation {
+  createUser(user: UserCreateInput!): User!
+  updateUser(id: ID!, user: UserCreateInput!): User!
+}

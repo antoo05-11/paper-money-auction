@@ -2,12 +2,17 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import http from "http";
-import { createHandler } from "graphql-http/lib/use/express"
-import { buildSchema } from "graphql"
-import { ruruHTML } from "ruru/server"
-import { PORT, HOSTNAME } from "../config/environment";
+import dotenv from 'dotenv';
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import { typeDefs, resolvers } from "./schema/index.js";
 
-var app = express();
+dotenv.config();
+const PORT = process.env.PORT || 5050;
+const HOSTNAME = process.env.HOSTNAME || 'localhost';
+
+const app = express();
 // Register middleware
 app.use(express.json());
 app.use(cookieParser());
@@ -23,36 +28,22 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Construct a schema, using GraphQL schema language
-var schema = buildSchema(`
-  type Query {
-    hello: String
-  }
-`)
+const httpServer = http.createServer(app);
 
-// The root provides a resolver function for each API endpoint
-var root = {
-    hello: () => {
-        return "Hello world!"
-    }
-}
 
-app.all(
-    "/api/v1",
-    createHandler({
-        schema: schema,
-        rootValue: root,
-    })
-)
+const apolloServer = new ApolloServer({
+    typeDefs,
+    resolvers,
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+});
 
-// Serve the GraphiQL IDE.
-app.get("/", (_req, res) => {
-    res.type("html")
-    res.end(ruruHTML({ endpoint: "/api/v1" }))
-})
+await apolloServer.start();
 
-// Server
-var server = http.createServer(app);
-server.listen(PORT, HOSTNAME, () => {
+app.use('/', expressMiddleware(apolloServer, {
+    context: async ({ req }) => ({ token: req.headers.token }),
+}));
+
+
+httpServer.listen(PORT, HOSTNAME, () => {
     console.log(`Server started running at ${HOSTNAME}:${PORT}`);
-})
+});
