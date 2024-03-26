@@ -8,4 +8,4 @@ const auctionSessionSchema = new mongoose.Schema({
     status: String,
 });
 
-export const AuctionSession = mongoose.model("Auction", auctionSessionSchema);
+export const AuctionSession = mongoose.model("AuctionSession", auctionSessionSchema);
