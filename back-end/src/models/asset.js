@@ -6,7 +6,10 @@ const assetSchema = new mongoose.Schema({
         ref: 'User'
     },
     attributes: Object,
-    status: String,
+    status: {
+        type: String, 
+        enum: ['sold', 'unsold', 'invalid', 'unchecked']
+    },
 }, {
     versionKey: false,
     timestamps: true

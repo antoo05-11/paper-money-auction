@@ -1,9 +1,14 @@
 import mongoose from "mongoose";
 
 const transactionSchema = new mongoose.Schema({
-    id: String,
-    userId: String,
-    type: String,
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    type: {
+        type: String,
+        enum: []
+    },
     last_balance: Number,
     depositRequiredFee: Number,
     postId: String,

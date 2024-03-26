@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import errorCode from "./constants/error.code";
 import router from "./routers/router";
 import User from "./models/user.js";
+import Asset from "./models/asset.js";
 
 // Load env variables
 dotenv.config();
@@ -33,33 +34,35 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
 app.use("/", router);
-app.use((req, res, next) => {
-    res.status(404).json({
-        ...errorCode.URL_NOT_FOUND,
-    });
-});
+
+// app.use((req, res, next) => {
+//     res.status(404).json({
+//         ...errorCode.URL_NOT_FOUND,
+//     });
+// });
 
 const httpServer = http.createServer(app);
+
 httpServer.listen(PORT, HOSTNAME, () => {
-    console.log(`Server started running at ${HOSTNAME}:${PORT}`);
+    const address = httpServer.address();
+    console.log(`Server started running at http://${address.address}:${address.port}`);
 });
 
 // Test schema
 app.get('/test', async (req, res) => {
-    const sampleUser = new User({
-        role: 'user', 
-        name: 'John Doe1', 
-        phone: '0123456788',
-        password: 'password123', 
-        email: 'john@example.com1', 
-        address: '123 Main Street, City, Country', 
-        balance: 1000 
+    const sampleAsset = new Asset({
+        ownerId: new mongoose.Types.ObjectId(), // Đây là một ObjectId ngẫu nhiên, bạn có thể thay đổi theo nhu cầu
+        attributes: { // Các thuộc tính của tài sản
+            name: "Sample Asset",
+            description: "This is a sample asset.",
+            value: 1000,
+        },
+        status: "active", // Trạng thái của tài sản
     });
 
-    let user = await sampleUser.save();
-    if (user) {
-        return res.status(200).json(user);
-    }
+    const savedAsset = await sampleAsset.save();
+    if (savedAsset) return res.status(200).json(savedAsset)
+    console.log("Sample asset added successfully:", savedAsset);
     return res.status(400).json();
 
 });
