@@ -1,4 +1,4 @@
-import User from "./db.js";
+import User from "./user.js";
 
 export const userMutations = {
   createUser: async (_, args) => {

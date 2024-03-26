@@ -9,6 +9,8 @@ const transactionSchema = new mongoose.Schema({
     postId: String,
     createdTime: Date,
     status: String,
+}, {
+    versionKey: false
 });
 
 export const Transaction = mongoose.model("Transaction", transactionSchema);

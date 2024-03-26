@@ -16,6 +16,8 @@ const activityLogSchema = new mongoose.Schema({
     updateAuction: Boolean,
     deleteAuction: Boolean,
     makeOffer: Boolean,
+}, {
+    versionKey: false
 });
 
 export const ActivityLog = mongoose.model("ActivityLog", activityLogSchema);

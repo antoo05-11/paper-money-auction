@@ -4,7 +4,9 @@ const offerSchema = new mongoose.Schema({
     auctionId: String,
     offerorId: String,
     amount: Number,
-    createdTime: Date,
+}, {
+    timestamps: true,
+    versionKey: false
 });
 
 export const Offer = mongoose.model("Offer", offerSchema);

@@ -1,4 +1,4 @@
-import User from './db.js';
+import User from './user.js';
 
 export const userQueries = {
   users: async (_, args) => {

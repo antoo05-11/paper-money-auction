@@ -10,6 +10,8 @@ const postSchema = new mongoose.Schema({
     participantIdList: [String],
     requiredFee: Number,
     status: String,
+}, {
+    versionKey: false
 });
 
 export const Post = mongoose.model("Post", postSchema);

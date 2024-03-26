@@ -1,11 +1,15 @@
 import mongoose from "mongoose";
 
 const auctionSessionSchema = new mongoose.Schema({
-    id: String,
     assetId: String,
-    last_amount: Number,
-    createdTime: Date,
-    status: String,
+    lastAmount: Number,
+    status: {
+        type: String,
+        enum: []
+    }
+}, {
+    versionKey: false,
+    timestamps: true
 });
 
-export const AuctionSession = mongoose.model("Auction", auctionSessionSchema);
+export const AuctionSession = mongoose.model("AuctionSession", auctionSessionSchema);

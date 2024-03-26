@@ -8,6 +8,7 @@ import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { typeDefs, resolvers } from "./schema/index.js";
+import User from "./schema/user/user.js";
 
 // Load env variables
 dotenv.config();
@@ -53,10 +54,30 @@ const apolloServer = new ApolloServer({
 
 await apolloServer.start();
 
-app.use('/', expressMiddleware(apolloServer, {
-    context: async ({ req }) => ({ token: req.headers.token }),
-}));
+// app.use('/', expressMiddleware(apolloServer, {
+//     context: async ({ req }) => ({ token: req.headers.token }),
+// }));
 
 httpServer.listen(PORT, HOSTNAME, () => {
     console.log(`Server started running at ${HOSTNAME}:${PORT}`);
+});
+
+// Test schema
+app.get('/test', async (req, res) => {
+    const sampleUser = new User({
+        role: 'user', // Vai trò của người dùng
+        name: 'John Doe1', // Tên của người dùng
+        phone: '0123456788', // Số điện thoại (đã unique)
+        password: 'password123', // Mật khẩu
+        email: 'john@example.com1', // Địa chỉ email (đã unique)
+        address: '123 Main Street, City, Country', // Địa chỉ
+        balance: 1000 // Số dư tài khoản
+    });
+
+    let user = await sampleUser.save();
+    if (user) {
+        return res.status(200).json(user);
+    }
+    return res.status(400).json();
+
 });
