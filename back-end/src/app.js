@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import errorCode from "./constants/error.code";
 import router from "./routers/router";
-import User from "./schema/user/user.js";
+import User from "./models/user.js";
 
 // Load env variables
 dotenv.config();
@@ -47,13 +47,13 @@ httpServer.listen(PORT, HOSTNAME, () => {
 // Test schema
 app.get('/test', async (req, res) => {
     const sampleUser = new User({
-        role: 'user', // Vai trò của người dùng
-        name: 'John Doe1', // Tên của người dùng
-        phone: '0123456788', // Số điện thoại (đã unique)
-        password: 'password123', // Mật khẩu
-        email: 'john@example.com1', // Địa chỉ email (đã unique)
-        address: '123 Main Street, City, Country', // Địa chỉ
-        balance: 1000 // Số dư tài khoản
+        role: 'user', 
+        name: 'John Doe1', 
+        phone: '0123456788',
+        password: 'password123', 
+        email: 'john@example.com1', 
+        address: '123 Main Street, City, Country', 
+        balance: 1000 
     });
 
     let user = await sampleUser.save();
