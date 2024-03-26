@@ -5,6 +5,9 @@ front-end/node_modules/
 back-end/package-lock.json
 front-end/package-lock.json
 
+# Dist files
+back-end/dist/
+
 # Environmental variables
 .env
 
