@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { AuctionRoom } from "./room";
+import errorCode from "../../constants/error.code";
 
 export class SocketService {
     #roomIds = new Set();
@@ -38,11 +39,11 @@ export class SocketService {
                 if (room) {
                     room.addUser(userId);
                     socket.join(roomId);
-                    this.io.to(roomId).emit('attendees_update', room.getRoomBriefInfo())
+                    this.io.to(roomId).emit('attendees_update', room.getRoomBriefInfo());
                 }
             }
         } catch (error) {
-            console.error("Error decoding token:", error);
+            socket.emit('joinRoomResponse', errorCode.INVALID_AUCTION_TOKEN);
         }
     }
 }

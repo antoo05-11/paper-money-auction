@@ -51,4 +51,9 @@ export default {
         code: "INTERNAL_SERVER_ERROR",
         message: "Internal server error",
     },
+
+    INVALID_AUCTION_TOKEN: {
+        code: "INVALID_AUCTION_TOKEN",
+        message: "Token used for auction session is invalid!"
+    }
 };
