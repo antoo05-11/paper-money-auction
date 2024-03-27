@@ -8,6 +8,7 @@ import errorCode from "./constants/error.code";
 import router from "./routers/router";
 import User from "./models/user.js";
 import Asset from "./models/asset.js";
+import { SocketService } from "./services/auction_session/socket.js";
 
 // Load env variables
 dotenv.config();
@@ -48,21 +49,5 @@ httpServer.listen(PORT, HOSTNAME, () => {
     console.log(`Server started running at http://${address.address}:${address.port}`);
 });
 
-// Test schema
-app.get('/test', async (req, res) => {
-    const sampleAsset = new Asset({
-        ownerId: new mongoose.Types.ObjectId(), // Đây là một ObjectId ngẫu nhiên, bạn có thể thay đổi theo nhu cầu
-        attributes: { // Các thuộc tính của tài sản
-            name: "Sample Asset",
-            description: "This is a sample asset.",
-            value: 1000,
-        },
-        status: "active", // Trạng thái của tài sản
-    });
-
-    const savedAsset = await sampleAsset.save();
-    if (savedAsset) return res.status(200).json(savedAsset)
-    console.log("Sample asset added successfully:", savedAsset);
-    return res.status(400).json();
-
-});
+// Init socket.
+const socketService = new SocketService(httpServer);

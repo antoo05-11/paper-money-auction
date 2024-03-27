@@ -20,7 +20,8 @@
         "joi": "^17.11.0",
         "jsonwebtoken": "^9.0.2",
         "lodash": "^4.17.21",
-        "mongoose": "^8.2.2"
+        "mongoose": "^8.2.2",
+        "socket.io": "^4.7.5"
     },
     "devDependencies": {
         "@babel/cli": "^7.24.1",
