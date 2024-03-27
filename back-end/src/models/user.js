@@ -1,19 +1,25 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
-    role: {
-        type: String,
-        enum: ['admin', 'auctioneer', 'user']
+const userSchema = new mongoose.Schema(
+    {
+        // Profile
+        name: String,
+        ssid: { type: String, unique: true },
+        password: String,
+        role: String,
+        phone: { type: String, unique: true },
+        email: { type: String, unique: true },
+        address: String,
+        // Payment
+        bank: String,
+        account_number: String,
+        holder: String,
+        // System
+        verified: { type: Boolean, default: false },
     },
-    name: String,
-    phone: { type: String, unique: true },
-    password: String,
-    email: { type: String, unique: true },
-    address: String,
-    balance: Number,
-    verified: { type: Boolean, required: true, default: false }
-}, {
-    versionKey: false
-});
+    {
+        versionKey: false,
+    }
+);
 
 export default mongoose.model("User", userSchema);

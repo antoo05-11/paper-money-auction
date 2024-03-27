@@ -1,5 +1,5 @@
 export default {
     ADMIN: "admin",
-    USER: "user",
+    CUSTOMER: "customer",
     AUCTIONEER: "auctioneer",
 };
