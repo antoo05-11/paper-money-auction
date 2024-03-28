@@ -25,8 +25,8 @@ export default function HomePage() {
             <h1 className="font-normal mb-1.5">
               Tự hào là một trong những nền tảng đấu giá trực tuyến hàng đầu tại Việt Nam,
               Vua Tiền Tệ tự hào là đơn vị tiên phong trong việc sử dụng công nghệ thông tin để tối ưu hóa hoạt động đấu giá của mình.
-              Vua Tiền Tệ không chỉ đảm bảo cung cấp một môi trường
-              đấu giá trực tuyến an toàn và minh bạch cho người dùng mà còn mang đến những trải nghiệm độc đáo và hiệu quả.
+              Vua Tiền Tệ đảm bảo cung cấp một môi trường
+              đấu giá trực tuyến an toàn và minh bạch cho người dùng.
             </h1>
             <Button className="mt-2 bg-highlightColor" onClick={executeScroll}>Khám phá</Button>
           </div>
