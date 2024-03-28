@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Lexend } from "next/font/google";
 import "./globals.css";
+import PageHeader from "./component/page-header";
+import PageFooter from "./component/page-footer";
 
 const lexend = Lexend({ subsets: ["latin"] });
 
@@ -16,7 +18,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      {/* <PageHeader /> */}
       <body className={lexend.className}>{children}</body>
+      {/* <PageFooter /> */}
     </html>
   );
 }
