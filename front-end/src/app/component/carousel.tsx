@@ -23,7 +23,7 @@ export default function MyCarousel() {
                                 <CardContent>
                                     <h3 className="font-semibold">Rồng đỏ Macao</h3>
                                     <p>Giá khởi điểm: 30.000 VNĐ</p>
-                                    <Button className="mt-2 bg-highlightColor">Chi tiết</Button>
+                                    <Button className="mt-2 bg-highlightColor w-full">Chi tiết</Button>
                                 </CardContent>
                             </Card>
                         </div>

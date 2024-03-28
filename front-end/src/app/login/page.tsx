@@ -19,7 +19,7 @@ const formSchema = z.object({
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
   }),
-  password: z.string().min(3),
+  password: z.string(),
 });
 
 export default function LoginForm() {
@@ -41,8 +41,11 @@ export default function LoginForm() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="rounded-xl space-y-8 pb-7 pt-7 border-4 object-center mx-auto px-5 md max-w-80 min-w-80 flex-col items-center "
+          className="rounded-xl space-y-8 pb-7 pt-7 border-4 object-center mx-auto px-5 md max-w-80 min-w-80 flex-col items-center bg-yellow-100"
         >
+          <div className="flex flex-col items-center justify-center">
+            <text>Đăng nhập</text>
+          </div>
           <FormField
             control={form.control}
             name="username"
