@@ -1,25 +1,25 @@
-export class AuctionRoom {
-    #roomId
+export class AuctionSession {
+    #sessionId
     #recentUsers
     #users
 
     static MAX_RECENT_USER = 20;
 
-    constructor(roomId) {
-        this.#roomId = roomId;
+    constructor(sessionId) {
+        this.#sessionId = sessionId;
         this.#recentUsers = [];
         this.#users = new Map();
     }
 
     toString() {
-        return `Room(roomId = ${this.#roomId}, recentUsers = ${this.#recentUsers})`
+        return `Session(sessionId = ${this.#sessionId}, recentUsers = ${this.#recentUsers})`
     }
 
     addUser(user) {
         const userId = user.getUserId();
-        user.joinRoom(this.#roomId);
+        user.joinSession(this.#sessionId);
         if (!this.#users.has(userId)) {
-            if (this.#recentUsers.length === AuctionRoom.MAX_RECENT_USER)
+            if (this.#recentUsers.length === AuctionSession.MAX_RECENT_USER)
                 this.#recentUsers.shift();
             this.#recentUsers.push(user);
         }
@@ -34,14 +34,14 @@ export class AuctionRoom {
         const pos = this.#recentUsers.indexOf(user);
         if (pos > -1) this.#recentUsers.splice(pos, 1);
 
-        user.leaveRoom(this.#roomId);
+        user.leaveSession(this.#sessionId);
     }
 
-    getRoomId() {
-        return this.#roomId;
+    getSessionId() {
+        return this.#sessionId;
     }
 
-    getRoomBriefInfo() {
+    getSessionBriefInfo() {
         return this.#recentUsers;
     }
 }

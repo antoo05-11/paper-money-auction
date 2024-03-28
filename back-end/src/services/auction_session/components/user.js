@@ -1,28 +1,34 @@
 export class User {
     #userId
     #socketId
-    #roomIds
+    #sessionIds
 
     constructor(socketId, userId) {
         this.#socketId = socketId;
         this.#userId = userId;
-        this.#roomIds = new Set();
+        this.#sessionIds = new Set();
     }
 
     toString() {
         return `User(userId = ${this.#userId}, socketId = ${this.#socketId})`
     }
 
-    joinRoom(roomId) {
-        this.#roomIds.add(roomId);
+    toJSON() {
+        return {
+            userId: this.#userId
+        };
     }
 
-    leaveRoom(roomId) {
-        this.#roomIds.delete(roomId);
+    joinSession(sessionId) {
+        this.#sessionIds.add(sessionId);
     }
 
-    getUserRoomIds() {
-        return this.#roomIds;
+    leaveSession(sessionId) {
+        this.#sessionIds.delete(sessionId);
+    }
+
+    getUserSessionIds() {
+        return this.#sessionIds;
     }
 
     getUserId() {

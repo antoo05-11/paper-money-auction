@@ -5,10 +5,10 @@ const socket = io.connect('http://localhost:3000');
 socket.on('connect', () => {
     console.log('Connected to server');
 
-    socket.emit('joinRoom', sampleAuctionToken);
+    socket.emit('joinSession', sampleAuctionToken);
 });
 
-socket.on('joinRoomResponse', (response) => {
+socket.on('joinSessionResponse', (response) => {
     console.log(response);
 });
 
@@ -26,4 +26,4 @@ socket.on('disconnect', () => {
 
 
 
-const sampleAuctionToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb29tSWQiOjU2NDYsInVzZXJJZCI6MiwiaWF0IjoxNzExNjIxMTExLCJleHAiOjE3MTE3MDc1MTF9.V_wSLO3I2CVxfyFBUjuyi6zc4GSMvYVJ29rwgSsWUHE';
+const sampleAuctionToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZXNzaW9uSWQiOjU2NDYsInVzZXJJZCI6MiwiaWF0IjoxNzExNjI1MjM1LCJleHAiOjE3NDMxNjEyMzV9.4Sba0iSU7mfGabMAerwfaND0trCRpobY_bndMU05M6k';
