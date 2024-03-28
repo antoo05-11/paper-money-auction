@@ -32,15 +32,14 @@ app.get("/", (req, res) => {
     res.status(200).json({
         message: "Welcome to Paper Money Auction server!!!",
         information: "This server is a part of Object Oriented Analysis and Design Course in UET, VNU.",
-        project_contributors: "Ngũ Thành An, Nguyễn Trần Gia Bảo, Đỗ Minh Duy, Phạm Xuân Bách,Đỗ Đức Anh, Đỗ Minh Duy"
+        project_contributors: "Ngũ Thành An, Nguyễn Trần Gia Bảo, Đỗ Minh Duy, Phạm Xuân Bách, Đỗ Đức Anh"
     });
 });
 
 const httpServer = http.createServer(app);
 
-httpServer.listen(PORT, HOSTNAME, () => {
-    const address = httpServer.address();
-    console.log(`Server started running at http://${address.address}:${address.port}`);
+httpServer.listen(PORT, () => {
+    console.log(`Server started running on port ${PORT}`);
 });
 
 // Init socket.
