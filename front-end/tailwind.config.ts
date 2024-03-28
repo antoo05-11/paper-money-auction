@@ -24,7 +24,7 @@ const config = {
         highlightColor: "#F38181",
         footerBgColor: "#F08A5D",
         tmpColor: "#95E1D3",
-        tmpColor1: "EAFFD0",
+        tmpColor1: "#EAFFD0",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
