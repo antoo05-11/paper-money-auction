@@ -15,4 +15,4 @@ const assetSchema = new mongoose.Schema({
     timestamps: true
 });
 
-export default mongoose.model("Asset", assetSchema);
+export const Assets = mongoose.model("Asset", assetSchema);
