@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema(
         phone: { type: String, unique: true },
         email: { type: String, unique: true },
         address: String,
-        // Payment
+        // Payment (for User only)
         bank: String,
         account_number: String,
         holder: String,
