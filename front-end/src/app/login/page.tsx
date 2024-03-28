@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-
+import { toast } from "sonner";
 const formSchema = z.object({
   username: z.string().min(2, {
     message: "Username must be at least 2 characters.",
@@ -73,7 +73,19 @@ export default function LoginForm() {
             )}
           />
           <div className="flex flex-col items-center justify-center">
-            <Button className="left-0 min-w-60 relative" type="submit">
+            <Button
+              className="left-0 min-w-60 relative"
+              type="submit"
+              onClick={() =>
+                toast("Event has been created", {
+                  description: "Sunday, December 03, 2023 at 9:00 AM",
+                  action: {
+                    label: "Undo",
+                    onClick: () => console.log("Undo"),
+                  },
+                })
+              }
+            >
               Login
             </Button>
           </div>
