@@ -19,6 +19,8 @@ const auctionSchema = new mongoose.Schema(
         registration_close: Date,
         auction_start: Date,
         auction_end: Date,
+        max_number_of_bidder: Number,
+        docs: [String],
         // Result
         winning_bid: Number,
         winner: {
