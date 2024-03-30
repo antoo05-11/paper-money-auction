@@ -15,6 +15,8 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ArrowRight } from 'lucide-react';
+
 import Link from "next/link";
 
 export default function PageHeader() {
@@ -62,15 +64,17 @@ export default function PageHeader() {
   ListItem.displayName = "ListItem";
   return (
     <header
-      className={`min-h-[70px] fixed w-screen z-10 flex items-center transition-all duration-300 ${
-        navBar ? "bg-white shadow-md" : "bg-transparent"
-      }`}
+      className={`min-h-[70px] fixed w-screen z-10 flex items-center transition-all duration-300 ${navBar ? "bg-white shadow-md" : "bg-transparent"
+        }`}
     >
       <div className="container">
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex ml-auto lg:order-1">
-            <Link href={"/login"}>
-              <Button className="mt-2 bg-highlightColor">Đăng nhập</Button>
+            <Link href={"/login/signin"}>
+              <Button className="bg-highlightColor">
+                Đăng nhập
+                <ArrowRight size={18} className="ml-1" />
+              </Button>
             </Link>
           </div>
           <NavigationMenu>

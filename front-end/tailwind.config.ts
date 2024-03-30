@@ -21,7 +21,7 @@ const config = {
     extend: {
       colors: {
         bgColor: "#FCE38A",
-        highlightColor: "#F38181",
+        highlightColor: "#FF2442",
         footerBgColor: "#F08A5D",
         tmpColor: "#95E1D3",
         tmpColor1: "#EAFFD0",

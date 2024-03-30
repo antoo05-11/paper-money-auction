@@ -15,8 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={lexend.className}>
-        <PageHeader />
+        {/* <PageHeader /> */}
         {children}
+        {/* <PageFooter /> */}
       </body>
       <Toaster />
     </html>
