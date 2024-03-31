@@ -5,7 +5,7 @@ const auctionSessionSchema = new mongoose.Schema({
     lastAmount: Number,
     status: {
         type: String,
-        enum: [] 
+        enum: []
     }
 }, {
     versionKey: false,
