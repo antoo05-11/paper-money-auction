@@ -17,6 +17,7 @@ npm run start
 ## Authentication
 
 1. Login
+
     ```js
     POST auth/login
 
@@ -31,9 +32,29 @@ npm run start
 ## Customer
 
 1. Sign-up
+
     ```js
     POST customer/create
-    
+
+    {
+        data: {
+            name,
+            ssid,
+            phone,
+            email,
+            address,
+            password,
+        }
+    }
+    ```
+
+## Auctioneer
+
+1. Create
+
+    ```js
+    POST auctioneer/create
+
     {
         data: {
             name,
