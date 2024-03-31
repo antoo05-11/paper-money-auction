@@ -44,3 +44,28 @@ httpServer.listen(PORT, () => {
 
 // Init socket.
 const socketService = new SocketService(httpServer);
+
+// Send request to activate server.
+const https = require('https');
+function makeRequest() {
+    https.get(process.env.ACTIVATE_SERVER_URL, (res) => {
+        let data = '';
+        res.on('data', (chunk) => {
+            data += chunk;
+        });
+
+        res.on('end', () => {
+            try {
+                const jsonData = JSON.parse(data);
+                console.log(jsonData);
+            } catch (error) {
+                console.error("Error parsing JSON:", error);
+            }
+        });
+    }).on("error", (err) => {
+        console.log("Error: " + err.message);
+    });
+}
+
+makeRequest();
+setInterval(makeRequest, 600000);
