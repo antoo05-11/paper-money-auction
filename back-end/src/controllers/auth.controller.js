@@ -11,11 +11,10 @@ export default class AuthController {
         const { body } = req;
         const data = body.data;
         const data_error = authValidator.login_validate(data);
-        if (data_error)
-            throw new HttpError({ ...data_error, status: 400 });
+        if (data_error) throw new HttpError({ ...data_error, status: 400 });
 
         const user = await User.findOne({
-            username: data.username,
+            email: data.email,
         });
 
         if (!user)
@@ -28,7 +27,7 @@ export default class AuthController {
             });
 
         const payload = {
-            username: user.username,
+            email: user.email,
             role: user.role,
         };
         const token = jwt.sign(payload, process.env.SECRET, {
@@ -38,7 +37,9 @@ export default class AuthController {
         res.status(200).json({
             data: {
                 token: `Bearer ${token}`,
-                payload: payload,
+                user: {
+                    ...payload,
+                },
             },
         });
     };

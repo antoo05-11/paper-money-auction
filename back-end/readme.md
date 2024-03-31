@@ -16,13 +16,32 @@ npm run start
 
 ## Authentication
 
-```js
-POST auth/login
+1. Login
+    ```js
+    POST auth/login
 
-{
-    data: {
-        username
-        password
+    {
+        data: {
+            email,
+            password,
+        }
     }
-}
-```
+    ```
+
+## Customer
+
+1. Sign-up
+    ```js
+    POST customer/create
+    
+    {
+        data: {
+            name,
+            ssid,
+            phone,
+            email,
+            address,
+            password,
+        }
+    }
+    ```

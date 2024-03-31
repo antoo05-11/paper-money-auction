@@ -1,10 +1,14 @@
 import Joi from "joi";
 import errorCode from "../constants/error.code";
 
-class AuthValidator {
-    login_validate = (data) => {
+class UserValidator {
+    signup_validate = (data) => {
         let schema = Joi.object({
             email: Joi.string().required(),
+            name: Joi.string().required(),
+            ssid: Joi.string().required(),
+            phone: Joi.string().required(),
+            address: Joi.string().required(),
             password: Joi.string().required(),
         }).required();
 
@@ -15,9 +19,9 @@ class AuthValidator {
                 message: error.details.map((x) => x.message).join(", "),
             };
         }
-        
+
         return null;
     };
 }
 
-export default new AuthValidator();
+export default new UserValidator();
