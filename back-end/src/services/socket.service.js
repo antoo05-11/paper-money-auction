@@ -1,18 +1,31 @@
 import jwt from "jsonwebtoken";
-import {AuctionSession} from "./components/session";
-import errorCode from "../../constants/error.code";
+import {AuctionSession} from "./auction_session/components/session";
+import errorCode from "../constants/error.code";
 import {Server} from 'socket.io';
-import {User} from "./components/user";
-import {isNumberInRange} from "../../utils/string.utils";
+import {User} from "./auction_session/components/user";
+import {isNumberInRange} from "../utils/string.utils";
+import {Service} from "./service";
 
-export class SocketService {
+let instance;
+
+class SocketService extends Service {
     #sessions = new Map();
     #users = new Map();
 
     static LOWER_THRESHOLD_OFFER = 10000
     static UPPER_THRESHOLD_OFFER = 20000
 
-    constructor(httpServer) {
+    constructor() {
+        super();
+        if (instance) {
+            throw new Error("Mail Service must be constructed only one time!");
+        }
+        instance = this;
+    }
+
+    init(httpServer) {
+        super.init();
+
         this.io = new Server(httpServer);
 
         this.io.on('connection', (socket) => {
@@ -81,3 +94,5 @@ export class SocketService {
         }
     }
 }
+
+export const socketService = new SocketService();

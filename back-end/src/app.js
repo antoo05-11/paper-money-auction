@@ -5,7 +5,8 @@ import http from "http";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import router from "./routers/router";
-import {SocketService} from "./services/auction_session/socket.js";
+import {socketService} from "./services/socket.service";
+import {mailService} from "./services/mail.service";
 
 // Load .env variables
 dotenv.config();
@@ -42,11 +43,13 @@ httpServer.listen(PORT, () => {
     console.log(`Server started running on port ${PORT}`);
 });
 
-// Init socket.
-const socketService = new SocketService(httpServer);
+//Init app services
+mailService.init()
+socketService.init(httpServer)
 
 // Send request to activate server.
 const https = require('https');
+
 function makeRequest() {
     https.get(process.env.ACTIVATE_SERVER_URL, (res) => {
         let data = '';
@@ -69,3 +72,4 @@ function makeRequest() {
 
 makeRequest();
 setInterval(makeRequest, 600000);
+
