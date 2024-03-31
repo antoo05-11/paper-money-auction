@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 
 export default class UserController {
     constructor() {}
-    create_customer = async (req, res) => {
+    create = (role) => async (req, res) => {
         const { body } = req;
         const { data } = body;
         const data_error = userValidator.signup_validate(data);
@@ -19,16 +19,18 @@ export default class UserController {
             bcrypt.genSaltSync(12),
             null
         );
-        data.role = userRole.CUSTOMER;
-        const customer = await User.create(data);
+        data.role = role;
+        const user = await User.create(data);
 
-        delete customer._doc.password;
+        delete user._doc.password;
         res.status(200).json({
             data: {
-                customer: customer,
+                user: user,
             },
         });
     };
+    create_customer = this.create(userRole.CUSTOMER);
+    create_auctioneer = this.create(userRole.AUCTIONEER);
 
     view_profile = async (req, res) => {};
     update_profile = async (req, res) => {};

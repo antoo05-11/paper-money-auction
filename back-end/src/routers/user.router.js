@@ -11,6 +11,12 @@ export default [
                 method: "create_customer",
             },
             {
+                httpMethod: "post",
+                path: "/auctioneer/create",
+                method: "create_auctioneer",
+                roles: [userRole.ADMIN],
+            },
+            {
                 httpMethod: "get",
                 path: "/user/:id/profile",
                 method: "view_profile",
