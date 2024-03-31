@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import router from "./routers/router";
 import {socketService} from "./services/socket.service";
 import {mailService} from "./services/mail.service";
+import {ftpService} from "./services/ftp.service";
 
 // Load .env variables
 dotenv.config();
@@ -46,6 +47,7 @@ httpServer.listen(PORT, () => {
 //Init app services
 mailService.init()
 socketService.init(httpServer)
+ftpService.init()
 
 // Send request to activate server.
 const https = require('https');

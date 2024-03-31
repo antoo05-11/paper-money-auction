@@ -1,8 +1,6 @@
 import nodemailer from 'nodemailer';
-import dotenv from "dotenv";
 import {Service} from "./service";
 
-dotenv.config();
 let instance;
 
 class MailService extends Service {
