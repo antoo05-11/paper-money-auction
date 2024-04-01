@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const AuctionBidderSchema = new mongoose.Schema(
+const ParticipationSchema = new mongoose.Schema(
     {
         auction: {
             type: mongoose.Schema.Types.ObjectId,
@@ -19,4 +19,4 @@ const AuctionBidderSchema = new mongoose.Schema(
     }
 );
 
-export const Offer = mongoose.model("Bidding", AuctionBidderSchema);
+export const Participation = mongoose.model("Participation", ParticipationSchema);

@@ -15,4 +15,4 @@ const biddingSchema = new mongoose.Schema(
     }
 );
 
-export const Offer = mongoose.model("Bidding", biddingSchema);
+export const Bidding = mongoose.model("Bidding", biddingSchema);

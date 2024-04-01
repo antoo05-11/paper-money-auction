@@ -14,7 +14,7 @@ const auth = (roles) => async (req, res, next) => {
                     if (payload) {
                         req.payload = payload;
                         const user = await User.findOne({
-                            username: payload.username,
+                            email: payload.email,
                         });
 
                         if (

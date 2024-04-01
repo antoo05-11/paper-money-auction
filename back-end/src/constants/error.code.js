@@ -38,6 +38,17 @@ export default {
         },
     },
 
+    AUCTION: {
+        INVALID_TOKEN: {
+            code: "INVALID_AUCTION_TOKEN",
+            message: "Token used for auction session is invalid!",
+        },
+        ID_NOT_FOUND: {
+            code: "AUCTION_ID_NOT_FOUND",
+            message: "Auction with request ID is not found",
+        },
+    },
+
     PARAMS_INVALID: {
         code: "PARAMS_INVALID",
     },
@@ -51,14 +62,4 @@ export default {
         code: "INTERNAL_SERVER_ERROR",
         message: "Internal server error",
     },
-
-    INVALID_AUCTION_TOKEN: {
-        code: "INVALID_AUCTION_TOKEN",
-        message: "Token used for auction session is invalid!"
-    },
-
-    INVALID_AUCTION_SESSION_ID: {
-        code: "INVALID_AUCTION_SESSION_ID",
-        message: "Auction session id is invalid!"
-    }
 };
