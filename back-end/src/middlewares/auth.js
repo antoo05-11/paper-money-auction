@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import User from "../models/user";
+import {User} from "../models/user";
 import error from "../constants/error.code";
 
 const auth = (roles) => async (req, res, next) => {

@@ -1,15 +1,21 @@
 import mongoose from "mongoose";
 
-const assetSchema = new mongoose.Schema({
-    ownerId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+const assetSchema = new mongoose.Schema(
+    {
+        owner: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+        },
+        // Information
+        name: String,
+        description: String,
+        pics: [String],
+        // Verification
+        docs: [String],
     },
-    attributes: Object,
-    status: String,
-}, {
-    versionKey: false,
-    timestamps: true
-});
+    {
+        versionKey: false,
+    }
+);
 
-export default mongoose.model("Asset", assetSchema);
+export const Assets = mongoose.model("Asset", assetSchema);
