@@ -4,62 +4,74 @@ import cors from "cors";
 import http from "http";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import errorCode from "./constants/error.code";
 import router from "./routers/router";
-import User from "./models/user.js";
+import {socketService} from "./services/socket.service";
+import {mailService} from "./services/mail.service";
+import {ftpService} from "./services/ftp.service";
 
-// Load env variables
+// Load .env variables
 dotenv.config();
 const PORT = process.env.PORT || 5050;
 const HOSTNAME = process.env.HOSTNAME || "localhost";
 const DATABASE_URL = process.env.DATABASE_URL;
 
-// Connect to Database
-mongoose.connect(DATABASE_URL);
-const db = mongoose.connection;
-
-db.on("error", (error) => {
+// Connect to database server.
+mongoose.connect(DATABASE_URL).then(() => {
+    console.log("Database Connected");
+}).catch((error) => {
     console.log("Database Connecting Error", error);
 });
 
-db.once("connected", () => {
-    console.log("Database Connected");
-});
-
-// Init Epxress App
+// Init Express App
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
 app.use("/", router);
-app.use((req, res, next) => {
-    res.status(404).json({
-        ...errorCode.URL_NOT_FOUND,
+
+app.get("/", (req, res) => {
+    res.status(200).json({
+        message: "Welcome to Paper Money Auction server!!!",
+        information: "This server is a part of Object Oriented Analysis and Design Course in UET, VNU.",
+        project_contributors: "Ngũ Thành An, Nguyễn Trần Gia Bảo, Đỗ Minh Duy, Phạm Xuân Bách, Đỗ Đức Anh"
     });
 });
 
 const httpServer = http.createServer(app);
-httpServer.listen(PORT, HOSTNAME, () => {
-    console.log(`Server started running at ${HOSTNAME}:${PORT}`);
+
+httpServer.listen(PORT, () => {
+    console.log(`Server started running on port ${PORT}`);
 });
 
-// Test schema
-app.get('/test', async (req, res) => {
-    const sampleUser = new User({
-        role: 'user', 
-        name: 'John Doe1', 
-        phone: '0123456788',
-        password: 'password123', 
-        email: 'john@example.com1', 
-        address: '123 Main Street, City, Country', 
-        balance: 1000 
+//Init app services
+mailService.init()
+socketService.init(httpServer)
+ftpService.init()
+
+// Send request to activate server.
+const https = require('https');
+
+function makeRequest() {
+    https.get(process.env.ACTIVATE_SERVER_URL, (res) => {
+        let data = '';
+        res.on('data', (chunk) => {
+            data += chunk;
+        });
+
+        res.on('end', () => {
+            try {
+                const jsonData = JSON.parse(data);
+                console.log(jsonData);
+            } catch (error) {
+                console.error("Error parsing JSON:", error);
+            }
+        });
+    }).on("error", (err) => {
+        console.log("Error: " + err.message);
     });
+}
 
-    let user = await sampleUser.save();
-    if (user) {
-        return res.status(200).json(user);
-    }
-    return res.status(400).json();
+makeRequest();
+setInterval(makeRequest, 600000);
 
-});

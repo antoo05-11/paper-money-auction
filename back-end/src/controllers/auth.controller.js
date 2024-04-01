@@ -1,16 +1,19 @@
 import error from "../constants/error.code";
-import User from "../models/user";
-import { HttpError } from "../utils/http.error";
+import {User} from "../models/user";
+import {HttpError} from "../utils/http.error";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import authValidator from "../services/auth.validator";
 
 export default class AuthController {
-    constructor() {}
+    constructor() {
+    }
+
     login = async (req, res) => {
-        const { body } = req;
+        const {body} = req;
         const data = body.data;
         const data_error = authValidator.login_validate(data);
+      
         if (data_error) throw new HttpError({ ...data_error, status: 400 });
 
         const user = await User.findOne({
@@ -18,7 +21,7 @@ export default class AuthController {
         });
 
         if (!user)
-            throw new HttpError({ ...error.AUTH.USER_NOT_FOUND, status: 400 });
+            throw new HttpError({...error.AUTH.USER_NOT_FOUND, status: 400});
 
         if (!bcrypt.compareSync(data.password, user.password))
             throw new HttpError({
