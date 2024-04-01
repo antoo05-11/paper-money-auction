@@ -1,6 +1,37 @@
+import userRole from "../constants/user.role";
+import User from "../models/user";
+import userValidator from "../services/user.validator";
+import { HttpError } from "../utils/http.error";
+import bcrypt from "bcrypt";
+
 export default class UserController {
     constructor() {}
-    create_user = async (req, res) => {};
+    create = (role) => async (req, res) => {
+        const { body } = req;
+        const { data } = body;
+        const data_error = userValidator.signup_validate(data);
+        if (data_error) {
+            throw new HttpError({ ...data_error, status: 400 });
+        }
+
+        data.password = bcrypt.hashSync(
+            data.password,
+            bcrypt.genSaltSync(12),
+            null
+        );
+        data.role = role;
+        const user = await User.create(data);
+
+        delete user._doc.password;
+        res.status(200).json({
+            data: {
+                user: user,
+            },
+        });
+    };
+    create_customer = this.create(userRole.CUSTOMER);
+    create_auctioneer = this.create(userRole.AUCTIONEER);
+
     view_profile = async (req, res) => {};
     update_profile = async (req, res) => {};
     update_password = async (req, res) => {};
