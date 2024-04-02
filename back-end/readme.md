@@ -17,6 +17,8 @@ npm run start
 ## Authentication
 
 1. Login
+   
+   Login step:
 
     ```js
     POST auth/login
@@ -24,17 +26,31 @@ npm run start
     {
         data: {
             email,
-            password,
+            password
         }
     }
     ```
+   
+   Login verify step:
+   ```js
+    POST auth/login/authenticate
+
+    {
+        data: {
+            email,
+            password,
+            authenticCode
+        }
+    }
+    ```
+
 
 ## Customer
 
 1. Sign-up
 
     ```js
-    POST user/create/customer
+    POST auth/user/create/customer
 
     {
         data: {
@@ -51,7 +67,7 @@ npm run start
 2. View profile
 
     ```js
-    GET user/profile
+    GET auth/user/profile
 
     Header:
         Authorization: "Bearer <customer's token>"
@@ -60,7 +76,7 @@ npm run start
 3. View Payment method
 
     ```js
-    GET user/payment
+    GET auth/user/payment
 
     Header:
         Authorization: "Bearer <customer's token>"
@@ -71,7 +87,7 @@ npm run start
 1. Create
 
     ```js
-    POST user/create/staff
+    POST auth/user/create/staff
 
     Header:
         Authorization: "Bear <admin's token>"

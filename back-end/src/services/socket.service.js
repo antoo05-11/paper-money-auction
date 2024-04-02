@@ -3,8 +3,8 @@ import {AuctionSession} from "./auction_session/components/session";
 import errorCode from "../constants/error.code";
 import {Server} from 'socket.io';
 import {User} from "./auction_session/components/user";
-import {isNumberInRange} from "../utils/string.utils";
 import {Service} from "./service";
+import {utils} from "../utils/utils";
 
 let instance;
 
@@ -70,7 +70,7 @@ class SocketService extends Service {
                 console.log(session.toString());
             }
         } catch (error) {
-            socket.emit('joinSessionResponse', errorCode.INVALID_AUCTION_TOKEN);
+            socket.emit('joinSessionResponse', errorCode.AUCTION.INVALID_TOKEN);
         }
     }
 
@@ -89,7 +89,7 @@ class SocketService extends Service {
     }
 
     #makeOffer = (socket, auctionToken, offer) => {
-        if (isNumberInRange(offer, SocketService.LOWER_THRESHOLD_OFFER, SocketService.UPPER_THRESHOLD_OFFER)) {
+        if (utils.isNumberInRange(offer, SocketService.LOWER_THRESHOLD_OFFER, SocketService.UPPER_THRESHOLD_OFFER)) {
 
         }
     }

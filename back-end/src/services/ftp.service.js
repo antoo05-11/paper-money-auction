@@ -1,19 +1,13 @@
 import {Service} from "./service";
 
-let instance;
 const PromiseFtp = require('promise-ftp');
 
 class FtpService extends Service {
-    #client
     #fileServerUrl
     #ftpClient
 
     constructor() {
         super();
-        if (instance) {
-            throw new Error("Mail Service must be constructed only one time!");
-        }
-        instance = this;
 
         this.#fileServerUrl = process.env.FTP_URL;
         this.#ftpClient = new PromiseFtp();

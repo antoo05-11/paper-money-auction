@@ -1,18 +1,15 @@
 import nodemailer from 'nodemailer';
 import {Service} from "./service";
-
-let instance;
+import * as fs from "fs";
+import * as path from "path";
 
 class MailService extends Service {
     #transporter
     #config
+    #mailTemplates
 
     constructor() {
         super();
-        if (instance) {
-            throw new Error("Mail Service must be constructed only one time!");
-        }
-        instance = this;
 
         this.#config = {
             service: 'gmail',
@@ -25,7 +22,31 @@ class MailService extends Service {
             }
         };
         this.#transporter = nodemailer.createTransport(this.#config);
+
+        this.#mailTemplates = {
+            sendAuthCodeTemplate: this.#readMailTemplate('send_auth_code_template.html')
+        }
     }
+
+    #sendMessage = async (mailOption) => {
+        await this.#transporter.sendMail(mailOption);
+    }
+
+    #readMailTemplate = (fileName) => {
+        const fullPath = path.join(__dirname, `/mail_templates/${fileName}`);
+        return fs.readFileSync(fullPath, 'utf-8');
+    }
+
+    send2FACode = async (mailAddress, code) => {
+        const mailOption = {
+            from: this.#config.auth.user,
+            to: mailAddress,
+            subject: 'Verify your identity for Paper Money Auction System',
+            html: this.#mailTemplates.sendAuthCodeTemplate.replace('{{code}}', code)
+        };
+        await this.#sendMessage(mailOption);
+    };
+
 
     sendPasswordToNewUserMail = async (mailAddress, password) => {
         const mailOption = {
@@ -34,7 +55,7 @@ class MailService extends Service {
             subject: 'Welcome to our Paper Money Auction System!',
             text: `Here is your new password: ${password}. Thanks!`
         };
-        await this.#transporter.sendMail(mailOption);
+        await this.#sendMessage(mailOption)
     };
 
     sendMailVerifiedCode = async (mailAddress, code) => {
@@ -44,7 +65,7 @@ class MailService extends Service {
             subject: 'Change password for Paper Money Auction account!',
             text: `To change your password, enter this code to verifying box: ${code}. Thanks!`
         };
-        await this.#transporter.sendMail(mailOption);
+        await this.#sendMessage(mailOption)
     }
 }
 
