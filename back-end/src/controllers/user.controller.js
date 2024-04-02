@@ -1,20 +1,19 @@
 import userRole from "../constants/user.role";
-import {User} from "../models/user";
+import { User } from "../models/user";
 import userValidator from "../services/user.validator";
-import {HttpError} from "../utils/http.error";
+import { HttpError } from "../utils/http.error";
 import bcrypt from "bcrypt";
+import errorCode from "../constants/error.code";
 
 export default class UserController {
-    constructor() {
-    }
-
+    constructor() {}
     create_customer = async (req, res) => {
-        const {body} = req;
-        const {data} = body;
+        const { body } = req;
+        const { data } = body;
         data.role = userRole.CUSTOMER;
-        const data_error = userValidator.to_create(data);
+        const data_error = userValidator.toCreateUser(data);
         if (data_error) {
-            throw new HttpError({...data_error, status: 400});
+            throw new HttpError({ ...data_error, status: 400 });
         }
         data.password = bcrypt.hashSync(
             data.password,
@@ -33,8 +32,8 @@ export default class UserController {
     };
 
     create_staff = async (req, res) => {
-        const {body} = req;
-        const {data} = body;
+        const { body } = req;
+        const { data } = body;
         const year = new Date().getFullYear() % 100;
         const num_of_staff = (
             await User.countDocuments({
@@ -50,9 +49,9 @@ export default class UserController {
             null
         );
 
-        const data_error = userValidator.to_create(data);
+        const data_error = userValidator.toCreateUser(data);
         if (data_error) {
-            throw new HttpError({...data_error, status: 400});
+            throw new HttpError({ ...data_error, status: 400 });
         }
 
         const staff = await User.create(data);
@@ -85,9 +84,34 @@ export default class UserController {
     };
 
     update_profile = async (req, res) => {
+        const { body } = req;
+        const { data } = body;
+        const payload = req.payload;
+
+        const data_error = userValidator.toUpdateProfile(data);
+        if (data_error) {
+            throw new HttpError({ ...data_error, status: 400 });
+        }
+
+        const user = await User.findByIdAndUpdate(payload.id, data, {
+            new: true,
+        }).select({
+            _id: 0,
+            name: 1,
+            ssid: 1,
+            email: 1,
+            phone: 1,
+            address: 1,
+            verified: 1,
+        });
+
+        res.status(200).json({
+            data: {
+                user: user,
+            },
+        });
     };
-    update_password = async (req, res) => {
-    };
+    update_password = async (req, res) => {};
 
     view_payment_method = async (req, res) => {
         const payload = req.payload;
@@ -106,5 +130,28 @@ export default class UserController {
     };
 
     update_payment_method = async (req, res) => {
+        const { body } = req;
+        const { data } = body;
+        const payload = req.payload;
+
+        const data_error = userValidator.toUpdatePayment(data);
+        if (data_error) {
+            throw new HttpError({ ...data_error, status: 400 });
+        }
+
+        const user = await User.findByIdAndUpdate(payload.id, data, {
+            new: true,
+        }).select({
+            _id: 0,
+            bank: 1,
+            account_number: 1,
+            holder: 1,
+        });
+
+        res.status(200).json({
+            data: {
+                user: user,
+            },
+        });
     };
 }

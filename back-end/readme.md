@@ -73,13 +73,49 @@ npm run start
         Authorization: "Bearer <customer's token>"
     ```
 
-3. View Payment method
+3. Update profile
+
+    ```js
+    PUT user/profile
+
+    Header:
+        Authorization: "Bearer <customer's token>"
+
+    {
+        data: {
+            name,
+            ssid,
+            phone,
+            email,
+            address,
+        }
+    }
+    ```
+
+4. View Payment method
 
     ```js
     GET auth/user/payment
 
     Header:
         Authorization: "Bearer <customer's token>"
+    ```
+
+5. Update Payment method
+
+    ```js
+    PUT user/payment
+
+    Header:
+        Authorization: "Bearer <customer's token>"
+
+    {
+        data: {
+            bank,
+            account_number,
+            holder,
+        }
+    }
     ```
 
 ## Auctioneer
