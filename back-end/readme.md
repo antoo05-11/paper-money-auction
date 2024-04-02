@@ -34,7 +34,7 @@ npm run start
 1. Sign-up
 
     ```js
-    POST customer/create
+    POST user/create/customer
 
     {
         data: {
@@ -53,16 +53,13 @@ npm run start
 1. Create
 
     ```js
-    POST auctioneer/create
+    POST user/create/staff
 
     {
         data: {
             name,
             ssid,
-            phone,
-            email,
-            address,
-            password,
+            role, // Auctioneer
         }
     }
     ```

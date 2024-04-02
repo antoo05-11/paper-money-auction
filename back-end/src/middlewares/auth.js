@@ -7,15 +7,13 @@ const auth = (roles) => async (req, res, next) => {
 
     if (authorization && authorization.startsWith("Bearer ")) {
         const token = authorization.slice("Bearer ".length);
-        var secret = systemConfig.get("secret");
+        const secret = process.env.SECRET;
         if (token) {
             try {
                 jwt.verify(token, secret, async function (err, payload) {
                     if (payload) {
                         req.payload = payload;
-                        const user = await User.findOne({
-                            email: payload.email,
-                        });
+                        const user = await User.findById(payload.id);
 
                         if (
                             roles &&
@@ -31,7 +29,7 @@ const auth = (roles) => async (req, res, next) => {
                         }
 
                         req.user = user;
-                        if (!user) {
+                        if (!user || !user.active) {
                             res.status(403).json({
                                 ...error.AUTH.USER_DELETED,
                             });

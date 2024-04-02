@@ -29,7 +29,8 @@ export default class AuthController {
             });
 
         const payload = {
-            email: user.email,
+            id: user._id.toString(),
+            name: user.name,
             role: user.role,
         };
         const token = jwt.sign(payload, process.env.SECRET, {

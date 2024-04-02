@@ -7,13 +7,13 @@ export default [
         methods: [
             {
                 httpMethod: "post",
-                path: "/customer/create",
+                path: "/user/create/customer",
                 method: "create_customer",
             },
             {
                 httpMethod: "post",
-                path: "/auctioneer/create",
-                method: "create_auctioneer",
+                path: "/user/create/staff",
+                method: "create_staff",
                 roles: [userRole.ADMIN],
             },
             {
