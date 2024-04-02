@@ -11,7 +11,7 @@ export default class UserController {
         const { body } = req;
         const { data } = body;
         data.role = userRole.CUSTOMER;
-        const data_error = userValidator.to_create(data);
+        const data_error = userValidator.toCreateUser(data);
         if (data_error) {
             throw new HttpError({ ...data_error, status: 400 });
         }
@@ -49,7 +49,7 @@ export default class UserController {
             null
         );
 
-        const data_error = userValidator.to_create(data);
+        const data_error = userValidator.toCreateUser(data);
         if (data_error) {
             throw new HttpError({ ...data_error, status: 400 });
         }
@@ -83,7 +83,34 @@ export default class UserController {
         });
     };
 
-    update_profile = async (req, res) => {};
+    update_profile = async (req, res) => {
+        const { body } = req;
+        const { data } = body;
+        const payload = req.payload;
+
+        const data_error = userValidator.toUpdateProfile(data);
+        if (data_error) {
+            throw new HttpError({ ...data_error, status: 400 });
+        }
+
+        const user = await User.findByIdAndUpdate(payload.id, data, {
+            new: true,
+        }).select({
+            _id: 0,
+            name: 1,
+            ssid: 1,
+            email: 1,
+            phone: 1,
+            address: 1,
+            verified: 1,
+        });
+
+        res.status(200).json({
+            data: {
+                user: user,
+            },
+        });
+    };
     update_password = async (req, res) => {};
 
     view_payment_method = async (req, res) => {
@@ -102,5 +129,29 @@ export default class UserController {
         });
     };
 
-    update_payment_method = async (req, res) => {};
+    update_payment_method = async (req, res) => {
+        const { body } = req;
+        const { data } = body;
+        const payload = req.payload;
+
+        const data_error = userValidator.toUpdatePayment(data);
+        if (data_error) {
+            throw new HttpError({ ...data_error, status: 400 });
+        }
+
+        const user = await User.findByIdAndUpdate(payload.id, data, {
+            new: true,
+        }).select({
+            _id: 0,
+            bank: 1,
+            account_number: 1,
+            holder: 1,
+        });
+
+        res.status(200).json({
+            data: {
+                user: user,
+            },
+        });
+    };
 }
