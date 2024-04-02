@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import {User} from "../models/user";
+import { User } from "../models/user";
 import error from "../constants/error.code";
 
 const auth = (roles) => async (req, res, next) => {
@@ -13,7 +13,9 @@ const auth = (roles) => async (req, res, next) => {
                 jwt.verify(token, secret, async function (err, payload) {
                     if (payload) {
                         req.payload = payload;
-                        const user = await User.findById(payload.id);
+                        const user = await User.findById(payload.id, {
+                            active: 1,
+                        });
 
                         if (
                             roles &&
@@ -28,7 +30,6 @@ const auth = (roles) => async (req, res, next) => {
                             });
                         }
 
-                        req.user = user;
                         if (!user || !user.active) {
                             res.status(403).json({
                                 ...error.AUTH.USER_DELETED,

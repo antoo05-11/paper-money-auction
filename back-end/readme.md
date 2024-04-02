@@ -48,12 +48,33 @@ npm run start
     }
     ```
 
+2. View profile
+
+    ```js
+    GET user/profile
+
+    Header:
+        Authorization: "Bearer <customer's token>"
+    ```
+
+3. View Payment method
+
+    ```js
+    GET user/payment
+
+    Header:
+        Authorization: "Bearer <customer's token>"
+    ```
+
 ## Auctioneer
 
 1. Create
 
     ```js
     POST user/create/staff
+
+    Header:
+        Authorization: "Bear <admin's token>"
 
     {
         data: {

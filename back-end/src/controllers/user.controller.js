@@ -3,6 +3,7 @@ import { User } from "../models/user";
 import userValidator from "../services/user.validator";
 import { HttpError } from "../utils/http.error";
 import bcrypt from "bcrypt";
+import errorCode from "../constants/error.code";
 
 export default class UserController {
     constructor() {}
@@ -64,15 +65,42 @@ export default class UserController {
     };
 
     view_profile = async (req, res) => {
-        const user = req.user;
+        const payload = req.payload;
+        const user = await User.findById(payload.id, {
+            _id: 0,
+            name: 1,
+            ssid: 1,
+            email: 1,
+            phone: 1,
+            address: 1,
+            verified: 1,
+        });
+
         res.status(200).json({
             data: {
                 user: user,
             },
         });
     };
+
     update_profile = async (req, res) => {};
     update_password = async (req, res) => {};
-    view_payment_method = async (req, res) => {};
+
+    view_payment_method = async (req, res) => {
+        const payload = req.payload;
+        const user = await User.findById(payload.id, {
+            _id: 0,
+            bank: 1,
+            account_number: 1,
+            holder: 1,
+        });
+
+        res.status(200).json({
+            data: {
+                user: user,
+            },
+        });
+    };
+
     update_payment_method = async (req, res) => {};
 }
