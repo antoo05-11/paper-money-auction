@@ -24,8 +24,20 @@ class FtpService extends Service {
             });
     }
 
-    uploadFile = (fileId) => {
+    #reconnect = () => {
+        const RECONNECT_ATTEMPT = 3;
+        this.#ftpClient.reconnect(RECONNECT_ATTEMPT);
+    }
 
+    uploadFile = async (files) => {
+        this.#reconnect();
+        for (const fileKey in files) {
+            const file = files[fileKey];
+            const remotePath = process.env.FTP_URL + file.name;
+
+            await this.#ftpClient.put(file.data, remotePath);
+        }
+        await this.#ftpClient.end();
     }
 }
 

@@ -1,6 +1,7 @@
 import Joi from "joi";
-import errorCode from "../constants/error.code";
-import userRole from "../constants/user.role";
+import errorCode from "../../constants/error.code";
+import userRole from "../../constants/user.role";
+import {getValidateResult} from "./validator";
 
 class UserValidator {
     toCreateUser = (data) => {
@@ -18,15 +19,7 @@ class UserValidator {
                 .required(),
         }).required();
 
-        const { error } = schema.validate(data);
-        if (error) {
-            return {
-                ...errorCode.PARAMS_INVALID,
-                message: error.details.map((x) => x.message).join(", "),
-            };
-        }
-
-        return null;
+        return getValidateResult(schema, data);
     };
 
     toUpdatePayment = (data) => {
@@ -36,15 +29,7 @@ class UserValidator {
             holder: Joi.string().required(),
         }).required();
 
-        const { error } = schema.validate(data);
-        if (error) {
-            return {
-                ...errorCode.PARAMS_INVALID,
-                message: error.details.map((x) => x.message).join(", "),
-            };
-        }
-
-        return null;
+        return getValidateResult(schema, data);
     };
 
     toUpdateProfile = (data) => {
@@ -56,16 +41,8 @@ class UserValidator {
             address: Joi.string(),
         }).required();
 
-        const { error } = schema.validate(data);
-        if (error) {
-            return {
-                ...errorCode.PARAMS_INVALID,
-                message: error.details.map((x) => x.message).join(", "),
-            };
-        }
-
-        return null;
+        return getValidateResult(schema, data);
     };
 }
 
-export default new UserValidator();
+export const userValidator = Object.freeze(new UserValidator());

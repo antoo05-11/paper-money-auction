@@ -33,7 +33,7 @@ class MailService extends Service {
     }
 
     #readMailTemplate = (fileName) => {
-        const fullPath = path.join(__dirname, `/mail_templates/${fileName}`);
+        const fullPath = path.join(__dirname, `../../res/mail_templates/${fileName}`);
         return fs.readFileSync(fullPath, 'utf-8');
     }
 

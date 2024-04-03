@@ -61,10 +61,11 @@ export default class AuthController {
         const data_error = authValidator.authenticate_validate(data);
         if (data_error) throw new HttpError({...data_error, status: 400});
 
-        // Check authentic code match server data.
+        // Check authentic code match server data and remove in codes map.
         if (data.authenticCode !== this.#userAuthCodes.get(data.email).code) {
             throw new HttpError({...error.AUTH.INVALID_AUTH_CODE, status: 400});
         }
+        this.#userAuthCodes.delete(data.email);
 
         // Checking user existence.
         const user = await User.findOne({

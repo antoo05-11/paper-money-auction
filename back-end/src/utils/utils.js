@@ -1,11 +1,7 @@
-let instance;
 import * as crypto from "crypto";
 
 class Utils {
     constructor() {
-        if (instance) {
-            throw new Error("Utils must be constructed only one time!");
-        }
     }
 
     isNumberInRange = (input, lowerThreshold, upperThreshold) => {
