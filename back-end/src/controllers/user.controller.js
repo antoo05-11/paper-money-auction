@@ -3,7 +3,6 @@ import {User} from "../models/user";
 import {userValidator} from "../services/validator_services/user.validator";
 import {HttpError} from "../utils/http.error";
 import bcrypt from "bcrypt";
-import errorCode from "../constants/error.code";
 
 export default class UserController {
     constructor() {

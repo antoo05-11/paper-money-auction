@@ -1,5 +1,4 @@
 import Joi from "joi";
-import errorCode from "../../constants/error.code";
 import userRole from "../../constants/user.role";
 import {getValidateResult} from "./validator";
 
