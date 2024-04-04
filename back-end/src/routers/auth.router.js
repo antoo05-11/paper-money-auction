@@ -9,6 +9,11 @@ export default [
                 path: "/auth/login",
                 method: "login",
             },
+            {
+                httpMethod: "post",
+                path: "/auth/login/authenticate",
+                method: "authenticateLogin",
+            },
         ],
     },
 ];

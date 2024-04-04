@@ -5,12 +5,13 @@ import http from "http";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import router from "./routers/router";
-import {SocketService} from "./services/auction_session/socket.js";
+import {socketService} from "./services/socket.service";
+import {mailService} from "./services/mail.service";
+import {ftpService} from "./services/ftp.service";
 
 // Load .env variables
 dotenv.config();
 const PORT = process.env.PORT || 5050;
-const HOSTNAME = process.env.HOSTNAME || "localhost";
 const DATABASE_URL = process.env.DATABASE_URL;
 
 // Connect to database server.
@@ -26,7 +27,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
-app.use("/", router);
+app.use("/api", router);
 
 app.get("/", (req, res) => {
     res.status(200).json({
@@ -42,11 +43,14 @@ httpServer.listen(PORT, () => {
     console.log(`Server started running on port ${PORT}`);
 });
 
-// Init socket.
-const socketService = new SocketService(httpServer);
+//Init app services
+mailService.init()
+socketService.init(httpServer)
+ftpService.init()
 
 // Send request to activate server.
 const https = require('https');
+
 function makeRequest() {
     https.get(process.env.ACTIVATE_SERVER_URL, (res) => {
         let data = '';
@@ -69,3 +73,5 @@ function makeRequest() {
 
 makeRequest();
 setInterval(makeRequest, 600000);
+
+
