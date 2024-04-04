@@ -10,12 +10,8 @@ export default function (router, apis) {
             const path = e.path;
             const method = e.method;
             const roles = e.roles;
-            const statuses = e.statuses;
             if (_.isEmpty(roles)) {
-                router[httpMethod](
-                    `${path}`,
-                    catchAsync(controller, method)
-                );
+                router[httpMethod](`${path}`, catchAsync(controller, method));
             } else {
                 router[httpMethod](
                     `${path}`,
@@ -33,9 +29,10 @@ const catchAsync = (controller, method) => async (req, res, next) => {
         delete body.password;
         await controller[method](req, res, next);
     } catch (e) {
+        console.log(e)
         res.status(e.status || 500).json({
             code: e.code || error.INTERNAL_SERVER_ERROR.code,
-            message: e.message || error.INTERNAL_SERVER_ERROR.message
+            message: e.message || error.INTERNAL_SERVER_ERROR.message,
         });
     }
 };

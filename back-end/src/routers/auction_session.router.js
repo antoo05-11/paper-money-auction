@@ -8,9 +8,9 @@ export default [
             {
                 httpMethod: "post",
                 path: "/auction_session/:id/enter",
-                method: "enterAuctionRoom",
+                method: "enterAuctionSession",
                 roles: [
-                    UserRole.USER
+                    UserRole.CUSTOMER, UserRole.AUCTIONEER
                 ]
             },
         ],
