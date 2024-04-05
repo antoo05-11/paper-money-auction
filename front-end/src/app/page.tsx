@@ -13,16 +13,16 @@ export default function HomePage() {
       behavior: "smooth",
       block: "start",
     });
-    window.scrollBy(0, -60);
+    window.scrollBy(0, -70);
   };
 
   return (
     <div className="bg-bgColor bg-[url(/bg.png)] bg-cover">
       {/* === Banner === */}
       <div className="bg-[url(/hero-header-bg.png)] bg-cover center h-screen">
-        {/* <PageHeader /> */}
+        <PageHeader />
         <div className="container flex flex-row h-full">
-          <div className="basis-1/2 flex-row content-center">
+          <div className="basis-1/2 flex-row content-center pl-4">
             <h3 className="font-semibold text-2xl mb-1.5 text-highlightColor">
               Chào mừng bạn đến với vua tiền tệ{" "}
             </h3>
@@ -51,7 +51,7 @@ export default function HomePage() {
 
       {/* === Item show === */}
       <div
-        className="flex justify-center items-center flex-col"
+        className="flex justify-center items-center flex-col pb-10"
         ref={assetSectionRef}
       >
         <div className="my-6">
@@ -63,7 +63,7 @@ export default function HomePage() {
       </div>
 
       {/*=== Footer === */}
-      {/* <PageFooter /> */}
+      <PageFooter />
     </div>
   );
 }
