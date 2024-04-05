@@ -64,61 +64,67 @@ export default function PageHeader() {
   ListItem.displayName = "ListItem";
   return (
     <header
-      className={`min-h-[70px] fixed w-screen z-10 flex items-center transition-all duration-300 ${navBar ? "bg-white shadow-md" : "bg-transparent"
+      className={`min-h-[70px] fixed w-screen z-50 flex items-center transition-all duration-300 ${navBar ? "bg-white shadow-md" : "bg-transparent"
         }`}
     >
       <div className="container">
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex ml-auto lg:order-1">
-            <Link href={"/login/signin"}>
-              <Button className="bg-highlightColor">
-                Đăng nhập
-                <ArrowRight size={18} className="ml-1" />
-              </Button>
-            </Link>
+        <div className="flex justify-between gap-4">
+          <div>
+            LOGO
           </div>
-          <NavigationMenu>
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <Link href="/" legacyBehavior passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Trang chủ
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
+          <div className="flex flex-row">
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <Link href="/" legacyBehavior passHref>
+                    <NavigationMenuLink className={`${navigationMenuTriggerStyle()} ${navBar ? 'text-black' : 'text-white'}`}>
+                      Trang chủ
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
 
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>Cuộc đấu giá</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="gap-3 p-5 md:w-[300px] lg:w-[300px] lg:grid-cols-[.75fr_1fr]">
-                    <ListItem
-                      href="/docs/installation"
-                      title="Cuộc đáu giá sắp diễn ra"
-                      className={navigationMenuTriggerStyle()}
-                    ></ListItem>
-                    <ListItem
-                      href="/docs/primitives/typography"
-                      title="Cuộc đấu giá đang diễn ra"
-                      className={navigationMenuTriggerStyle()}
-                    ></ListItem>
-                    <ListItem
-                      href="/docs/primitives/typography"
-                      title="Cuộc đấu giá đã diễn"
-                      className={navigationMenuTriggerStyle()}
-                    ></ListItem>
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className={`${navigationMenuTriggerStyle()} ${navBar ? 'text-black' : 'text-white'}`}>Cuộc đấu giá</NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <ul className="gap-3 p-5 md:w-[300px] lg:w-[300px] lg:grid-cols-[.75fr_1fr]">
+                      <ListItem
+                        href="/docs/installation"
+                        title="Cuộc đáu giá sắp diễn ra"
+                        className="hover:text-highlightColor"
+                      ></ListItem>
+                      <ListItem
+                        href="/docs/primitives/typography"
+                        title="Cuộc đấu giá đang diễn ra"
+                        className="hover:text-highlightColor"
+                      ></ListItem>
+                      <ListItem
+                        href="/docs/primitives/typography"
+                        title="Cuộc đấu giá đã diễn"
+                        className="hover:text-highlightColor"
+                      ></ListItem>
+                    </ul>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
 
-              <NavigationMenuItem>
-                <Link href="/" legacyBehavior passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Liên hệ
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
+                <NavigationMenuItem>
+                  <Link href="/" legacyBehavior passHref>
+                    <NavigationMenuLink className={`${navigationMenuTriggerStyle()} ${navBar ? 'text-black' : 'text-white'}`}>
+                      Liên hệ
+                    </NavigationMenuLink>
+                  </Link>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+
+            <div className="flex ml-32">
+              <Link href={"/login/signin"}>
+                <Button className="bg-highlightColor">
+                  Đăng nhập
+                  <ArrowRight size={18} className="ml-1" />
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </header>

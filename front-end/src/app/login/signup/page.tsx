@@ -38,9 +38,9 @@ export default function RegisterForm() {
         console.log(values);
     }
     return (
-        <section className="bg-bgColor bg-[url(/bg.png)] bg-cover">
+        <section className="bg-[url(/Shape.jpg)]">
             <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-                <Link href={"/"} className="flex items-center mb-6 text-2xl font-semibold text-highlightColor">
+                <Link href={"/"} className="flex items-center mb-6 text-2xl font-semibold text-white">
                     Vua Tiền Tệ
                 </Link>
                 <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
