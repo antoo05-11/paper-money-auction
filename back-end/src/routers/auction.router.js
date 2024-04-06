@@ -18,9 +18,27 @@ export default [
             },
             {
                 httpMethod: "get",
+                path: "auction/registerd",
+                method: "list_registerd_auction",
+                roles: [userRole.CUSTOMER],
+            },
+            {
+                httpMethod: "get",
+                path: "auction/managing",
+                method: "list_managing_auction",
+                roles: [userRole.AUCTIONEER],
+            },
+            {
+                httpMethod: "get",
+                path: "auction/owned",
+                method: "list_owned_auction",
+                roles: [userRole.CUSTOMER],
+            },
+            {
+                httpMethod: "get",
                 path: "auction/:id",
                 method: "view_auction",
-            },
+            }, 
             {
                 httpMethod: "post",
                 path: "auction/:id/register",

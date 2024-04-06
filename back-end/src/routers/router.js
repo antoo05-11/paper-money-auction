@@ -1,9 +1,12 @@
 import { Router } from "express";
 import controller from "../controllers/controller";
-import AuthRouter from "./auth.router";
-import AuctionSessionRouter from "./auction_session.router";
+import authRouter from "./auth.router";
+import userRouter from "./user.router";
+import auctionRouter from "./auction.router";
 
 const router = Router();
-controller(router, AuthRouter);
-controller(router, AuctionSessionRouter);
+controller(router, authRouter);
+controller(router, userRouter);
+controller(router, auctionRouter);
+
 export default router;
