@@ -1,16 +1,16 @@
-// Import the Client Component into a parent Layout (Server Component)
-import BlogNavLink from "./page";
-// import getFeaturedPosts from './get-featured-posts'
+import { Sidebar } from "../component/sidebar";
+import { MobileSidebar } from "../component/mobile-sidebar";
 
-export default async function Layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  // const featuredPosts = await getFeaturedPosts()
+const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div>
-      <div>{children}</div>
+    <div className="h-full">
+      <MobileSidebar />
+      <div className="hidden md:flex h-full w-56 flex-col fixed inset-y-0 z-50">
+        <Sidebar />
+      </div>
+      <main className="md:pl-56 h-full">{children}</main>
     </div>
   );
-}
+};
+
+export default AdminLayout;

@@ -12,7 +12,7 @@ const config = {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: "5rem",
       screens: {
         "2xl": "1400px",
         md: "768px",
@@ -20,10 +20,10 @@ const config = {
     },
     extend: {
       colors: {
-        bgColor: "#FCE38A",
-        highlightColor: "#FF2442",
+        bgColor: "#FFF",
+        highlightColor: "#7186f5",
         footerBgColor: "#F08A5D",
-        tmpColor: "#95E1D3",
+        tmpColor: "#9B51E0",
         tmpColor1: "#EAFFD0",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -73,10 +73,53 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        typing: {
+          "0%": {
+            width: "0%",
+            visibility: "hidden"
+          },
+          "100%": {
+            width: "100%"
+          }
+        },
+        blink: {
+          "50%": {
+            borderColor: "transparent"
+          },
+          "100%": {
+            borderColor: "white"
+          }
+        },
+        floating1: {
+          "25%": { transform: "translate(-150px, -150px) rotate(210deg)" },
+          "50%": { transform: "translate(30, -400px) rotate(5deg)" },
+          "100%": { transform: "translate(150px, -500px) rotate(190deg)" }
+        },
+        floating2: {
+          "25%": { transform: "translate(100px, -200px) rotate(190deg)" },
+          "50%": { transform: "translate(300px, -400px) rotate(25deg)" },
+          "100%": { transform: "translate(-150px, -600px) rotate(190deg)" }
+        },
+        floating3: {
+          "25%": { transform: "translate(80px, -100px) rotate(30deg)" },
+          "50%": { transform: "translate(-30px, -250px) rotate(280deg)" },
+          "100%": { transform: "translate(150px, -600px) rotate(190deg)" }
+        },
+        bid: {
+          "0%": { transform: "translateY(20px)" },
+          "20%": { transform: "translateY(4px)" },
+          "40%": { transform: "translateX(5px)" },
+          "100%": { transform: "translateX(20px)" }
+        }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "floating1": "floating1 30s ease-out 0s infinite alternate",
+        "floating2": "floating2 25s ease-out 0s infinite alternate",
+        "floating3": "floating3 40s ease-out 0s infinite alternate",
+        "typing": "typing 2s steps(20) alternate, blink .7s",
+        "bid": "bid 3s linear infinite alternate"
       },
     },
   },
