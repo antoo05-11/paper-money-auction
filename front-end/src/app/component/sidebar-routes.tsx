@@ -14,14 +14,19 @@ const guestRoutes = [
 
 const adminRoutes = [
     {
+        icon: Layout,
+        label: "Dashboard",
+        href: "/admin",
+    },
+    {
         icon: List,
         label: "Customer",
-        href:"/admin/customer",
+        href: "/admin/customer",
     },
     {
         icon: List,
         label: "Staff",
-        href:"/admin/staff",
+        href: "/admin/staff",
     },
 ]
 

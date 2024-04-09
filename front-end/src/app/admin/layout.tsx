@@ -1,5 +1,6 @@
 import { Sidebar } from "../component/sidebar";
 import { MobileSidebar } from "../component/mobile-sidebar";
+import TopBar from "../component/topbar";
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -8,7 +9,10 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
       <div className="hidden md:flex h-full w-56 flex-col fixed inset-y-0 z-50">
         <Sidebar />
       </div>
-      <main className="md:pl-56 h-full">{children}</main>
+      <main className="md:pl-56 h-full">
+        <TopBar />
+        {children}
+      </main>
     </div>
   );
 };
