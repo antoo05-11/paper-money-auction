@@ -1,6 +1,5 @@
 import userRole from "../constants/user.role";
 import { User } from "../models/user";
-import { userValidator } from "../services/validator_services/user.validator";
 import { HttpError } from "../utils/http.error";
 import bcrypt from "bcrypt";
 import _ from "lodash";
@@ -20,7 +19,7 @@ export default class UserController {
         );
         const user = await User.create(data);
 
-        const payload = _.omit(user, ["password"]);
+        const payload = _.omit(user._doc, ["password"]);
         res.status(200).json({
             ok: true,
             data: {

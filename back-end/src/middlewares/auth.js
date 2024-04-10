@@ -14,6 +14,7 @@ const auth = (roles) => async (req, res, next) => {
                     if (payload) {
                         req.payload = payload;
                         const user = await User.findById(payload.id, {
+                            email: 1,
                             active: 1,
                         });
 
@@ -36,6 +37,7 @@ const auth = (roles) => async (req, res, next) => {
                             });
                         }
 
+                        req.user = user;
                         next();
                     } else {
                         if (err && err.name === "TokenExpiredError") {
