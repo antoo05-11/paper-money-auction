@@ -106,4 +106,49 @@ export default class AuthController {
             }
         }
     };
+
+    sendCode = async (req, res) => {
+        const { user } = req;
+
+        const CODE_LENGTH = 6;
+        this.#userAuthCodes.set(user.email, {
+            code: utils.genNumeralCode(CODE_LENGTH),
+            createdAt: Date.now(),
+        });
+
+        await mailService.sendCodeToVerifyAccount(
+            user.email,
+            this.#userAuthCodes.get(user.email).code
+        );
+
+        // Log the code for tesing
+        console.log(this.#userAuthCodes.get(user.email).code);
+
+        return res.status(200).json({
+            ok: true,
+            message: "Open your mail box to get verification code.",
+        });
+    };
+
+    verifyCode = async (req, res) => {
+        const { user } = req;
+        const { data } = req.body;
+
+        // Check authentic code match server data and remove in codes map.
+        if (data.code !== this.#userAuthCodes.get(user.email).code) {
+            throw new HttpError({
+                ...error.AUTH.INVALID_AUTH_CODE,
+                status: 400,
+            });
+        }
+        this.#userAuthCodes.delete(user.email);
+
+        user.verified = true;
+        await user.save();
+
+        res.status(200).json({
+            ok: true,
+            message: "Your account is now verified",
+        });
+    };
 }

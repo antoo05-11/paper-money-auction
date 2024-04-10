@@ -13,4 +13,10 @@ export default {
             .pattern(/^[0-9]{6}$/)
             .required(),
     }).required(),
+
+    verify: Joi.object({
+        code: Joi.string()
+            .pattern(/^[0-9]{6}/)
+            .required(),
+    }).required(),
 };
