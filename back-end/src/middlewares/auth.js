@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import {User} from "../models/user";
+import { User } from "../models/user";
 import error from "../constants/error.code";
 
 const auth = (roles) => async (req, res, next) => {
@@ -7,14 +7,14 @@ const auth = (roles) => async (req, res, next) => {
 
     if (authorization && authorization.startsWith("Bearer ")) {
         const token = authorization.slice("Bearer ".length);
-        var secret = systemConfig.get("secret");
+        const secret = process.env.SECRET;
         if (token) {
             try {
                 jwt.verify(token, secret, async function (err, payload) {
                     if (payload) {
                         req.payload = payload;
-                        const user = await User.findOne({
-                            username: payload.username,
+                        const user = await User.findById(payload.id, {
+                            active: 1,
                         });
 
                         if (
@@ -30,8 +30,7 @@ const auth = (roles) => async (req, res, next) => {
                             });
                         }
 
-                        req.user = user;
-                        if (!user) {
+                        if (!user || !user.active) {
                             res.status(403).json({
                                 ...error.AUTH.USER_DELETED,
                             });
@@ -39,7 +38,7 @@ const auth = (roles) => async (req, res, next) => {
 
                         next();
                     } else {
-                        if (err && err.name == "TokenExpiredError") {
+                        if (err && err.name === "TokenExpiredError") {
                             res.status(403).json({
                                 ...error.AUTH.TOKEN_EXPIRED,
                             });

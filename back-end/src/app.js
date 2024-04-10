@@ -12,7 +12,6 @@ import {ftpService} from "./services/ftp.service";
 // Load .env variables
 dotenv.config();
 const PORT = process.env.PORT || 5050;
-const HOSTNAME = process.env.HOSTNAME || "localhost";
 const DATABASE_URL = process.env.DATABASE_URL;
 
 // Connect to database server.
@@ -28,7 +27,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
-app.use("/", router);
+app.use("/api", router);
 
 app.get("/", (req, res) => {
     res.status(200).json({
@@ -74,4 +73,5 @@ function makeRequest() {
 
 makeRequest();
 setInterval(makeRequest, 600000);
+
 

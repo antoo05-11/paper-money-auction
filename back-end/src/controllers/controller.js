@@ -29,6 +29,7 @@ const catchAsync = (controller, method) => async (req, res, next) => {
         delete body.password;
         await controller[method](req, res, next);
     } catch (e) {
+        console.log(e)
         res.status(e.status || 500).json({
             code: e.code || error.INTERNAL_SERVER_ERROR.code,
             message: e.message || error.INTERNAL_SERVER_ERROR.message,
