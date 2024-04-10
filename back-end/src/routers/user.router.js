@@ -1,5 +1,6 @@
 import UserController from "../controllers/user.controller";
 import userRole from "../constants/user.role";
+import userValidation from "../validations/user.validation";
 
 export default [
     {
@@ -8,42 +9,47 @@ export default [
             {
                 httpMethod: "post",
                 path: "/user/create/customer",
-                method: "create_customer",
+                method: "createCustomer",
+                schema: userValidation.createCustomer,
             },
             {
                 httpMethod: "post",
                 path: "/user/create/staff",
-                method: "create_staff",
+                method: "createStaff",
                 roles: [userRole.ADMIN],
+                schema: userValidation.createStaff,
             },
             {
                 httpMethod: "get",
                 path: "/user/profile",
-                method: "view_profile",
+                method: "viewProfile",
                 roles: [userRole.CUSTOMER, userRole.AUCTIONEER],
             },
             {
                 httpMethod: "put",
                 path: "/user/profile",
-                method: "update_profile",
+                method: "updateProfile",
                 roles: [userRole.CUSTOMER],
+                schema: userValidation.updateProfile,
             },
             {
                 httpMethod: "put",
                 path: "/user/password",
-                method: "update_password",
+                method: "updatePassword",
                 roles: [userRole.CUSTOMER, userRole.AUCTIONEER],
+                schema: userValidation.updatePassword,
             },
             {
                 httpMethod: "put",
                 path: "/user/payment",
-                method: "update_payment_method",
+                method: "updatePaymentMethod",
                 roles: [userRole.CUSTOMER],
+                schema: userValidation.updatePayment,
             },
             {
                 httpMethod: "get",
                 path: "/user/payment",
-                method: "view_payment_method",
+                method: "viewPaymentMethod",
                 roles: [userRole.CUSTOMER],
             },
         ],
