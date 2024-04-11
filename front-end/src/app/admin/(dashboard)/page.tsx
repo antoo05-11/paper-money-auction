@@ -1,10 +1,14 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
+import dynamic from "next/dynamic";
 import Overview from "../_component/Overview";
-import PostStatistic from "../_component/PostStatistic";
-import StaffStatistic from "../_component/StaffStatistic";
-import UserStatistic from "../_component/UserSatistic";
+// import PostStatistic from "../_component/PostStatistic";
+// import StaffStatistic from "../_component/StaffStatistic";
+// import UserStatistic from "../_component/UserSatistic";
+const StaffStatistic = dynamic(() => import("../_component/StaffStatistic"));
+const UserStatistic = dynamic(() => import("../_component/UserSatistic"));
+const PostStatistic = dynamic(() => import("../_component/PostStatistic"));
 import StaffTable from "../staff/_component/StaffTable";
 
 export default function AdminPage() {
