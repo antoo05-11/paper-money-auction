@@ -10,9 +10,17 @@ const config = {
   ],
   prefix: "",
   theme: {
-    container: {
+    containerHome: {
       center: true,
       padding: "5rem",
+      screens: {
+        "2xl": "1400px",
+        md: "768px",
+      },
+    },
+    container: {
+      center: true,
+      padding: "2rem",
       screens: {
         "2xl": "1400px",
         md: "768px",
