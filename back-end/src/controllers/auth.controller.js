@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import { mailService } from "../services/mail.service";
 import { utils } from "../utils/utils";
 
+
 export default class AuthController {
     #userAuthCodes;
     static AUTH_CODE_LIVE_TIME_MLS = 5 * 60 * 1000;
@@ -41,7 +42,7 @@ export default class AuthController {
         const CODE_LENGTH = 6;
         this.#userAuthCodes.set(data.email, {
             code: utils.genNumeralCode(CODE_LENGTH),
-            createdAt: Date.now(),
+            createdAt: Date.now()
         });
         await mailService.send2FACode(
             data.email,
@@ -61,6 +62,10 @@ export default class AuthController {
         const { body } = req;
         const data = body.data;
 
+        // Validate schema of request body.
+        const data_error = authValidator.authenticate_validate(data);
+        if (data_error) throw new HttpError({...data_error, status: 400});
+
         // Check authentic code match server data and remove in codes map.
         if (data.authenticCode !== this.#userAuthCodes.get(data.email).code) {
             throw new HttpError({
@@ -75,7 +80,7 @@ export default class AuthController {
             email: data.email,
         });
         if (!user)
-            throw new HttpError({ ...error.AUTH.USER_NOT_FOUND, status: 400 });
+            throw new HttpError({...error.AUTH.USER_NOT_FOUND, status: 400});
 
         // Generate a JWT token for user.
         const payload = {
@@ -88,22 +93,65 @@ export default class AuthController {
         });
 
         return res.status(200).json({
-            ok: true,
             data: {
                 token: `Bearer ${token}`,
-                user: payload,
-            },
+                user: {
+                    ...payload,
+                }
+            }
         });
-    };
+    }
 
     #removeExpiredCodes = () => {
         for (const [email, authData] of this.#userAuthCodes.entries()) {
-            if (
-                authData.createdAt + AuthController.AUTH_CODE_LIVE_TIME_MLS <
-                Date.now()
-            ) {
+            if (authData.createdAt + AuthController.AUTH_CODE_LIVE_TIME_MLS < Date.now()) {
                 this.#userAuthCodes.delete(email);
             }
         }
+    };
+
+    sendCode = async (req, res) => {
+        const { user } = req;
+
+        const CODE_LENGTH = 6;
+        this.#userAuthCodes.set(user.email, {
+            code: utils.genNumeralCode(CODE_LENGTH),
+            createdAt: Date.now(),
+        });
+
+        await mailService.sendCodeToVerifyAccount(
+            user.email,
+            this.#userAuthCodes.get(user.email).code
+        );
+
+        // Log the code for tesing
+        console.log(this.#userAuthCodes.get(user.email).code);
+
+        return res.status(200).json({
+            ok: true,
+            message: "Open your mail box to get verification code.",
+        });
+    };
+
+    verifyCode = async (req, res) => {
+        const { user } = req;
+        const { data } = req.body;
+
+        // Check authentic code match server data and remove in codes map.
+        if (data.code !== this.#userAuthCodes.get(user.email).code) {
+            throw new HttpError({
+                ...error.AUTH.INVALID_AUTH_CODE,
+                status: 400,
+            });
+        }
+        this.#userAuthCodes.delete(user.email);
+
+        user.verified = true;
+        await user.save();
+
+        res.status(200).json({
+            ok: true,
+            message: "Your account is now verified",
+        });
     };
 }
