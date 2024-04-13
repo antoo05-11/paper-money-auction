@@ -1,41 +1,16 @@
 "use client";
 
-import { Compass, Layout, List } from "lucide-react";
+import { adminRoutes, guestRoutes, userRoutes } from "@/lib/constant/routes";
 import { SidebarItem } from "./sidebar-item";
 import { usePathname } from "next/navigation";
-
-const guestRoutes = [
-    {
-        icon: Layout,
-        label: "Dashboard",
-        href: "/",
-    },
-]
-
-const adminRoutes = [
-    {
-        icon: Layout,
-        label: "Dashboard",
-        href: "/admin",
-    },
-    {
-        icon: List,
-        label: "Customer",
-        href: "/admin/customer",
-    },
-    {
-        icon: List,
-        label: "Staff",
-        href: "/admin/staff",
-    },
-]
 
 export const SidebarRoutes = () => {
     const pathname = usePathname();
 
     const isAdminPage = pathname?.includes("/admin");
+    const isUserPage = pathname?.includes("/me");
 
-    const routes = isAdminPage ? adminRoutes : guestRoutes;
+    const routes = isAdminPage ? adminRoutes : (isUserPage ? userRoutes : guestRoutes);
 
     return (
         <div className="flex flex-col w-full">
