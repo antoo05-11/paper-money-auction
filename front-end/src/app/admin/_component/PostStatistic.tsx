@@ -48,6 +48,7 @@ const extendOptions = {
 export default function PostStatistic() {
     const [extend, isExtend] = useState(false);
     const chartHeight = extend ? 440 : 205;
+    const charWidth = extend ? 205 : 380;
     const options = extend ? extendOptions : defaultOptions;
     const data = [
         {
@@ -62,7 +63,7 @@ export default function PostStatistic() {
             </CardHeader>
             <CardContent>
                 {(typeof window !== 'undefined') &&
-                    <Chart type="area" options={defaultOptions} series={data} height={chartHeight} />
+                    <Chart type="area" options={defaultOptions} series={data} height={chartHeight} width={charWidth}/>
                 }
 
                 {/* <Button onClick={() => { isExtend(!extend); console.log(extend) }} >

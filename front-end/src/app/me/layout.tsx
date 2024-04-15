@@ -2,7 +2,7 @@ import { Sidebar } from "../../components/_layout/sidebar";
 import { MobileSidebar } from "../../components/_layout/mobile-sidebar";
 import TopBar from "../../components/_layout/topbar";
 
-const AdminLayout = ({ children }: { children: React.ReactNode }) => {
+const UserLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="h-full">
       <MobileSidebar />
@@ -17,4 +17,4 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export default AdminLayout;
+export default UserLayout;
