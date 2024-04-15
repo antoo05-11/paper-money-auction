@@ -1,4 +1,4 @@
-import { Bell, Compass, FileClock, Layout, List, ScrollText } from "lucide-react";
+import { BadgeDollarSign, Bell, Compass, FileClock, LandPlot, Layout, List, ScrollText } from "lucide-react";
 
 export const adminRoutes = [
     {
@@ -33,9 +33,19 @@ export const userRoutes = [
         href: "/me"
     },
     {
+        icon: LandPlot,
+        label: "Đăng ký tài sản đấu giá",
+        href: "/me/property"
+    },
+    {
         icon: FileClock,
         label: "Lịch sử đấu giá",
         href: "/me/history"
+    },
+    {
+        icon: BadgeDollarSign,
+        label: "Phiên đấu giá của tôi",
+        href: "/me/auction"
     },
     {
         icon: ScrollText,
