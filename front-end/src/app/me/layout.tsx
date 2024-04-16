@@ -6,7 +6,7 @@ const UserLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="h-full">
       <MobileSidebar />
-      <div className="hidden md:flex h-full w-56 flex-col fixed inset-y-0 z-50">
+      <div className="hidden md:flex h-full w-60 flex-col fixed inset-y-0 z-50">
         <Sidebar />
       </div>
       <main className="md:pl-56 h-full">
