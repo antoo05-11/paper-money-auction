@@ -43,3 +43,13 @@ export const userRoutes = [
         href: "/me/document"
     },
 ]
+
+export const auctioneerRoutes = [
+    {
+        icon: Layout,
+        label: "Phiên đấu giá",
+        href: "/auctioneer",
+    },
+
+]
+
