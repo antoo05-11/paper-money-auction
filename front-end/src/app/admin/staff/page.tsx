@@ -1,8 +1,9 @@
-import StaffTable from "./_component/StaffTable";
 import { Button } from "@/components/ui/button";
-
 import { Input } from "@/components/ui/input";
 import { UserPlus } from 'lucide-react';
+import StaffTable from "./_component/StaffTable";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import StaffForm from "./_component/StaffForm";
 
 export default function Page() {
   return (
@@ -16,10 +17,16 @@ export default function Page() {
           />
         </div>
         <div>
-          <Button variant={"createBtn"}>
-            <UserPlus />
-            <p className="ml-2">Tạo nhân viên</p>
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant={"createBtn"}>
+                <UserPlus />
+                <p className="ml-2">Tạo nhân viên</p>
+              </Button>
+            </DialogTrigger>
+
+            <StaffForm />
+          </Dialog>
         </div>
       </div>
 
