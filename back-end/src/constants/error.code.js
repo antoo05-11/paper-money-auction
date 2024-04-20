@@ -48,9 +48,9 @@ export default {
             code: "INVALID_AUCTION_TOKEN",
             message: "Token used for auction session is invalid!",
         },
-        ID_NOT_FOUND: {
-            code: "AUCTION_ID_NOT_FOUND",
-            message: "Auction with request ID is not found.",
+        NOT_FOUND: {
+            code: "AUCTION_NOT_FOUND",
+            message: "Your auction is not in the system.",
         },
     },
 

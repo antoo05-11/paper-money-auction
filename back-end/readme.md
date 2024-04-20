@@ -196,3 +196,38 @@ npm run start
         }
     }
     ```
+
+## Auction
+
+1. Create Auction
+
+    ```js
+    POST auction/create
+
+    Header:
+        Authorization: "Bearer <auctioneer's token>"
+
+    {
+        "data": {
+            "asset": "6623805feaec9306204beb7b",
+            "starting_price": 200000,
+            "bidding_increment": 10000,
+            "deposit": 20000,
+            "registration_open": "2024-05-23",
+            "registration_close": "2024-05-27",
+            "auction_start": "2024-06-12",
+            "auction_end": "2024-06-20",
+            "max_number_of_bidder": 100
+        }
+    }
+    ```
+
+    ```js
+    POST auction/:id/docs
+
+    Header:
+        Authorization: "Bearer <auctioneer's token>"
+
+    Form:
+        Key: docs
+    ```
