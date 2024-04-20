@@ -71,6 +71,24 @@ export default class AssetController {
         });
     };
 
-    view = async (req, res) => {};
+    viewAsset = async (req, res) => {
+        const { user } = req;
+        const { params } = req;
+
+        const asset = await Asset.findById(params.id);
+        if (!asset)
+            throw new HttpError({ ...errorCode.ASSET.NOT_FOUND, status: 403 });
+        if (asset.owner.toString() != user._id.toString())
+            throw new HttpError({
+                ...errorCode.AUTH.ROLE_INVALID,
+                status: 403,
+            });
+
+        const payload = asset;
+        res.status(200).json({
+            ok: true,
+            data: payload,
+        });
+    };
     list = async (req, res) => {};
 }

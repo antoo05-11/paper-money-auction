@@ -178,6 +178,24 @@ npm run start
         key: docs
     ```
 
+2. View Asset
+
+    ```js
+    GET asset/:id
+
+    Header:
+        Authorization: "Bearer <customer's token>"
+    ```
+
+3. List Asset
+
+    ```js
+    GET asset
+
+    Header:
+        Authorization: "Bearer <customer's token>"
+    ```
+
 ## Auctioneer
 
 1. Create

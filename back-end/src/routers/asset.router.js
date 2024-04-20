@@ -30,14 +30,14 @@ export default [
             },
             {
                 httpMethod: "get",
-                path: "asset/:id",
-                method: "view",
+                path: "/asset/:id",
+                method: "viewAsset",
                 roles: [userRole.CUSTOMER],
             },
             {
                 httpMethod: "get",
-                path: "asset",
-                method: "list",
+                path: "/asset",
+                method: "listAsset",
                 roles: [userRole.CUSTOMER],
             },
         ],
