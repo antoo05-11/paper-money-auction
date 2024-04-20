@@ -9,8 +9,8 @@ export default function MyCarousel() {
     return (
         <Carousel className="w-10/12 ">
             <CarouselContent className="-ml-1">
-                {Array.from({ length: 4 }).map((_, index) => (
-                    <CarouselItem key={index} className="pl-1 md:basis-1/2 lg:basis-1/4">
+                {Array.from({ length: 10 }).map((_, index) => (
+                    <CarouselItem key={index} className="pl-1 md:basis-1/2 lg:basis-1/3">
                         <div className="p-1">
                             <Card className="rounded-3xl">
                                 <CardHeader className="flex justify-center items-center">
@@ -30,8 +30,8 @@ export default function MyCarousel() {
                     </CarouselItem>
                 ))}
             </CarouselContent>
-            {/* <CarouselPrevious />
-            <CarouselNext /> */}
+            <CarouselPrevious />
+            <CarouselNext />
         </Carousel>
     )
 }

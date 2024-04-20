@@ -8,7 +8,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Ban, Check, Eye, Pencil } from 'lucide-react';
+import { Ban, Undo2, Eye, Pencil } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -39,8 +39,8 @@ export default function StaffTable() {
                                     <Badge variant="common">Hoạt động</Badge>
                                 </TableCell>
                                 <TableCell className="text-center">
-                                    <Button variant={"ghost"}><Eye /></Button>
-                                    <Button variant={"ghost"}><Ban /></Button>
+                                    <Button variant={"ghost"} className="text-purpleColor"><Eye /></Button>
+                                    <Button variant={"ghost"} className="text-red-500"><Ban /></Button>
                                 </TableCell>
                             </TableRow>
                             <TableRow>
@@ -52,8 +52,8 @@ export default function StaffTable() {
                                     <Badge>Đình chỉ</Badge>
                                 </TableCell>
                                 <TableCell className="text-center">
-                                    <Button variant={"ghost"}><Eye /></Button>
-                                    <Button variant={"ghost"}><Check /></Button>
+                                    <Button variant={"ghost"} className="text-purpleColor"><Eye /></Button>
+                                    <Button variant={"ghost"} className="text-highlightColor"><Undo2 /></Button>
                                 </TableCell>
                             </TableRow>
                         </TableBody>

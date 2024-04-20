@@ -1,15 +1,18 @@
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 import { Input } from "@/components/ui/input";
 import { UserPlus } from 'lucide-react';
+import MyAuctionTable from "./_component/MyAuctionTable";
 
 export default function Page() {
   return (
     <div className="container">
-      <div className="flex justify-between mb-5">
-        <div className="flex flex-row">
+      <Card className="shadow">
+        <div className="flex flex-col justify-center items-center my-7 container">
+          <MyAuctionTable />
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

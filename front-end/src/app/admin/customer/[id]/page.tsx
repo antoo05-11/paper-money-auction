@@ -20,50 +20,48 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import MyAuctionTable from "@/app/me/auction/_component/MyAuctionTable";
+
 export default function CustomerDetail({ params, searchParams }: any) {
   const id = params.id;
   return (
-    <div className="flex flex-col justify-center items-center">
-      <Card className="absolute h-[90%] w-[80%] top-0">
+    <div className="container">
+      <Card className="">
         <CardHeader>
           <CardTitle>Thông tin khách hàng</CardTitle>
           {/* <CardDescription></CardDescription> */}
         </CardHeader>
         <CardContent>
-          <p>Họ và tên</p>
-          <p>Mã khách</p>
-          <p>Địa chỉ</p>
-          <p>Các thông tin khác</p>
+          <div className="grid w-full items-center gap-4">
+            <div className="grid grid-cols-2 gap-4  ">
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="name">Họ và tên</Label>
+                <Input id="name" defaultValue={"ALoo"} disabled={true} className="rounded-full" />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="name">CCCD</Label>
+                <Input id="name" defaultValue={"ALoo"} disabled={true} className="rounded-full" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4  ">
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="name">Số điện thoại</Label>
+                <Input id="name" defaultValue={"ALoo"} disabled={true} className="rounded-full" />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="name">Email</Label>
+                <Input id="name" defaultValue={"ALoo"} disabled={true} className="rounded-full" />
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-3">
+            <MyAuctionTable />
+          </div>
         </CardContent>
-        <CardFooter className="flex flex-col">
-          <p>Danh sách các phiên đấu giá của khánh hàng</p>
-          <Table>
-            <TableCaption>Danh sách nhân viên</TableCaption>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[100px]">STT</TableHead>
-                <TableHead>Tên phiên đấu giá</TableHead>
-                <TableHead>Mã phiên đấu giá</TableHead>
-                <TableHead>Thời gian bắt đầu đấu giá</TableHead>
-                <TableHead>Vai trò</TableHead>
-                <TableHead>Trạng thái</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <TableRow>
-                <TableCell className="font-medium">1</TableCell>
-                <TableCell className="font-medium">INV001</TableCell>
-                <TableCell>Paid</TableCell>
-                <TableCell>Credit Card</TableCell>
-                <TableCell>$250.00</TableCell>
-                <TableCell>$250.00</TableCell>
-                <TableCell>
-                  <Button>Chi tiết</Button>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </CardFooter>
       </Card>
     </div>
   );
