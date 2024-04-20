@@ -12,7 +12,7 @@ const assetSchema = new mongoose.Schema(
         pics: [String],
         // Verification
         docs: [String],
-        status: {
+        verified: {
             type: Boolean,
             default: false,
         },
