@@ -90,5 +90,45 @@ export default class AssetController {
             data: payload,
         });
     };
-    list = async (req, res) => {};
+
+    listAsset = async (req, res) => {
+        const { user } = req;
+        const { query } = req;
+
+        const toSortFields = query.sort || null;
+
+        const filter = {
+            owner: user._id,
+        };
+        const regexFields = ["name", "description"];
+        const queryFields = ["verified"];
+        Object.keys(query).forEach((key) => {
+            if (regexFields.includes(key)) {
+                filter[key] = { $regex: query[key] };
+            } else if (queryFields.includes(key)) {
+                filter[key] = query[key];
+            }
+        });
+
+        let totalAssets = await Asset.countDocuments(filter);
+        let page = parseInt(query.page) || 1;
+        let limit = parseInt(query.limit) || 10;
+        let skip = (page - 1) * limit;
+        let totalPages = Math.ceil(totalAssets / limit);
+
+        const assets = await Asset.find(filter)
+            .sort(toSortFields)
+            .skip(skip)
+            .limit(limit);
+
+        const payload = {
+            page: page,
+            totalPages: totalPages,
+            assets: assets,
+        };
+        res.status(200).json({
+            ok: true,
+            data: payload,
+        });
+    };
 }
