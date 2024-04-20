@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
 import dynamic from "next/dynamic";
 
-const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
+// const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 const defaultOptions = {
   chart: {
@@ -48,23 +48,23 @@ const extendOptions = {
 export default function PostStatistic() {
   const [extend, isExtend] = useState(false);
   const chartHeight = extend ? 440 : 205;
-  const charWidth = 350;
+  const charWidth = extend ? 205 : 380;
   const options = extend ? extendOptions : defaultOptions;
   const data = [
     {
-      name: 'series1',
-      data: [31, 40, 28, 51, 42, 109, 100]
+      name: "series1",
+      data: [31, 40, 28, 51, 42, 109, 100],
     },
-  ]
+  ];
   return (
     <Card className="shadow">
       <CardHeader>
         <CardTitle>Bài đăng</CardTitle>
       </CardHeader>
       <CardContent>
-        {(typeof window !== 'undefined') &&
-          <Chart type="area" options={defaultOptions} series={data} height={chartHeight} width={charWidth} />
-        }
+        {/* {(typeof window !== 'undefined') &&
+                    <Chart type="area" options={defaultOptions} series={data} height={chartHeight} width={charWidth}/>
+                } */}
 
         {/* <Button onClick={() => { isExtend(!extend); console.log(extend) }} >
                     Chi tiết
