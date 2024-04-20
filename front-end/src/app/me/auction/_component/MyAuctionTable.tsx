@@ -12,7 +12,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 
-export default function AuctionSessionTable() {
+export default function MyAuctionTable() {
     return (
         <div className="w-full">
             <Table>

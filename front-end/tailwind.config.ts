@@ -31,7 +31,7 @@ const config = {
         bgColor: "#FFF",
         highlightColor: "#7186f5",
         footerBgColor: "#F08A5D",
-        tmpColor: "#9B51E0",
+        purpleColor: "#9B51E0",
         tmpColor1: "#EAFFD0",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

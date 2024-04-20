@@ -6,6 +6,7 @@ import { UserPlus } from "lucide-react";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import AuctionSessionTable from "../_component/AuctionSessionTable";
 import AuctionSessionForm from "../_component/AuctionSessionForm";
+import { Card } from "@/components/ui/card";
 
 export default function Page() {
 
@@ -32,7 +33,11 @@ export default function Page() {
                     </Dialog>
                 </div>
             </div>
-            <AuctionSessionTable />
+            <Card className="shadow">
+                <div className="flex flex-col justify-center items-center my-7 container">
+                    <AuctionSessionTable />
+                </div>
+            </Card>
         </div>
     );
 }

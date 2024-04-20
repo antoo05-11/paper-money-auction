@@ -15,7 +15,8 @@ export default async function Layout({
           <BlogNavLink slug={post.slug}>{post.title}</BlogNavLink>
         </div>
       ))}
-      <div>{children}</div> */}
+      // <div>{children}</div> */}
+      {children}
     </div>
   );
 }
