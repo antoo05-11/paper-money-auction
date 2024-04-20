@@ -5,6 +5,7 @@ export default [
     {
         controller: AuctionController,
         methods: [
+            // Create Auction
             {
                 httpMethod: "post",
                 path: "auction/create",

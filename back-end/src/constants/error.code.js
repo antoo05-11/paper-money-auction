@@ -26,7 +26,8 @@ export default {
         },
         TOKEN_BLOCKED: {
             code: "TOKEN_BLOCKED",
-            message: "Account has just changed the password or has been kicked.",
+            message:
+                "Account has just changed the password or has been kicked.",
         },
         USER_NOT_FOUND: {
             code: "USER_NOT_FOUND",
@@ -34,7 +35,7 @@ export default {
         },
         INVALID_AUTH_CODE: {
             code: "INVALID_AUTH_CODE",
-            message: "Your auth code is incorrect or expired."
+            message: "Your auth code is incorrect or expired.",
         },
         PASSWORD_INVALID: {
             code: "PASSWORD_INVALID",
@@ -50,6 +51,13 @@ export default {
         ID_NOT_FOUND: {
             code: "AUCTION_ID_NOT_FOUND",
             message: "Auction with request ID is not found.",
+        },
+    },
+
+    ASSET: {
+        NOT_FOUND: {
+            code: "ASSET_NOT_FOUND",
+            message: "Your asset is not in the system.",
         },
     },
 

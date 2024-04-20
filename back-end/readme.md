@@ -17,8 +17,8 @@ npm run start
 ## Authentication
 
 1. Login
-   
-   Login step:
+
+    Login step:
 
     ```js
     POST auth/login
@@ -30,20 +30,42 @@ npm run start
         }
     }
     ```
-   
-   Login verify step:
-   ```js
-    POST auth/login/authenticate
+
+    Login verify step:
+
+    ```js
+     POST auth/login/authenticate
+
+     {
+         data: {
+             email,
+             password,
+             authenticCode
+         }
+     }
+    ```
+
+2. Verify account
+
+    ```js
+    GET auth/verify
+
+    Header:
+        Authorization: "Bearer <customer's token>"
+    ```
+
+    ```js
+    POST auth/verify
+
+    Header:
+        Authorization: "Bearer <customer's token>"
 
     {
-        data: {
-            email,
-            password,
-            authenticCode
+        "data": {
+            "code": "123456"
         }
     }
     ```
-
 
 ## Customer
 
@@ -116,6 +138,44 @@ npm run start
             holder,
         }
     }
+    ```
+
+## Asset
+
+1. Create Asset
+
+    ```js
+    POST asset/create
+
+    Header:
+        Authorization: "Bearer <customer's token>"
+
+    {
+        "data": {
+            "name": "example",
+            "description": "example"
+        }
+    }
+    ```
+
+    ```js
+    POST asset/:id/pics
+
+    Header:
+        Authorization: "Bearer <customer's token>"
+
+    Form:
+        key: pics
+    ```
+
+    ```js
+    POST asset/:id/docs
+
+    Header:
+        Authorization: "Bearer <customer's token>"
+
+    Form:
+        key: docs
     ```
 
 ## Auctioneer
