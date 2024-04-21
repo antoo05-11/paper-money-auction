@@ -8,7 +8,7 @@ const auctionSchema = new mongoose.Schema(
             ref: "Asset",
         },
         // Auction
-        autioneer: {
+        auctioneer: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
         },

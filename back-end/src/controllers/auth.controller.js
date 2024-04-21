@@ -137,8 +137,9 @@ export default class AuthController {
         const { user } = req;
         const { data } = req.body;
 
+        const memory = this.#userAuthCodes.get(user.email);
         // Check authentic code match server data and remove in codes map.
-        if (data.code !== this.#userAuthCodes.get(user.email).code) {
+        if (!memory || data.code !== memory.code) {
             throw new HttpError({
                 ...error.AUTH.INVALID_AUTH_CODE,
                 status: 400,

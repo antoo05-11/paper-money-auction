@@ -2,6 +2,7 @@ import _ from "lodash";
 import auth from "../middlewares/auth";
 import errorCatch from "../middlewares/error.catch";
 import validate from "../middlewares/validate";
+import upload from "../middlewares/file.upload";
 
 export default function (router, apis) {
     apis.forEach((element) => {
@@ -12,10 +13,15 @@ export default function (router, apis) {
             const method = e.method;
             const roles = e.roles;
             const schema = e.schema;
+            const files = e.files;
 
             const middlewares = [];
             if (!_.isEmpty(roles)) {
                 middlewares.push(auth(roles));
+            }
+
+            if (!_.isEmpty(files)) {
+                middlewares.push(upload.array(files));
             }
 
             if (!_.isEmpty(schema)) {
