@@ -5,6 +5,7 @@ import {Server} from 'socket.io';
 import {User} from "./auction_session/components/user";
 import {Service} from "./service";
 import {utils} from "../utils/utils";
+import {Auction} from "../models/auction";
 
 let instance;
 
@@ -30,6 +31,8 @@ class SocketService extends Service {
 
         this.io.on('connection', (socket) => {
 
+            socket.on('startSession', (auctionToken) => this.#startSession(socket, auctionToken))
+
             socket.on('joinSession', (auctionToken) => this.#joinSession(socket, auctionToken));
 
             socket.on('disconnect', () => this.#disconnect(socket));
@@ -38,41 +41,63 @@ class SocketService extends Service {
         });
     }
 
-    #joinSession = (socket, auctionToken) => {
+    #authenticateSession = (socket, auctionToken) => {
         const secretKey = process.env.JWT_AUCTION_KEY || "";
-        const socketId = socket.id;
 
         try {
             const decoded = jwt.verify(auctionToken, secretKey);
 
             const userId = decoded.userId;
             const sessionId = decoded.sessionId;
-
             if (userId && sessionId) {
-                if (!this.#sessions.has(sessionId)) {
-                    this.#sessions.set(sessionId, new AuctionSession(sessionId));
-                }
-
-                const session = this.#sessions.get(sessionId);
-
-                if (session) {
-                    let user = this.#users.get(socketId);
-                    if (!user) {
-                        user = new User(socketId, userId);
-                        this.#users.set(socketId, user);
-                    }
-
-                    session.addUser(user);
-                    socket.join(sessionId);
-
-                    this.io.to(sessionId).emit('attendees_update', JSON.stringify(session.getSessionBriefInfo()));
-                }
-                console.log(session.toString());
-            }
+                return decoded;
+            } else return null;
         } catch (error) {
             socket.emit('joinSessionResponse', errorCode.AUCTION.INVALID_TOKEN);
+            return null;
         }
-    }
+    };
+
+    #startSession = async (socket, auctionToken) => {
+        const socketInfo = this.#authenticateSession(socket, auctionToken);
+        if (socketInfo) {
+            console.log(socketInfo)
+            const auction = await Auction.findById(socketInfo.sessionId);
+            // console.log(auction);
+        }
+    };
+
+    #joinSession = (socket, auctionToken) => {
+        const socketId = socket.id;
+
+        const socketInfo = this.#authenticateSession(socket, auctionToken);
+
+        this.#startSession(socket, auctionToken).then(()=>{
+
+        });
+
+        if (socketInfo) {
+            if (!this.#sessions.has(socketInfo.sessionId)) {
+                this.#sessions.set(socketInfo.sessionId, new AuctionSession(socketInfo.sessionId));
+            }
+
+            const session = this.#sessions.get(socketInfo.sessionId);
+
+            if (session) {
+                let user = this.#users.get(socketInfo.socket);
+                if (!user) {
+                    user = new User(socketId, socketInfo.userId);
+                    this.#users.set(socketId, user);
+                }
+
+                session.addUser(user);
+                socket.join(socketInfo.sessionId);
+
+                this.io.to(socketInfo.sessionId).emit('attendees_update', JSON.stringify(session.getSessionBriefInfo()));
+            }
+            console.log(session.toString());
+        }
+    };
 
     #disconnect = (socket) => {
         console.log(`User ${socket.id} left session.`);
@@ -86,10 +111,11 @@ class SocketService extends Service {
             this.io.to(sessionId).emit('attendees_update', JSON.stringify(session.getSessionBriefInfo()));
         }
         this.#users.delete(socket.id);
-    }
+    };
 
     #makeOffer = (socket, auctionToken, offer) => {
         if (utils.isNumberInRange(offer, SocketService.LOWER_THRESHOLD_OFFER, SocketService.UPPER_THRESHOLD_OFFER)) {
+            //TODO: Compare and Save into cache + async Using bidding object to save into DB + emit to users.
 
         }
     }

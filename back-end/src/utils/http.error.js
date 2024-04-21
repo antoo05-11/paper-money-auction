@@ -3,5 +3,6 @@ export class HttpError extends Error {
         super(message);
         this.status = status;
         this.code = code;
+        // console.log(message)
     }
 }

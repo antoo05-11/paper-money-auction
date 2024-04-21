@@ -2,13 +2,17 @@ export class AuctionSession {
     #sessionId
     #recentUsers
     #users
+    #biddings
+    #auction
 
     static MAX_RECENT_USER = 20;
 
-    constructor(sessionId) {
+    constructor(sessionId, auction) {
         this.#sessionId = sessionId;
+        this.#auction = auction;
         this.#recentUsers = [];
         this.#users = new Map();
+        this.#biddings = [];
     }
 
     toString() {

@@ -1,27 +1,23 @@
 import error from "../constants/error.code";
-import { User } from "../models/user";
-import { HttpError } from "../utils/http.error";
+import {User} from "../models/user";
+import {HttpError} from "../utils/http.error";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { mailService } from "../services/mail.service";
-import { utils } from "../utils/utils";
+import {mailService} from "../services/mail.service";
+import {utils} from "../utils/utils";
+import NodeCache from "node-cache";
 
 
 export default class AuthController {
-    #userAuthCodes;
-    static AUTH_CODE_LIVE_TIME_MLS = 5 * 60 * 1000;
-    static CHECK_INTERVAL_MLS = 5000;
+    static AUTH_CODE_LIVE_TIME_S = 5 * 60;
+
+    #userAuthCodesCache = new NodeCache({stdTTL: AuthController.AUTH_CODE_LIVE_TIME_S, checkperiod: 120});
 
     constructor() {
-        this.#userAuthCodes = new Map();
-        setInterval(
-            this.#removeExpiredCodes.bind(this),
-            AuthController.CHECK_INTERVAL_MLS
-        );
     }
 
     login = async (req, res) => {
-        const { body } = req;
+        const {body} = req;
         const data = body.data;
 
         // Checking user existence.
@@ -29,7 +25,7 @@ export default class AuthController {
             email: data.email,
         });
         if (!user)
-            throw new HttpError({ ...error.AUTH.USER_NOT_FOUND, status: 400 });
+            throw new HttpError({...error.AUTH.USER_NOT_FOUND, status: 400});
 
         // Check encrypted password matched with database.
         if (!bcrypt.compareSync(data.password, user.password))
@@ -40,17 +36,15 @@ export default class AuthController {
 
         // Generate 2FA code, save it temporarily and send to user mail box.
         const CODE_LENGTH = 6;
-        this.#userAuthCodes.set(data.email, {
-            code: utils.genNumeralCode(CODE_LENGTH),
-            createdAt: Date.now()
-        });
+
+        this.#userAuthCodesCache.set(data.email, utils.genNumeralCode(CODE_LENGTH));
         await mailService.send2FACode(
             data.email,
-            this.#userAuthCodes.get(data.email).code
+            this.#userAuthCodesCache.get(data.email)
         );
 
         // Log 2FA code for testing
-        console.log(this.#userAuthCodes.get(data.email).code);
+        console.log(this.#userAuthCodesCache.get(data.email));
 
         return res.status(200).json({
             ok: true,
@@ -59,21 +53,17 @@ export default class AuthController {
     };
 
     authenticateLogin = async (req, res) => {
-        const { body } = req;
+        const {body} = req;
         const data = body.data;
 
-        // Validate schema of request body.
-        const data_error = authValidator.authenticate_validate(data);
-        if (data_error) throw new HttpError({...data_error, status: 400});
-
         // Check authentic code match server data and remove in codes map.
-        if (data.authenticCode !== this.#userAuthCodes.get(data.email).code) {
+        if (data.authenticCode !== this.#userAuthCodesCache.get(data.email)) {
             throw new HttpError({
                 ...error.AUTH.INVALID_AUTH_CODE,
                 status: 400,
             });
         }
-        this.#userAuthCodes.delete(data.email);
+        this.#userAuthCodesCache.del(data.email);
 
         // Checking user existence.
         const user = await User.findOne({
@@ -102,30 +92,19 @@ export default class AuthController {
         });
     }
 
-    #removeExpiredCodes = () => {
-        for (const [email, authData] of this.#userAuthCodes.entries()) {
-            if (authData.createdAt + AuthController.AUTH_CODE_LIVE_TIME_MLS < Date.now()) {
-                this.#userAuthCodes.delete(email);
-            }
-        }
-    };
-
     sendCode = async (req, res) => {
-        const { user } = req;
+        const {user} = req;
 
         const CODE_LENGTH = 6;
-        this.#userAuthCodes.set(user.email, {
-            code: utils.genNumeralCode(CODE_LENGTH),
-            createdAt: Date.now(),
-        });
+        this.#userAuthCodesCache.set(user.email, utils.genNumeralCode(CODE_LENGTH));
 
         await mailService.sendCodeToVerifyAccount(
             user.email,
-            this.#userAuthCodes.get(user.email).code
+            this.#userAuthCodesCache.get(user.email)
         );
 
         // Log the code for tesing
-        console.log(this.#userAuthCodes.get(user.email).code);
+        console.log(this.#userAuthCodesCache.get(user.email));
 
         return res.status(200).json({
             ok: true,
@@ -134,18 +113,17 @@ export default class AuthController {
     };
 
     verifyCode = async (req, res) => {
-        const { user } = req;
-        const { data } = req.body;
+        const {user} = req;
+        const {data} = req.body;
 
-        const memory = this.#userAuthCodes.get(user.email);
         // Check authentic code match server data and remove in codes map.
-        if (!memory || data.code !== memory.code) {
+        if (data.code !== this.#userAuthCodesCache.get(user.email)) {
             throw new HttpError({
                 ...error.AUTH.INVALID_AUTH_CODE,
                 status: 400,
             });
         }
-        this.#userAuthCodes.delete(user.email);
+        this.#userAuthCodesCache.del(user.email);
 
         user.verified = true;
         await user.save();
