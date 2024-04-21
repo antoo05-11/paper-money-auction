@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Pencil } from 'lucide-react';
+import { Ban, Undo2, Eye, Pencil } from 'lucide-react';
+import { Badge } from "@/components/ui/badge";
 
 import {
     Table,
@@ -21,21 +22,39 @@ export default function CustomerTable() {
                         <TableCaption>Danh sách khách hàng</TableCaption>
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="w-[100px]">STT</TableHead>
-                                <TableHead>Mã khách hàng</TableHead>
+                                <TableHead className="w-[50px]">STT</TableHead>
+                                <TableHead className="w-[150px]">Mã khách hàng</TableHead>
                                 <TableHead>Họ và tên</TableHead>
-                                <TableHead>Số điện thoại</TableHead>
-                                <TableHead className="text-right"></TableHead>
+                                <TableHead>Email</TableHead>
+                                <TableHead className="text-center">Trạng thái</TableHead>
+                                <TableHead className="text-center">Chi tiết</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             <TableRow>
-                                <TableCell className="font-medium">INV001</TableCell>
-                                <TableCell>Paid</TableCell>
-                                <TableCell>Credit Card</TableCell>
-                                <TableCell>1234567890</TableCell>
-                                <TableCell className="text-right">
-                                    <Button variant={"editBtn"}><Pencil /></Button>
+                                <TableCell className="font-medium">1</TableCell>
+                                <TableCell>#FFF</TableCell>
+                                <TableCell>Duy ngu</TableCell>
+                                <TableCell>duyngu@g.c</TableCell>
+                                <TableCell className="text-center">
+                                    <Badge variant="common">Hoạt động</Badge>
+                                </TableCell>
+                                <TableCell className="text-center">
+                                    <Button variant={"ghost"} className="text-purpleColor"><Eye /></Button>
+                                    <Button variant={"ghost"} className="text-red-500"><Ban /></Button>
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell className="font-medium">1</TableCell>
+                                <TableCell>#FFF</TableCell>
+                                <TableCell>Duy ngu</TableCell>
+                                <TableCell>duyngu@g.c</TableCell>
+                                <TableCell className="text-center">
+                                    <Badge>Đình chỉ</Badge>
+                                </TableCell>
+                                <TableCell className="text-center">
+                                    <Button variant={"ghost"} className="text-purpleColor"><Eye /></Button>
+                                    <Button variant={"ghost"} className="text-highlightColor"><Undo2 /></Button>
                                 </TableCell>
                             </TableRow>
                         </TableBody>

@@ -48,7 +48,7 @@ const extendOptions = {
 export default function StaffStatistic() {
     const [extend, isExtend] = useState(false);
     const chartHeight = extend ? 440 : 205;
-    const charWidth = extend ? 205 : 380;
+    const charWidth = 350;
     const options = extend ? extendOptions : defaultOptions;
     const data = [
         {
@@ -63,7 +63,7 @@ export default function StaffStatistic() {
             </CardHeader>
             <CardContent>
                 {(typeof window !== 'undefined') &&
-                    <Chart type="area" options={defaultOptions} series={data} height={chartHeight} width={charWidth}/>
+                    <Chart type="area" options={defaultOptions} series={data} height={chartHeight} width={charWidth} />
                 }
 
                 {/* <Button onClick={() => { isExtend(!extend); console.log(extend) }} >
