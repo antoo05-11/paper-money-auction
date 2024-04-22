@@ -57,7 +57,7 @@ export default function RegisterForm() {
                                         <FormItem>
                                             <FormLabel>Tài khoản</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Tài khoản" {...field} />
+                                                <Input placeholder="Tài khoản" {...field} className="rounded-full" />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -71,7 +71,7 @@ export default function RegisterForm() {
                                         <FormItem>
                                             <FormLabel>Password</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Password" {...field} />
+                                                <Input placeholder="Password" {...field} className="rounded-full" />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -84,7 +84,7 @@ export default function RegisterForm() {
                                         <FormItem>
                                             <FormLabel>BLablas</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="BLablas" {...field} />
+                                                <Input placeholder="BLablas" {...field} className="rounded-full" />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
