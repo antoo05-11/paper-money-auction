@@ -17,9 +17,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import Link from "next/link";
+import { login } from "@/app/api/apiEnpoints";
+import { HTTP_STATUS } from "@/lib/constant/constant";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+  email: z.string().min(2, {
+    message: "Email must be at least 2 characters.",
   }),
   password: z.string(),
 });
@@ -29,14 +33,19 @@ export default function LoginForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
+  const router = useRouter();
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    await login(values).then(res => {
+      if (res.status == HTTP_STATUS.OK) {
+
+      }
+    })
   }
   return (
     <section className="bg-[url(/Shape.jpg)] bg-cover">
@@ -53,7 +62,7 @@ export default function LoginForm() {
               <form className="space-y-4 md:space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
                 <FormField
                   control={form.control}
-                  name="username"
+                  name="email"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Tài khoản</FormLabel>

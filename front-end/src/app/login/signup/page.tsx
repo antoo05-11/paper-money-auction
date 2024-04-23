@@ -16,26 +16,37 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { createCustomer } from "@/app/api/apiEnpoints";
+import { HTTP_STATUS } from "@/lib/constant/constant";
 const formSchema = z.object({
-    username: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
+    email: z.string().min(2, {
+        message: "Email must be at least 2 characters.",
     }),
     password: z.string(),
 });
 
 export default function RegisterForm() {
+    const router = useRouter();
+    const [loadingMessage, setLoading] = useState("Đăng kí");
     // 1. Define your form.
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            username: "",
+            email: "",
             password: "",
         },
     });
 
     // 2. Define a submit handler.
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values);
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        await createCustomer(values).then(res => {
+            if (res.status == HTTP_STATUS.OK) {
+                setLoading("Thành công");
+                
+            }
+        });
     }
     return (
         <section className="bg-[url(/Shape.jpg)]">
@@ -52,7 +63,7 @@ export default function RegisterForm() {
                             <form className="space-y-4 md:space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
                                 <FormField
                                     control={form.control}
-                                    name="username"
+                                    name="email"
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Tài khoản</FormLabel>
@@ -71,13 +82,13 @@ export default function RegisterForm() {
                                         <FormItem>
                                             <FormLabel>Password</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Password" {...field} className="rounded-full" />
+                                                <Input placeholder="Password" {...field} className="rounded-full" type="password"/>
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
-                                <FormField
+                                {/* <FormField
                                     control={form.control}
                                     name="username"
                                     render={({ field }) => (
@@ -89,9 +100,9 @@ export default function RegisterForm() {
                                             <FormMessage />
                                         </FormItem>
                                     )}
-                                />
-                                <Button type="submit" className="w-full">
-                                    Đăng kí
+                                /> */}
+                                <Button type="submit" className={`w-full ${loadingMessage != 'Đăng kí' ? 'bg-lime-600' : ''}`} disabled={loadingMessage != 'Đăng kí'}>
+                                    {loadingMessage}
                                 </Button>
                             </form>
                         </Form>

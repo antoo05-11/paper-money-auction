@@ -1,14 +1,15 @@
 export type userLoginData = {
-    username: String,
+    email: String,
     password: String
 };
 
 export type userData = {
-    name: String,
-    ssid: String,
-    phone: String,
+    name: String | undefined,
+    ssid: String | undefined,
+    phone: String | undefined,
     email: String,
-    address: String
+    address: String | undefined,
+    password: String | undefined
 };
 
 export type paymentData = {
