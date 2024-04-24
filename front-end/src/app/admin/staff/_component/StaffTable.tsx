@@ -15,7 +15,7 @@ import {
     AlertDialog,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { CustomAlert } from "../../_component/CustomAlert";
+import { CustomAlert } from "../../../component/CustomAlert";
 
 export default function StaffTable() {
     return (

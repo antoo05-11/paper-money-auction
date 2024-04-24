@@ -43,11 +43,6 @@ export const userRoutes = [
         label: "Phiên đấu giá của tôi",
         href: "/me/auction"
     },
-    {
-        icon: ScrollText,
-        label: "Tài liệu của tôi",
-        href: "/me/document"
-    },
 ]
 
 export const auctioneerRoutes = [
