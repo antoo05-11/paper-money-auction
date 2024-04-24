@@ -70,7 +70,7 @@ export default function LoginForm() {
   async function submit2FACode(value: string) {
     await login2FA({...authData, authenticCode: value}).then(res => {
       if (res.status == HTTP_STATUS.OK) {
-        Cookies.set('access_token', "res.data.token");
+        Cookies.set('access_token', res.data.token);
         Cookies.set('user', res.data.user);
         router.push('/me');
       }
