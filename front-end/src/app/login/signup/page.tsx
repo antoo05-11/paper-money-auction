@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createCustomer } from "@/app/api/apiEnpoints";
 import { HTTP_STATUS } from "@/lib/constant/constant";
 const formSchema = z.object({
@@ -41,9 +41,19 @@ export default function RegisterForm() {
 
     // 2. Define a submit handler.
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        await createCustomer(values).then(res => {
+        const userData = {
+            ...values,
+            name: 'bach',
+            ssid: 'wtf',
+            phone: '069696969',
+            address: 'dofuck'
+        }
+        await createCustomer(userData).then(res => {
             if (res.status == HTTP_STATUS.OK) {
                 setLoading("Thành công");
+                setTimeout(() => {
+                    router.push('/login/signin');
+                }, 3000);
             }
         });
     }
@@ -87,19 +97,6 @@ export default function RegisterForm() {
                                         </FormItem>
                                     )}
                                 />
-                                {/* <FormField
-                                    control={form.control}
-                                    name="username"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>BLablas</FormLabel>
-                                            <FormControl>
-                                                <Input placeholder="BLablas" {...field} className="rounded-full" />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                /> */}
                                 <Button type="submit" className={`w-full ${loadingMessage != 'Đăng kí' ? 'bg-lime-600' : ''}`} disabled={loadingMessage != 'Đăng kí'}>
                                     {loadingMessage}
                                 </Button>

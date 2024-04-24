@@ -36,7 +36,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getProfile } from "@/app/api/apiEnpoints";
 
 const frameworks = [
   {
@@ -64,6 +65,20 @@ const frameworks = [
 export default function Page() {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
+
+  const [profileData, setProfileData] = useState(null);
+  useEffect(() => {
+    let ignore = false;
+    setProfileData(null);
+    getProfile().then(res => {
+      if (!ignore) {
+        setProfileData(res.data);
+      }
+    });
+    return () => {
+      ignore = true;
+    }
+  }, []);
 
   return (
     <div className="container">
