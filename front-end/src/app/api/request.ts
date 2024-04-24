@@ -30,15 +30,12 @@ service.interceptors.request.use(
 
 // response interceptor
 service.interceptors.response.use(
-  response => {
-    console.log(response)
-    return response
-  },
+  response => response,
   error => {
     if (error.response) {
       if (error.response.status == HTTP_STATUS.FORBIDDEN) {
         if (Object.values(AUTH).some(item => item.code === (error.response.data.code))) {
-          toast.error(error.response.data.message + 'Please sign in again.');
+          toast.error(error.response.data.message + 'Please sign in.');
           setTimeout(() => window.location.href = '/login/signin', 4000);
         }
         return Promise.resolve({

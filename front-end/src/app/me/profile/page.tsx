@@ -68,9 +68,16 @@ export default function Page() {
 
   const [profileData, setProfileData] = useState(null);
   useEffect(() => {
+    let ignore = false;
+    setProfileData(null);
     getProfile().then(res => {
-      setProfileData(res.data);
-    })
+      if (!ignore) {
+        setProfileData(res.data);
+      }
+    });
+    return () => {
+      ignore = true;
+    }
   }, []);
 
   return (
