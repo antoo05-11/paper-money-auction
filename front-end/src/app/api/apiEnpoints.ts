@@ -3,11 +3,11 @@ import request from '../api/request';
 
 //authentication
 export function login(data: userLoginData) {
-    return request.post('api/auth/login', data);
+    return request.post('api/auth/login', {data: data});
 };
 
 export function login2FA(data: any) {
-    return request.post('api/auth/login/authenticate', data);
+    return request.post('api/auth/login/authenticate', {data: data});
 };
 
 export function verifyUser() {
@@ -15,11 +15,11 @@ export function verifyUser() {
 };
 
 export function reverifyUser(data: any) {
-    return request.post('api/auth/verify', data);
+    return request.post('api/auth/verify', {data: data});
 };
 
 export function createCustomer(data: userData) {
-    return request.post('api/user/create/customer', data);
+    return request.post('api/user/create/customer', {data: data});
 };
 
 
@@ -29,7 +29,7 @@ export function getProfile() {
 };
 
 export function updateProfile(data: userData) {
-    return request.put('api/user/profile', data);
+    return request.put('api/user/profile', {data: data});
 };
 
 //payment
@@ -38,12 +38,12 @@ export function viewPayment() {
 };
 
 export function updatePayment(data: paymentData) {
-    return request.post('api/user/payment', data);
+    return request.post('api/user/payment', {data: data});
 };
 
 //asset
 export function createAsset(data: assetData) {
-    return request.post('api/asset/create', data);
+    return request.post('api/asset/create', {data: data});
 };
 
 export function addAssetPicture(id: String, pics: BinaryData) {
@@ -63,11 +63,11 @@ export function listAsset(data: filterAssetData) {
 };
 
 export function createStaff(data: auctioneerData) {
-    return request.post('api/user/create/staff', data);
+    return request.post('api/user/create/staff', {data: data});
 };
 
 export function createAuction(data: auctionData) {
-    return request.post('api/aution/create', data);
+    return request.post('api/aution/create', {data: data});
 };
 
 export function addAuctionDocument(id: String, docs: BinaryData) {
