@@ -36,7 +36,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { getProfile } from "@/app/api/apiEndpoints";
+import { SessionContext } from "@/lib/session";
 
 const frameworks = [
   {
@@ -65,6 +67,23 @@ export default function Page() {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
 
+  const [profileData, setProfileData] = useState(null);
+  const session = useContext(SessionContext);
+  console.log(session.user);
+
+  useEffect(() => {
+    let ignore = false;
+    setProfileData(null);
+    getProfile().then(res => {
+      if (!ignore) {
+        setProfileData(res.data);
+      }
+    });
+    return () => {
+      ignore = true;
+    }
+  }, []);
+
   return (
     <div className="container">
       <div className="flex justify-between mb-5">
@@ -83,23 +102,23 @@ export default function Page() {
                 <CardContent className="space-y-2">
                   <div className="space-y-1">
                     <Label htmlFor="name">Họ và tên</Label>
-                    <Input id="name" defaultValue="" placeholder="Nguyễn Văn A" />
+                    <Input id="name" defaultValue="" placeholder="Nguyễn Văn A" className="rounded-full" />
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="username">CCCD</Label>
-                    <Input id="username" defaultValue="" placeholder="123456789000" />
+                    <Input id="username" defaultValue="" placeholder="123456789000" className="rounded-full" />
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="username">Email</Label>
-                    <Input id="username" defaultValue="" placeholder="abc@g.c" />
+                    <Input id="username" defaultValue="" placeholder="abc@g.c" className="rounded-full" />
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="username">Phone</Label>
-                    <Input id="username" defaultValue="" placeholder="0123456789" />
+                    <Input id="username" defaultValue="" placeholder="0123456789" className="rounded-full" />
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="username">Địa chỉ</Label>
-                    <Input id="username" defaultValue="" placeholder="Hà Nộ, Việt Nam" />
+                    <Input id="username" defaultValue="" placeholder="Hà Nộ, Việt Nam" className="rounded-full" />
                   </div>
                 </CardContent>
                 <CardFooter>
@@ -115,11 +134,11 @@ export default function Page() {
                 <CardContent className="space-y-2">
                   <div className="space-y-1">
                     <Label htmlFor="current">Mật khẩu hiện tại</Label>
-                    <Input id="current" type="password" />
+                    <Input id="current" type="password" className="rounded-full" />
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="new">Mật khẩu mới</Label>
-                    <Input id="new" type="password" />
+                    <Input id="new" type="password" className="rounded-full" />
                   </div>
                 </CardContent>
                 <CardFooter>
@@ -135,11 +154,11 @@ export default function Page() {
                 <CardContent className="space-y-2">
                   <div className="space-y-1">
                     <Label htmlFor="current">Chủ tài khoản</Label>
-                    <Input id="name" />
+                    <Input id="name" className="rounded-full" />
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="current">Số tài khoản</Label>
-                    <Input id="name" />
+                    <Input id="name" className="rounded-full" />
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="new" className="mr-3">Ngân hàng</Label>

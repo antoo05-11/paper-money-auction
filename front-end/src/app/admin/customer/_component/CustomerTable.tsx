@@ -13,6 +13,12 @@ import {
     TableRow,
 } from "@/components/ui/table";
 
+import {
+    AlertDialog,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { CustomAlert } from "../../../component/CustomAlert";
+
 export default function CustomerTable() {
     return (
         <Card className="shadow">
@@ -41,7 +47,14 @@ export default function CustomerTable() {
                                 </TableCell>
                                 <TableCell className="text-center">
                                     <Button variant={"ghost"} className="text-purpleColor"><Eye /></Button>
-                                    <Button variant={"ghost"} className="text-red-500"><Ban /></Button>
+
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button variant={"ghost"} className="text-red-500"><Ban /></Button>
+                                        </AlertDialogTrigger>
+
+                                        <CustomAlert variant="BAN" />
+                                    </AlertDialog>
                                 </TableCell>
                             </TableRow>
                             <TableRow>
@@ -53,8 +66,19 @@ export default function CustomerTable() {
                                     <Badge>Đình chỉ</Badge>
                                 </TableCell>
                                 <TableCell className="text-center">
-                                    <Button variant={"ghost"} className="text-purpleColor"><Eye /></Button>
-                                    <Button variant={"ghost"} className="text-highlightColor"><Undo2 /></Button>
+                                    <Button variant={"ghost"} className="text-purpleColor">
+                                        <Eye />
+                                    </Button>
+
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button variant={"ghost"} className="text-highlightColor">
+                                                <Undo2 />
+                                            </Button>
+                                        </AlertDialogTrigger>
+
+                                        <CustomAlert variant="UNDO" />
+                                    </AlertDialog>
                                 </TableCell>
                             </TableRow>
                         </TableBody>

@@ -4,6 +4,8 @@ import "./globals.css";
 import PageHeader from "./component/page-header";
 import PageFooter from "./component/page-footer";
 import { Toaster } from "@/components/ui/sonner";
+import { SessionContext, getSessionCookie } from "@/lib/session";
+import { useEffect, useState } from "react";
 
 const lexend = Lexend({ subsets: ["latin"] });
 
@@ -12,14 +14,23 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [session, setSession] = useState(getSessionCookie());
+  useEffect(
+    () => {
+      setSession(getSessionCookie());
+    },
+    [session]
+  );
   return (
-    <html lang="en">
-      <body className={lexend.className}>
-        {/* <PageHeader /> */}
-        {children}
-        {/* <PageFooter /> */}
-      </body>
-      <Toaster />
-    </html>
+    <SessionContext.Provider value={session}>
+      <html lang="en">
+        <body className={lexend.className}>
+          {/* <PageHeader /> */}
+          {children}
+          {/* <PageFooter /> */}
+        </body>
+        <Toaster />
+      </html>
+    </SessionContext.Provider>
   );
 }

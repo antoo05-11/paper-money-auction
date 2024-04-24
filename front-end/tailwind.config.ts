@@ -118,7 +118,11 @@ const config = {
           "20%": { transform: "translateY(4px)" },
           "40%": { transform: "translateX(5px)" },
           "100%": { transform: "translateX(20px)" }
-        }
+        },
+        "caret-blink": {
+          "0%,70%,100%": { opacity: "1" },
+          "20%,50%": { opacity: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -127,7 +131,8 @@ const config = {
         "floating2": "floating2 25s ease-out 0s infinite alternate",
         "floating3": "floating3 40s ease-out 0s infinite alternate",
         "typing": "typing 2s steps(20) alternate, blink .7s",
-        "bid": "bid 3s linear infinite alternate"
+        "bid": "bid 3s linear infinite alternate",
+        "caret-blink": "caret-blink 1.25s ease-out infinite",
       },
     },
   },

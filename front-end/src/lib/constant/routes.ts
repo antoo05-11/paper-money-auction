@@ -27,15 +27,11 @@ export const guestRoutes = [
 ]
 
 export const userRoutes = [
-    {
-        icon: Layout,
-        label: "Thông tin cá nhân",
-        href: "/me"
-    },
+
     {
         icon: LandPlot,
         label: "Đăng ký tài sản đấu giá",
-        href: "/me/property"
+        href: "/me"
     },
     {
         icon: FileClock,
@@ -46,11 +42,6 @@ export const userRoutes = [
         icon: BadgeDollarSign,
         label: "Phiên đấu giá của tôi",
         href: "/me/auction"
-    },
-    {
-        icon: ScrollText,
-        label: "Tài liệu của tôi",
-        href: "/me/document"
     },
 ]
 
