@@ -34,13 +34,31 @@ export default function LoginForm() {
   });
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    // console.log(values);
+    const url_path = "https://paper-money-auction.onrender.com/api/auth/login";
+    const requestLogin = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        data: {
+          email: values.username,
+          password: values.password,
+        },
+      }),
+    };
+    const data = await fetch(url_path, requestLogin).then((response) =>
+      response.json()
+    );
+    console.log(data);
   }
   return (
     <section className="bg-[url(/Shape.jpg)] bg-cover">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-        <Link href={"/"} className="flex items-center mb-6 text-2xl font-semibold text-white">
+        <Link
+          href={"/"}
+          className="flex items-center mb-6 text-2xl font-semibold text-white"
+        >
           Vua Tiền Tệ
         </Link>
         <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
@@ -49,7 +67,10 @@ export default function LoginForm() {
               Đăng nhập
             </h1>
             <Form {...form}>
-              <form className="space-y-4 md:space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+              <form
+                className="space-y-4 md:space-y-6"
+                onSubmit={form.handleSubmit(onSubmit)}
+              >
                 <FormField
                   control={form.control}
                   name="username"
@@ -77,16 +98,21 @@ export default function LoginForm() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full" >
+                <Button type="submit" className="w-full">
                   Đăng nhập
                 </Button>
               </form>
             </Form>
             <p className="text-sm font-light text-gray-500 dark:text-gray-400">
               Chưa có tài khoản?
-              <Link href={"/login/signup"} className="font-medium text-primary-600 hover:underline dark:text-primary-500"> Đăng kí</Link>
+              <Link
+                href={"/login/signup"}
+                className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+              >
+                {" "}
+                Đăng kí
+              </Link>
             </p>
-
           </div>
         </div>
       </div>
