@@ -1,15 +1,25 @@
 import AuctionController from "../controllers/auction.controller";
 import userRole from "../constants/user.role";
+import auctionValidation from "../validations/auction.validation";
 
 export default [
     {
         controller: AuctionController,
         methods: [
+            // Create Auction
             {
                 httpMethod: "post",
-                path: "auction/create",
-                method: "create_auction",
+                path: "/auction/create",
+                method: "createAuction",
                 roles: [userRole.AUCTIONEER],
+                schema: auctionValidation.createAuction,
+            },
+            {
+                httpMethod: "post",
+                path: "/auction/:id/docs",
+                method: "uploadDocs",
+                roles: [userRole.AUCTIONEER],
+                files: "docs",
             },
             {
                 httpMethod: "get",
@@ -38,7 +48,7 @@ export default [
                 httpMethod: "get",
                 path: "auction/:id",
                 method: "view_auction",
-            }, 
+            },
             {
                 httpMethod: "post",
                 path: "auction/:id/register",

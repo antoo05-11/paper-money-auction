@@ -59,6 +59,7 @@ export default function LoginForm() {
     }
   }
 
+
   async function onSubmit(values: formData) {
     setAuthData(values);
     await login(values).then(res => {
@@ -75,11 +76,15 @@ export default function LoginForm() {
         router.push('/me');
       }
     });
+
   }
   return (
     <section className="bg-[url(/Shape.jpg)] bg-cover">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-        <Link href={"/"} className="flex items-center mb-6 text-2xl font-semibold text-white">
+        <Link
+          href={"/"}
+          className="flex items-center mb-6 text-2xl font-semibold text-white"
+        >
           Vua Tiền Tệ
         </Link>
         {!verifyState &&
@@ -89,7 +94,10 @@ export default function LoginForm() {
               Đăng nhập
             </h1>
             <Form {...form}>
-              <form className="space-y-4 md:space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+              <form
+                className="space-y-4 md:space-y-6"
+                onSubmit={form.handleSubmit(onSubmit)}
+              >
                 <FormField
                   control={form.control}
                   name="email"
@@ -117,16 +125,21 @@ export default function LoginForm() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full" >
+                <Button type="submit" className="w-full">
                   Đăng nhập
                 </Button>
               </form>
             </Form>
             <p className="text-sm font-light text-gray-500 dark:text-gray-400">
               Chưa có tài khoản?
-              <Link href={"/login/signup"} className="font-medium text-primary-600 hover:underline dark:text-primary-500"> Đăng kí</Link>
+              <Link
+                href={"/login/signup"}
+                className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+              >
+                {" "}
+                Đăng kí
+              </Link>
             </p>
-
           </div>
         </div>
         }
