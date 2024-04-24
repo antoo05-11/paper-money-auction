@@ -32,7 +32,7 @@ export default [
                 httpMethod: "get",
                 path: "/asset/:id",
                 method: "viewAsset",
-                roles: [userRole.CUSTOMER],
+                roles: [userRole.CUSTOMER, userRole.ADMIN],
             },
             {
                 httpMethod: "get",
