@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import Cookies from 'js-cookie';
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -24,10 +23,11 @@ import { REGEXP_ONLY_DIGITS } from "input-otp"
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import Link from "next/link";
-import { login, login2FA } from "@/app/api/apiEnpoints";
+import { login, login2FA } from "@/app/api/apiEndpoints";
 import { HTTP_STATUS } from "@/lib/constant/constant";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { setSessionCookie } from "@/lib/session";
 const formSchema = z.object({
   email: z.string().min(2, {
     message: "Email must be at least 2 characters.",
@@ -61,17 +61,16 @@ export default function LoginForm() {
 
   async function onSubmit(values: formData) {
     setAuthData(values);
-    await login(values).then(res => {
+    await login(values).then((res: any) => {
       if (res.status == HTTP_STATUS.OK) {
           setVerify(true);
       }
     })
   }
   async function submit2FACode(value: string) {
-    await login2FA({...authData, authenticCode: value}).then(res => {
+    await login2FA({...authData, authenticCode: value}).then((res: any) => {
       if (res.status == HTTP_STATUS.OK) {
-        Cookies.set('access_token', res.data.data.token);
-        Cookies.set('user', res.data.user);
+        setSessionCookie(res.data.data);
         router.push('/me');
       }
     });

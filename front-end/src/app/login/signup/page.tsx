@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { createCustomer } from "@/app/api/apiEnpoints";
+import { createCustomer } from "@/app/api/apiEndpoints";
 import { HTTP_STATUS } from "@/lib/constant/constant";
 const formSchema = z.object({
     email: z.string().min(2, {
@@ -48,7 +48,7 @@ export default function RegisterForm() {
             phone: '069696969',
             address: 'dofuck'
         }
-        await createCustomer(userData).then(res => {
+        await createCustomer(userData).then((res: any) => {
             if (res.status == HTTP_STATUS.OK) {
                 setLoading("Thành công");
                 setTimeout(() => {

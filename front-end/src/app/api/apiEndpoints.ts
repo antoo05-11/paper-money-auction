@@ -1,5 +1,5 @@
 import { assetData, auctionData, auctioneerData, filterAssetData, paymentData, userData, userLoginData } from '@/lib/constant/dataInterface';
-import request from '../api/request';
+import request from './request';
 
 //authentication
 export function login(data: userLoginData) {

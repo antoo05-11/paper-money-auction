@@ -36,8 +36,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { useEffect, useState } from "react";
-import { getProfile } from "@/app/api/apiEnpoints";
+import { useContext, useEffect, useState } from "react";
+import { getProfile } from "@/app/api/apiEndpoints";
+import { SessionContext } from "@/lib/session";
 
 const frameworks = [
   {
@@ -67,6 +68,9 @@ export default function Page() {
   const [value, setValue] = useState("");
 
   const [profileData, setProfileData] = useState(null);
+  const session = useContext(SessionContext);
+  console.log(session.user);
+
   useEffect(() => {
     let ignore = false;
     setProfileData(null);

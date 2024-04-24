@@ -30,8 +30,8 @@ service.interceptors.request.use(
 
 // response interceptor
 service.interceptors.response.use(
-  response => response,
-  error => {
+  (response: any) => response,
+  (error: any) => {
     if (error.response) {
       if (error.response.status == HTTP_STATUS.FORBIDDEN) {
         if (Object.values(AUTH).some(item => item.code === (error.response.data.code))) {
