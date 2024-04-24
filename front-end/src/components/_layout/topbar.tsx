@@ -63,13 +63,13 @@ export default function TopBar() {
                     </Avatar>
                 </DropdownMenuTrigger>
 
-                {!window.location.href.includes("/admin") && (
+                {!pathname.includes("/admin") && (
                     <DropdownMenuContent className="mr-3">
                         <DropdownMenuLabel>My Account</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
                             <DropdownMenuItem>
-                                <Link href={window.location.href.includes("me") ? "/me/profile" : "/auctioneer/profile"} className="flex flex-row">
+                                <Link href={pathname.includes("me") ? "/me/profile" : "/auctioneer/profile"} className="flex flex-row">
                                     <User className="mr-2 h-4 w-4" />
                                     <span>Profile</span>
                                 </Link>
