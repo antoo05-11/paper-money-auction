@@ -44,7 +44,6 @@ export default function RegisterForm() {
         await createCustomer(values).then(res => {
             if (res.status == HTTP_STATUS.OK) {
                 setLoading("Thành công");
-                
             }
         });
     }
@@ -82,7 +81,7 @@ export default function RegisterForm() {
                                         <FormItem>
                                             <FormLabel>Password</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Password" {...field} className="rounded-full" type="password"/>
+                                                <Input placeholder="Password" {...field} className="rounded-full" type="password" />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

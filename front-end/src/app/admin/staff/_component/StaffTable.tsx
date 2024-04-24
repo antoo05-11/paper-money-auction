@@ -11,6 +11,11 @@ import {
 import { Ban, Undo2, Eye, Pencil } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+    AlertDialog,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { CustomAlert } from "../../_component/CustomAlert";
 
 export default function StaffTable() {
     return (
@@ -40,7 +45,14 @@ export default function StaffTable() {
                                 </TableCell>
                                 <TableCell className="text-center">
                                     <Button variant={"ghost"} className="text-purpleColor"><Eye /></Button>
-                                    <Button variant={"ghost"} className="text-red-500"><Ban /></Button>
+
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button variant={"ghost"} className="text-red-500"><Ban /></Button>
+                                        </AlertDialogTrigger>
+
+                                        <CustomAlert variant="BAN" />
+                                    </AlertDialog>
                                 </TableCell>
                             </TableRow>
                             <TableRow>
@@ -52,8 +64,19 @@ export default function StaffTable() {
                                     <Badge>Đình chỉ</Badge>
                                 </TableCell>
                                 <TableCell className="text-center">
-                                    <Button variant={"ghost"} className="text-purpleColor"><Eye /></Button>
-                                    <Button variant={"ghost"} className="text-highlightColor"><Undo2 /></Button>
+                                    <Button variant={"ghost"} className="text-purpleColor">
+                                        <Eye />
+                                    </Button>
+
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button variant={"ghost"} className="text-highlightColor">
+                                                <Undo2 />
+                                            </Button>
+                                        </AlertDialogTrigger>
+
+                                        <CustomAlert variant="UNDO" />
+                                    </AlertDialog>
                                 </TableCell>
                             </TableRow>
                         </TableBody>
