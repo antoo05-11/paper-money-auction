@@ -12,6 +12,10 @@ const assetSchema = new mongoose.Schema(
         pics: [String],
         // Verification
         docs: [String],
+        verified: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         versionKey: false,
