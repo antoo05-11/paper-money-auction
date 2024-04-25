@@ -27,7 +27,7 @@ import { login, login2FA } from "@/app/api/apiEndpoints";
 import { HTTP_STATUS } from "@/lib/constant/constant";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { setSessionCookie } from "@/lib/session";
+import { setSessionCookie } from "@/lib/auth/session";
 const formSchema = z.object({
   email: z.string().min(2, {
     message: "Email must be at least 2 characters.",

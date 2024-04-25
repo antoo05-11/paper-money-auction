@@ -38,7 +38,7 @@ import {
 } from "@/components/ui/popover"
 import { useContext, useEffect, useState } from "react";
 import { getProfile } from "@/app/api/apiEndpoints";
-import { SessionContext } from "@/lib/session";
+import { SessionContext } from "@/lib/auth/session";
 
 const frameworks = [
   {
@@ -69,7 +69,7 @@ export default function Page() {
 
   const [profileData, setProfileData] = useState(null);
   const session = useContext(SessionContext);
-  console.log(session.user);
+  console.log(session);
 
   useEffect(() => {
     let ignore = false;
