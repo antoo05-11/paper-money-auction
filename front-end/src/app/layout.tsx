@@ -14,15 +14,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const [session, setSession] = useState(getSessionCookie());
-  // useEffect(
-  //   () => {
-  //     setSession(getSessionCookie());
-  //   },
-  //   []
-  // );
+  
   return (
-    // <SessionContext.Provider value={session}>
+    <SessionContext.Provider value={session}>
       <html lang="en">
         <body className={lexend.className}>
           {/* <PageHeader /> */}
@@ -31,6 +25,6 @@ export default function RootLayout({
         </body>
         <Toaster />
       </html>
-    // </SessionContext.Provider>
+    </SessionContext.Provider>
   );
 }

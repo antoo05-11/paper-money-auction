@@ -27,7 +27,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { LogOut, User } from "lucide-react";
 import Link from "next/link";
-import { removeSessionCookie } from "@/lib/auth/session";
+import { SessionContext, getSessionCookie, removeSessionCookie } from "@/lib/auth/session";
+import { useContext } from "react";
 
 
 export default function TopBar() {
@@ -36,6 +37,9 @@ export default function TopBar() {
     const routes = pathname.split('/').filter(path => path !== '');
     const listRoutes = routes.map((route, index) => '/' + routes.slice(0, index + 1).join('/'));
 
+    // const session = useContext(SessionContext);
+    const session = getSessionCookie();
+    
     function logOut() {
        removeSessionCookie();
        router.push('/');
@@ -72,7 +76,7 @@ export default function TopBar() {
 
                 {!pathname.includes("/admin") && (
                     <DropdownMenuContent className="mr-3">
-                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                        <DropdownMenuLabel>{session.name}</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
                             <DropdownMenuItem>

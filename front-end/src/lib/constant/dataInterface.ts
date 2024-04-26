@@ -3,6 +3,13 @@ export type userLoginData = {
     password: string
 };
 
+export type sessionData = {
+    name: string,
+    id: string,
+    role: string
+    isAuthenticated: boolean
+};
+
 export type userData = {
     name: string | null,
     ssid: string | null,
