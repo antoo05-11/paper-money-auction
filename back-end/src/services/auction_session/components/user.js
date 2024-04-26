@@ -9,7 +9,7 @@ export class User {
     }
 
     toString() {
-        return `User(userId = ${this.#userId}, joined = ${this.#joined})`
+        return `User(alias = ${this.#alias})`
     }
 
     toJSON() {

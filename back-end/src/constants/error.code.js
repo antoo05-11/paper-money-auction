@@ -51,6 +51,16 @@ export default {
         NOT_FOUND: {
             code: "AUCTION_NOT_FOUND",
             message: "Your auction is not in the system.",
+        },
+        BIDDING: {
+            TOO_QUICK: {
+                code: "BIDDING_ERROR",
+                message: "Your bidding is too quick.",
+            },
+            NOT_BIG_ENOUGH: {
+                code: "BIDDING_ERROR",
+                message: "Your bidding price is not big enough.",
+            }
         }
     },
 
