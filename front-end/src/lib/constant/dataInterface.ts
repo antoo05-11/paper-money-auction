@@ -3,12 +3,12 @@ export type userLoginData = {
     password: string
 };
 
-export type sessionData = {
+export interface User {
     name: string,
     id: string,
-    role: string
-    isAuthenticated: boolean
-};
+    role: string,
+    token: string
+}
 
 export type userData = {
     name: string | null,

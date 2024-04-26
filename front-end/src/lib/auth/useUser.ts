@@ -1,30 +1,24 @@
 import React, { ReactNode, useContext, useEffect, useState } from 'react';
-import { sessionData } from '../constant/dataInterface';
+import { User } from '../constant/dataInterface';
+import { AuthContext } from './AuthContext';
+import { useCookie } from './useCookie';
 
-
-const defaultAuthState = {
-    session: null,
-    login: () => {},
-    logout: () => {}
-};
-
-export const SessionUser = () => {
-
-    const SessionContext = React.createContext(defaultAuthState);
-
-    export const useSession = () => useContext(SessionContext);
-    const [session, setSession] = useState(getSessionCookie());
-    useEffect(
-    () => {
-        const initSession = getSessionCookie();
-        setSession(initSession);
-    },[]);
-    const login = (userData: sessionData) => {
-        setSession(userData);
+export const useSessionUser = () => {
+    const {user, setUser } = useContext(AuthContext);
+    const {setSessionCookie, getSessionCookie, removeSessionCookie} = useCookie();
+    const addUser = (userData: User) => {
+        // console.log(userData);
+        setSessionCookie(userData);
+        setUser((userData));
     }
-    const logout = () => {
-        setSession(null);
+    const removeUser = () => {
+        setUser(null);
+        removeSessionCookie();
     }
 
-    return {session, login, logout};
+    useEffect(() => {
+        console.log(user); // This will log the updated user after setUser
+    }, [user]);
+
+    return {user, addUser, removeUser, setUser};
 }

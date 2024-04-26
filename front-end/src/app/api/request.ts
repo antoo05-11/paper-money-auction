@@ -34,13 +34,13 @@ service.interceptors.response.use(
   (error: any) => {
     if (error.response) {
       if (error.response.status == HTTP_STATUS.FORBIDDEN) {
-        if (Object.values(AUTH).some(item => item.code === (error.response.data.code))) {
-          toast.error(error.response.data.message + 'Please sign in.');
-          setTimeout(() => window.location.href = '/login/signin', 4000);
-        }
-        return Promise.resolve({
-          status: HTTP_STATUS.UNAUTHORIZED
-        })
+        // if (Object.values(AUTH).some(item => item.code === (error.response.data.code))) {
+        //   toast.error(error.response.data.message + 'Please sign in.');
+        //   setTimeout(() => window.location.href = '/login/signin', 4000);
+        // }
+        // return Promise.resolve({
+        //   status: HTTP_STATUS.UNAUTHORIZED
+        // })
       }
     }
     return Promise.reject(error)

@@ -23,11 +23,11 @@ import { REGEXP_ONLY_DIGITS } from "input-otp"
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import Link from "next/link";
-import { login, login2FA } from "@/app/api/apiEndpoints";
+import { loginUser, login2FA } from "@/app/api/apiEndpoints";
 import { HTTP_STATUS } from "@/lib/constant/constant";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { setSessionCookie } from "@/lib/auth/session";
+import { useAuth } from "@/lib/auth/useAuth";
 const formSchema = z.object({
   email: z.string().min(2, {
     message: "Email must be at least 2 characters.",
@@ -44,6 +44,8 @@ export default function LoginForm() {
       password: "",
     },
   });
+
+  const { login } = useAuth();
   const router = useRouter();
 
   const [verifyState, setVerify] = useState(false);
@@ -62,16 +64,34 @@ export default function LoginForm() {
 
   async function onSubmit(values: formData) {
     setAuthData(values);
-    await login(values).then((res: any) => {
-      if (res.status == HTTP_STATUS.OK) {
-          setVerify(true);
+    const res = {
+      "data": {
+          "token": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Mjg4NzE2Yjg0MjA0MmU4YjQ4ZmFiNiIsIm5hbWUiOiJiYWNoIiwicm9sZSI6ImN1c3RvbWVyIiwiaWF0IjoxNzE0MTU0MjQyLCJleHAiOjE3MTQyNDA2NDJ9.yRHaiTkElU0vqTPj5GdwXFgGdAyXSrQzgeS8HyNBfjY",
+          "user": {
+              "id": "66288716b842042e8b48fab6",
+              "name": "bach",
+              "role": "customer"
+          }
       }
-    })
+  };
+    const { data: { token, user: { id, name, role } } } = res;
+    const session = {token, id, name, role};
+    // console.log(typeof session);
+    login(session);
+    router.push('/me');
+    // await loginUser(values).then((res: any) => {
+    //   if (res.status == HTTP_STATUS.OK) {
+    //       setVerify(true);
+    //   }
+    // })
   }
   async function submit2FACode(value: string) {
     await login2FA({...authData, authenticCode: value}).then((res: any) => {
       if (res.status == HTTP_STATUS.OK) {
-        setSessionCookie(res.data.data);
+        console.log(res.data.data);
+        const session = [res.data.data.token, ...res.data.data.user];
+        console.log(session);
+        login(session);
         router.push('/me');
       }
     });

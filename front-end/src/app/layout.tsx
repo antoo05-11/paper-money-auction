@@ -4,8 +4,9 @@ import "./globals.css";
 import PageHeader from "./component/page-header";
 import PageFooter from "./component/page-footer";
 import { Toaster } from "@/components/ui/sonner";
-import { SessionContext, getSessionCookie } from "@/lib/auth/session";
 import { useEffect, useState } from "react";
+import { useAuth } from "@/lib/auth/useAuth";
+import { AuthContext } from "@/lib/auth/AuthContext";
 
 const lexend = Lexend({ subsets: ["latin"] });
 
@@ -14,9 +15,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  
+  const { user, login, logout, setUser } = useAuth();
   return (
-    <SessionContext.Provider value={session}>
+    <AuthContext.Provider value={{ user, setUser }}>
       <html lang="en">
         <body className={lexend.className}>
           {/* <PageHeader /> */}
@@ -25,6 +26,6 @@ export default function RootLayout({
         </body>
         <Toaster />
       </html>
-    </SessionContext.Provider>
+    </AuthContext.Provider>
   );
 }

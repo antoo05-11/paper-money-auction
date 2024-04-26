@@ -1,21 +1,19 @@
 import Cookies from 'js-cookie';
 export const useCookie = () => {
     const setSessionCookie = (session: any): void => {
-        Cookies.set('access_token', session.token);
-        Cookies.set('user', JSON.stringify(session.user), { expires: 1});
+        Cookies.set('user', JSON.stringify(session), { expires: 1});
     };
     
-    const getSessionCookie: any = () => {
+    const getSessionCookie = (): string => {
         const sessionCookie = Cookies.get('user');
         if (sessionCookie === undefined) {
-            return {};
+            return '';
         } else {
             return (sessionCookie);
         }
     };
     
     const removeSessionCookie: any = () => {
-        Cookies.remove('access_token');
         Cookies.remove('user');
     };
 
