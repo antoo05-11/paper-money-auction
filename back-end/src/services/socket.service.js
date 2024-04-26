@@ -7,6 +7,7 @@ import {Auction} from "../models/auction";
 import {Participation} from "../models/participation";
 import mongoose from "mongoose";
 import {Bidding} from "../models/bidding";
+import schedule from "node-schedule";
 
 let instance;
 
@@ -64,11 +65,25 @@ class SocketService extends Service {
                 socket.emit('start_session_response', errorCode.AUCTION.NOT_FOUND);
                 return;
             }
+            if (auction.auction_start > Date.now() + 5 * 60 * 1000) {
+                socket.emit('start_session_response', errorCode.AUCTION.NOT_TIME_YET);
+                return;
+            }
+
             const participations = await Participation.find({auction: auction._id});
             const biddings = await Bidding.find({auction: auction._id});
+
             this.#sessions.set(socketInfo.sessionId, new AuctionSession(auction, participations, biddings));
-            if(biddings && biddings.length() > 0) {
-                this.io.to(socketInfo.sessionId).emit("biddings_update", this.#sessions.get(socketInfo.sessionId).getBiddings());
+
+            const sessionStarted = this.#sessions.get(socketInfo.sessionId);
+
+            schedule.scheduleJob(sessionStarted.getSessionEndDate() + 1 * 60 * 1000, () => {
+                this.#sessions.delete(socketInfo.sessionId);
+                console.log(this.#sessions);
+            });
+
+            if (biddings && biddings.length > 0) {
+                this.io.to(socketInfo.sessionId).emit("biddings_update", sessionStarted.getBiddings());
             }
             socket.emit('start_session_response', true);
         }
@@ -82,10 +97,15 @@ class SocketService extends Service {
         if (socketInfo) {
 
             if (!this.#sessions.has(socketInfo.sessionId)) {
-                return;
+                return; // Session starting is required.
             }
 
             const session = this.#sessions.get(socketInfo.sessionId);
+
+            if (!session.isOnGoing()) {
+                socket.emit('join_session_response', errorCode.AUCTION.NOT_ON_GOING);
+                return;
+            }
 
             if (session) {
                 let userSessions = this.#users.get(socketId) || new Set();

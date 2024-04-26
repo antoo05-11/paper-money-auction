@@ -1,8 +1,10 @@
 import {User} from "./user";
 import {utils} from "../../../utils/utils";
 import {Bidding} from "../../../models/bidding";
-import * as assert from "node:assert";
 import errorCode from "../../../constants/error.code";
+import schedule from "node-schedule";
+import {Auction} from "../../../models/auction";
+import mongoose from "mongoose";
 
 export class AuctionSession {
     #recentUsers = []; // [User]
@@ -26,9 +28,34 @@ export class AuctionSession {
             const userId = bidding.bidder.toString();
             const offer = bidding.price;
             const createdAt = bidding.createdAt;
-            this.#biddings.push({user: this.#users.get(userId), offer: offer, createdAt: createdAt})
+            this.#biddings.push({
+                user: this.#users.get(userId),
+                offer: offer,
+                createdAt: createdAt
+            })
         }
-        console.log(this.#biddings);
+        console.log(this.#auction.auction_end);
+        const job = schedule.scheduleJob(this.#auction.auction_end, function (auctionId) {
+            console.log(auctionId);
+            Bidding.findOne({
+                auction: auctionId
+            }).sort('-createdAt').then((bidding) => {
+                Auction.findOneAndUpdate({_id: auction._id}, {
+                    winning_bidding: bidding._id
+                }).then((winningBidding) => {
+                    console.log(`Status: Auction ${this.#auction} is saved successfully.`)
+                });
+            });
+        }.bind(null, this.#auction._id.toString()));
+    }
+
+    getSessionEndDate = () => {
+        return this.#auction.auction_end;
+    }
+
+
+    isOnGoing = () => {
+        return this.#auction.auction_start < Date.now() && this.#auction.auction_end > Date.now();
     }
 
     toString() {
@@ -48,13 +75,15 @@ export class AuctionSession {
 
         if (utils.isNumberInRange(offer, currentMinOffer, Number.MAX_SAFE_INTEGER)) {
             this.#biddings.push({user: user, offer: offer, createdAt: Date.now()});
+            const biddingIndex = this.#biddings.length - 1;
             Bidding.create({
                 auction: this.#auction._id,
                 bidder: userId,
                 price: offer
             }).then((bidding) => {
-                if (bidding) console.log("Status: Make new offer successfully.")
-                else console.log("Database server error: Cannot make new offer.")
+                if (bidding) {
+                    console.log("Status: Make new offer successfully.");
+                } else console.log("Database server error: Cannot make new offer.")
             });
             return true;
         } else return errorCode.AUCTION.BIDDING.NOT_BIG_ENOUGH;

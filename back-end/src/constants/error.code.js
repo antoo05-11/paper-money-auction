@@ -52,6 +52,14 @@ export default {
             code: "AUCTION_NOT_FOUND",
             message: "Your auction is not in the system.",
         },
+        NOT_TIME_YET: {
+            code: "NOT_TIME_YET",
+            message: "Your auction cannot be opened now.",
+        },
+        NOT_ON_GOING: {
+            code: "AUCTION_NOT_ON_GOING",
+            message: "Your auction is not not on going.",
+        },
         BIDDING: {
             TOO_QUICK: {
                 code: "BIDDING_ERROR",
