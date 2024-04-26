@@ -1,16 +1,15 @@
 export class User {
     #userId
-    #socketId
-    #sessionIds
+    #alias = null
+    #joined = false
 
-    constructor(socketId, userId) {
-        this.#socketId = socketId;
-        this.#userId = userId;
-        this.#sessionIds = new Set();
+    constructor(userInfo) {
+        this.#userId = userInfo.userId;
+        this.#alias = userInfo.alias;
     }
 
     toString() {
-        return `User(userId = ${this.#userId}, socketId = ${this.#socketId})`
+        return `User(userId = ${this.#userId}, joined = ${this.#joined})`
     }
 
     toJSON() {
@@ -19,16 +18,12 @@ export class User {
         };
     }
 
-    joinSession(sessionId) {
-        this.#sessionIds.add(sessionId);
+    joinSession() {
+        this.#joined = true;
     }
 
-    leaveSession(sessionId) {
-        this.#sessionIds.delete(sessionId);
-    }
-
-    getUserSessionIds() {
-        return this.#sessionIds;
+    leaveSession() {
+        this.#joined = false;
     }
 
     getUserId() {

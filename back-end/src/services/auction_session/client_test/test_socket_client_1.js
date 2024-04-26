@@ -24,6 +24,10 @@ socket.on('disconnect', () => {
     console.log('Disconnected from server');
 });
 
+socket.on('startSessionResponse', (message)=>{
+    console.log(message);
+})
 
 
-const sampleAuctionToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZXNzaW9uSWQiOjU2NDYsInVzZXJJZCI6MSwiaWF0IjoxNzExNjI1MjA3LCJleHAiOjE3NDMxNjEyMDd9.nP5Z8SrPDyFR7xEaCD2vu74d_rCxKu5Nk50tE3jY8nk';
+
+const sampleAuctionToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZXNzaW9uSWQiOiI2NjIzOTY1N2NkNjAzNGFkZDk3MTQ4NWEiLCJ1c2VySWQiOiI2NjE2YzlkMmNmOWUxMzc0ODg1NTgxODciLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3MTQxMDU3MTAsImV4cCI6MTc0NTY0MTcxMH0.ymW8KV-84Hs19qEPD-egVMkBz484wdKvhi3bDcCUbvQ';

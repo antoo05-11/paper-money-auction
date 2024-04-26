@@ -1,48 +1,42 @@
+import {User} from "./user";
+
 export class AuctionSession {
-    #sessionId
-    #recentUsers
-    #users
-    #biddings
-    #auction
+    #recentUsers = [];
+    #users = new Map();
+    #biddings = [];
+    #auction;
 
     static MAX_RECENT_USER = 20;
 
-    constructor(sessionId, auction) {
-        this.#sessionId = sessionId;
+    constructor(auction, participations) {
         this.#auction = auction;
-        this.#recentUsers = [];
-        this.#users = new Map();
-        this.#biddings = [];
+        for (const participation of participations) {
+            this.#users.set(participation.bidder.toString(), new User({
+                userId: participation.bidder.toString(),
+                alias: participation.alias
+            }));
+        }
     }
 
     toString() {
-        return `Session(sessionId = ${this.#sessionId}, recentUsers = ${this.#recentUsers})`
+        return `Session(sessionId = ${this.#auction._id}, recentUsers = ${this.#recentUsers})`
     }
 
-    addUser(user) {
-        const userId = user.getUserId();
-        user.joinSession(this.#sessionId);
-        if (!this.#users.has(userId)) {
+    addUser(userId) {
+        const user = this.#users.get(userId);
+        user.joinSession();
+        if (!this.#recentUsers.includes(user)) {
             if (this.#recentUsers.length === AuctionSession.MAX_RECENT_USER)
                 this.#recentUsers.shift();
             this.#recentUsers.push(user);
         }
-        this.#users.set(userId, user);
     }
 
-    removeUser(user) {
-        const userId = user.getUserId();
-
-        this.#users.delete(userId);
-
+    removeUser(userId) {
+        const user = this.#users.get(userId);
         const pos = this.#recentUsers.indexOf(user);
         if (pos > -1) this.#recentUsers.splice(pos, 1);
-
-        user.leaveSession(this.#sessionId);
-    }
-
-    getSessionId() {
-        return this.#sessionId;
+        user.leaveSession();
     }
 
     getSessionBriefInfo() {

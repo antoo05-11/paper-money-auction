@@ -2,10 +2,10 @@ const io = require('socket.io-client');
 
 const socket = io.connect('http://localhost:3000');
 
-socket.on('connect', () => {
+socket.on('connect', async () => {
     console.log('Connected to server');
 
-    socket.emit('joinSession', sampleAuctionToken);
+    await socket.emit('startSession', sampleAuctionToken);
 });
 
 socket.on('joinSessionResponse', (response) => {
@@ -24,6 +24,13 @@ socket.on('disconnect', () => {
     console.log('Disconnected from server');
 });
 
+socket.on('startSessionResponse', (message)=>{
+    console.log(message);
+    if(message === true) {
+        socket.emit('joinSession', sampleAuctionToken);
+    }
+})
 
 
-const sampleAuctionToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZXNzaW9uSWQiOjU2NDYsInVzZXJJZCI6MiwiaWF0IjoxNzExNjI1MjM1LCJleHAiOjE3NDMxNjEyMzV9.4Sba0iSU7mfGabMAerwfaND0trCRpobY_bndMU05M6k';
+
+const sampleAuctionToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZXNzaW9uSWQiOiI2NjIzOTY1N2NkNjAzNGFkZDk3MTQ4NWEiLCJ1c2VySWQiOiI2NjBiN2RiYzAyNTkwMDU4NmM3MzQwODQiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3MTQxMDU2NjksImV4cCI6MTc0NTY0MTY2OX0.q36or7-Pz560u624oJ2K2O1GJzo0mH6-Y3kzF8vwYMM';

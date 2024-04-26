@@ -51,7 +51,7 @@ export default {
         NOT_FOUND: {
             code: "AUCTION_NOT_FOUND",
             message: "Your auction is not in the system.",
-        },
+        }
     },
 
     ASSET: {

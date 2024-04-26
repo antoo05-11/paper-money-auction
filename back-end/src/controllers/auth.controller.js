@@ -103,7 +103,7 @@ export default class AuthController {
             this.#userAuthCodesCache.get(user.email)
         );
 
-        // Log the code for tesing
+        // Log the code for testing
         console.log(this.#userAuthCodesCache.get(user.email));
 
         return res.status(200).json({
