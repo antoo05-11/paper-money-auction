@@ -9,7 +9,7 @@ export default [
             // Create Auction
             {
                 httpMethod: "post",
-                path: "/auction/create",
+                path: "/auction",
                 method: "createAuction",
                 roles: [userRole.AUCTIONEER],
                 schema: auctionValidation.createAuction,

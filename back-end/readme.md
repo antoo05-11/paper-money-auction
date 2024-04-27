@@ -18,7 +18,7 @@ npm run start
 
 1. Login
 
-   Login step:
+    Login step:
 
     ```js
     POST /api/auth/login
@@ -32,7 +32,7 @@ npm run start
         }
     ```
 
-   Login verify step:
+    Login verify step:
 
     ```js
     POST /api/auth/login/authenticate
@@ -252,7 +252,6 @@ npm run start
             }
         }
     ```
-2. Get docs??
 
     ```js
     POST /api/auction/:id/docs
@@ -262,44 +261,4 @@ npm run start
 
     Form:
         Key: docs
-    ```
-2. Register auction.
-
-   ```js
-    POST /api/auction/:id/register
-
-    Header:
-        Authorization: "Bearer <customer's token>"
-
-    Response:
-       {
-           "data": {
-               "auction": "66239657cd6034add971485a",
-               "bidder": "6616c959dad79db7d9869274",
-               "alias": "Bidder 4",
-               "verified": false,
-               "_id": "662ccf3d3908fc015176fcdf",
-               "createdAt": "2024-04-27T10:11:09.481Z",
-               "updatedAt": "2024-04-27T10:11:09.481Z"
-           }
-        }
-    ```
-   
-4. Get auction token to join session.
-
-   ```js
-    GET /api/auction/:id/joinsession
-
-    Header:
-        Authorization: "Bearer <customer's token>"
-
-    Response:
-        {
-            "data": {
-                "token": "Bearer <token>",
-                "participation": {
-                    "alias": "Bidder 4"
-                }
-            }
-        }
     ```
