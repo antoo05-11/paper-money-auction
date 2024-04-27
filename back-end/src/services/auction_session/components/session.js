@@ -2,9 +2,6 @@ import {User} from "./user";
 import {utils} from "../../../utils/utils";
 import {Bidding} from "../../../models/bidding";
 import errorCode from "../../../constants/error.code";
-import schedule from "node-schedule";
-import {Auction} from "../../../models/auction";
-import mongoose from "mongoose";
 
 export class AuctionSession {
     #recentUsers = []; // [User]
@@ -34,25 +31,11 @@ export class AuctionSession {
                 createdAt: createdAt
             })
         }
-        console.log(this.#auction.auction_end);
-        const job = schedule.scheduleJob(this.#auction.auction_end, function (auctionId) {
-            console.log(auctionId);
-            Bidding.findOne({
-                auction: auctionId
-            }).sort('-createdAt').then((bidding) => {
-                Auction.findOneAndUpdate({_id: auction._id}, {
-                    winning_bidding: bidding._id
-                }).then((winningBidding) => {
-                    console.log(`Status: Auction ${this.#auction} is saved successfully.`)
-                });
-            });
-        }.bind(null, this.#auction._id.toString()));
     }
 
-    getSessionEndDate = () => {
-        return this.#auction.auction_end;
+    getRemainTime = () => {
+        return this.#auction.auction_end - Date.now();
     }
-
 
     isOnGoing = () => {
         return this.#auction.auction_start < Date.now() && this.#auction.auction_end > Date.now();

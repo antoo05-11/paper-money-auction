@@ -7,12 +7,35 @@ import {Auction} from "../models/auction";
 import {Participation} from "../models/participation";
 import mongoose from "mongoose";
 import {Bidding} from "../models/bidding";
-import schedule from "node-schedule";
+import cron from "node-cron";
+import NodeCache from "node-cache";
 
 let instance;
 
+// Schedule to finalize ended auctions every minute.
+cron.schedule('* * * * *', () => {
+    Auction.find({
+        auction_end: {$lte: new Date()},
+        winning_bidding: null
+    }).then((expiredAuctions) => {
+        for (const auction of expiredAuctions) {
+            Bidding.findOne({
+                auction: auction._id
+            }).sort('-price').then((highestBidding) => {
+                if (highestBidding) {
+                    Auction.findByIdAndUpdate(auction._id, {
+                        winning_bidding: highestBidding._id
+                    }).then(() => {
+                        console.log(`Auction ${auction._id} updated with winning bidding ${highestBidding._id}`);
+                    });
+                }
+            });
+        }
+    });
+});
+
 class SocketService extends Service {
-    #sessions = new Map(); // Map socketId _ AuctionSession.
+    #sessions = new NodeCache({stdTTL: 6 * 60 * 60, checkperiod: 120}); // Map socketId _ AuctionSession.
     #users = new Map(); // For tracking in_out only. Map socketId _ {sessionId, userId}.
 
     constructor() {
@@ -61,30 +84,38 @@ class SocketService extends Service {
         if (socketInfo) {
 
             const auction = await Auction.findById(new mongoose.Types.ObjectId(socketInfo.sessionId));
+
+            // Check valid auction status to start.
             if (!auction) {
                 socket.emit('start_session_response', errorCode.AUCTION.NOT_FOUND);
                 return;
             }
-            if (auction.auction_start > Date.now() + 5 * 60 * 1000) {
+            if (auction.auction_start - Date.now() > 5 * 60 * 1000) {
                 socket.emit('start_session_response', errorCode.AUCTION.NOT_TIME_YET);
                 return;
             }
+            if (auction.auction_end - Date.now() < 5 * 60 * 1000) {
+                socket.emit('start_session_response', errorCode.AUCTION.ENDED);
+                return;
+            }
+            if (this.#sessions.has(socketInfo.sessionId)) {
+                socket.emit('start_session_response', errorCode.AUCTION.STARTED);
+                return;
+            }
 
+            // Create new session auction in cache.
             const participations = await Participation.find({auction: auction._id});
             const biddings = await Bidding.find({auction: auction._id});
 
-            this.#sessions.set(socketInfo.sessionId, new AuctionSession(auction, participations, biddings));
+            this.#sessions.set(socketInfo.sessionId,
+                new AuctionSession(auction, participations, biddings),
+                (auction.auction_end - Date.now()) / 1000);
 
             const sessionStarted = this.#sessions.get(socketInfo.sessionId);
-
-            schedule.scheduleJob(sessionStarted.getSessionEndDate() + 1 * 60 * 1000, () => {
-                this.#sessions.delete(socketInfo.sessionId);
-                console.log(this.#sessions);
-            });
-
             if (biddings && biddings.length > 0) {
                 this.io.to(socketInfo.sessionId).emit("biddings_update", sessionStarted.getBiddings());
             }
+
             socket.emit('start_session_response', true);
         }
     };
