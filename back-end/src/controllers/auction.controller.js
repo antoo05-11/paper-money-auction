@@ -1,25 +1,27 @@
-import {HttpError} from "../utils/http.error";
+import { HttpError } from "../utils/http.error";
 import errorCode from "../constants/error.code";
-import {Auction} from "../models/auction";
-import {Asset} from "../models/asset";
-import {Participation} from "../models/participation";
+import { Auction } from "../models/auction";
+import { Asset } from "../models/asset";
+import { Participation } from "../models/participation";
 import auctionStatus from "../constants/auction.status";
 import _ from "lodash";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
 export default class AuctionController {
-    constructor() {
-    }
+    constructor() {}
 
     createAuction = async (req, res) => {
-        const {user} = req;
-        const {data} = req.body;
+        const { user } = req;
+        const { data } = req.body;
 
         const asset = await Asset.findById(data.asset);
         if (!asset)
-            throw new HttpError({...errorCode.ASSET.NOT_FOUND, status: 403});
+            throw new HttpError({ ...errorCode.ASSET.NOT_FOUND, status: 403 });
 
+        const uploadedDocs = _.map(req.files["docs"], "originalname"); // Replace this with real files url return from server
+
+        data.docs = uploadedDocs;
         data.auctioneer = user._id;
         data.status = auctionStatus.ONGOING;
         const auction = await Auction.create(data);
@@ -31,64 +33,41 @@ export default class AuctionController {
         });
     };
 
-    uploadDocs = async (req, res) => {
-        const {user} = req;
-        const {params} = req;
-
-        const auction = await Auction.findById(params.id);
-        if (!auction)
-            throw new HttpError({
-                ...errorCode.AUCTION.NOT_FOUND,
-                status: 403,
-            });
-        if (auction.auctioneer.toString() !== user._id.toString())
-            throw new HttpError({
-                ...errorCode.AUTH.ROLE_INVALID,
-                status: 403,
-            });
-
-        // TODO: Upload file to server and return files url
-        const uploadedDocs = _.map(req.files, "originalname"); // Replace this with real files url return from server
-
-        auction.docs = auction.docs.concat(uploadedDocs);
-        await auction.save();
-
-        const payload = auction;
-        res.status(200).json({
-            ok: true,
-            data: payload,
-        });
-    };
-
-    listAuction = async (req, res) => {
-    };
-    listRegisteredAuction = async (req, res) => {
-    };
-    listManagingAuction = async (req, res) => {
-    };
-    listOwnedAuction = async (req, res) => {
-    };
-    viewAuction = async (req, res) => {
-    };
+    listAuction = async (req, res) => {};
+    listRegisteredAuction = async (req, res) => {};
+    listManagingAuction = async (req, res) => {};
+    listOwnedAuction = async (req, res) => {};
+    viewAuction = async (req, res) => {};
 
     register = async (req, res) => {
         const user = req.user;
         const auctionID = req.params.id;
 
-        const auction = await Auction.findById(new mongoose.Types.ObjectId(auctionID));
+        const auction = await Auction.findById(
+            new mongoose.Types.ObjectId(auctionID)
+        );
         if (!auction)
-            throw new HttpError({...errorCode.AUCTION.NOT_FOUND, status: 400});
+            throw new HttpError({
+                ...errorCode.AUCTION.NOT_FOUND,
+                status: 400,
+            });
 
         // Check valid registration time.
-        if (auction.registration_open > Date.now() || auction.registration_close < Date.now()) {
-            throw new HttpError({...errorCode.AUCTION.NOT_IN_REGISTRATION_TIME, status: 400});
+        if (
+            auction.registration_open > Date.now() ||
+            auction.registration_close < Date.now()
+        ) {
+            throw new HttpError({
+                ...errorCode.AUCTION.NOT_IN_REGISTRATION_TIME,
+                status: 400,
+            });
         }
 
         // Check if user registered.
         let participation = await Participation.findOne({
             auction: auctionID,
-            bidder: user._id
-        })
+            bidder: user._id,
+        });
         if (participation) {
             throw new HttpError({
                 ...errorCode.AUCTION.REGISTERED,
@@ -97,7 +76,8 @@ export default class AuctionController {
         }
 
         // Create a new participation record.
-        let num = (await Participation.countDocuments({auction: auctionID})) + 1;
+        let num =
+            (await Participation.countDocuments({ auction: auctionID })) + 1;
         participation = {
             auction: auction._id,
             bidder: user._id,
@@ -106,7 +86,7 @@ export default class AuctionController {
         participation = await Participation.create(participation);
 
         return res.status(200).json({
-            data: participation
+            data: participation,
         });
     };
 
@@ -114,11 +94,19 @@ export default class AuctionController {
         const user = req.user;
         const auctionID = req.params.id;
 
-        const auction = await Auction.findById(new mongoose.Types.ObjectId(auctionID));
+        const auction = await Auction.findById(
+            new mongoose.Types.ObjectId(auctionID)
+        );
         if (!auction)
-            throw new HttpError({...errorCode.AUCTION.NOT_FOUND, status: 400});
+            throw new HttpError({
+                ...errorCode.AUCTION.NOT_FOUND,
+                status: 400,
+            });
 
-        const participation = await Participation.findOne({bidder: user._id, auction: auctionID})
+        const participation = await Participation.findOne({
+            bidder: user._id,
+            auction: auctionID,
+        });
         if (!participation) {
             throw new HttpError({
                 ...errorCode.AUCTION.NOT_REGISTERED_YET,
@@ -127,7 +115,7 @@ export default class AuctionController {
         }
 
         const token = jwt.sign(
-            {auctionID: auctionID, userID: user._id, role: user.role},
+            { auctionID: auctionID, userID: user._id, role: user.role },
             process.env.JWT_AUCTION_KEY,
             {
                 expiresIn: "1h",
@@ -146,12 +134,18 @@ export default class AuctionController {
     listBidders = async (req, res) => {
         const auctionID = req.params.id;
 
-        const auction = await Auction.findById(new mongoose.Types.ObjectId(auctionID));
-        if (!auction) throw new HttpError({...errorCode.AUCTION.NOT_FOUND, status: 400});
+        const auction = await Auction.findById(
+            new mongoose.Types.ObjectId(auctionID)
+        );
+        if (!auction)
+            throw new HttpError({
+                ...errorCode.AUCTION.NOT_FOUND,
+                status: 400,
+            });
 
-        const participations = await Participation.find({auction: auctionID})
+        const participations = await Participation.find({ auction: auctionID });
         return res.status(200).json({
-            data: participations
+            data: participations,
         });
     };
 
@@ -160,21 +154,30 @@ export default class AuctionController {
         const bidderId = req.params.bidderId || "";
         const user = req.user;
 
-        const auction = await Auction.findById(new mongoose.Types.ObjectId(auctionID));
-        if (!auction) throw new HttpError({...errorCode.AUCTION.NOT_FOUND, status: 400});
+        const auction = await Auction.findById(
+            new mongoose.Types.ObjectId(auctionID)
+        );
+        if (!auction)
+            throw new HttpError({
+                ...errorCode.AUCTION.NOT_FOUND,
+                status: 400,
+            });
         if (auction.auctioneer.toString() !== user._id.toString()) {
-            throw new HttpError({...errorCode.AUCTION.NOT_AUTHORIZED, status: 400});
+            throw new HttpError({
+                ...errorCode.AUCTION.NOT_AUTHORIZED,
+                status: 400,
+            });
         }
 
         const participation = await Participation.findOne({
             auction: auctionID,
-            bidder: bidderId
+            bidder: bidderId,
         });
         participation.verified = true;
         await participation.save();
 
         return res.status(200).json({
-            data: participation
+            data: participation,
         });
     };
 }
