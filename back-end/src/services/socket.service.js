@@ -9,6 +9,7 @@ import mongoose from "mongoose";
 import {Bidding} from "../models/bidding";
 import cron from "node-cron";
 import NodeCache from "node-cache";
+import userRole from "../constants/user.role";
 
 let instance;
 
@@ -53,17 +54,17 @@ class SocketService extends Service {
 
         this.io.on('connection', (socket) => {
 
-            socket.on('start_session', async (auctionToken) => this.#startSession(socket, auctionToken))
+            socket.on('start_session', async (auctionToken) => this.#startSession(socket, auctionToken, [userRole.AUCTIONEER]))
 
-            socket.on('join_session', (auctionToken) => this.#joinSession(socket, auctionToken));
+            socket.on('join_session', (auctionToken) => this.#joinSession(socket, auctionToken, [userRole.AUCTIONEER, userRole.CUSTOMER]));
+
+            socket.on('make_offer', (auctionToken, offer) => this.#makeOffer(socket, auctionToken, offer, [userRole.CUSTOMER]))
 
             socket.on('disconnect', () => this.#disconnect(socket));
-
-            socket.on('make_offer', (auctionToken, offer) => this.#makeOffer(socket, auctionToken, offer))
         });
     }
 
-    #authenticateSession = (socket, auctionToken) => {
+    #authSession = (socket, auctionToken, roles) => {
         const secretKey = process.env.JWT_AUCTION_KEY || "";
         try {
             const decoded = jwt.verify(auctionToken, secretKey);
@@ -71,6 +72,10 @@ class SocketService extends Service {
             delete decoded.exp
             // decode: {userId, sessionId, role}
             if (decoded.userId && decoded.sessionId && decoded.role) {
+                if (roles && !roles.includes(decoded.role)) {
+                    socket.emit('join_session_response', errorCode.AUCTION.INVALID_TOKEN);
+                    return null;
+                }
                 return decoded;
             } else return null;
         } catch (error) {
@@ -79,8 +84,8 @@ class SocketService extends Service {
         }
     };
 
-    #startSession = async (socket, auctionToken) => {
-        const socketInfo = this.#authenticateSession(socket, auctionToken);
+    #startSession = async (socket, auctionToken, roles) => {
+        const socketInfo = this.#authSession(socket, auctionToken, roles);
         if (socketInfo) {
 
             const auction = await Auction.findById(new mongoose.Types.ObjectId(socketInfo.sessionId));
@@ -120,14 +125,15 @@ class SocketService extends Service {
         }
     };
 
-    #joinSession = (socket, auctionToken) => {
+    #joinSession = (socket, auctionToken, roles) => {
         const socketId = socket.id;
 
-        const socketInfo = this.#authenticateSession(socket, auctionToken);
+        const socketInfo = this.#authSession(socket, auctionToken, roles);
 
         if (socketInfo) {
 
             if (!this.#sessions.has(socketInfo.sessionId)) {
+                socket.emit('join_session_response', errorCode.AUCTION.NOT_ON_GOING);
                 return; // Session starting is required.
             }
 
@@ -165,8 +171,8 @@ class SocketService extends Service {
         this.#users.delete(socket.id);
     };
 
-    #makeOffer = (socket, auctionToken, offer) => {
-        const socketInfo = this.#authenticateSession(socket, auctionToken);
+    #makeOffer = (socket, auctionToken, offer, roles) => {
+        const socketInfo = this.#authSession(socket, auctionToken, roles);
         if (!socketInfo) {
             socket.emit('make_offer_response', errorCode.AUCTION.INVALID_TOKEN);
             return;

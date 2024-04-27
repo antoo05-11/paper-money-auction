@@ -28,8 +28,8 @@ export default [
             },
             {
                 httpMethod: "get",
-                path: "auction/registerd",
-                method: "list_registerd_auction",
+                path: "auction/registered",
+                method: "list_registered_auction",
                 roles: [userRole.CUSTOMER],
             },
             {
@@ -51,7 +51,7 @@ export default [
             },
             {
                 httpMethod: "post",
-                path: "auction/:id/register",
+                path: "/auction/:id/register",
                 method: "register",
                 roles: [userRole.CUSTOMER],
             },
@@ -67,6 +67,12 @@ export default [
                 method: "verify_bidder",
                 roles: [userRole.AUCTIONEER],
             },
+            {
+                httpMethod: "get",
+                path: "/auction/:id/joinSession",
+                method: "joinSession",
+                roles: [userRole.AUCTIONEER, userRole.CUSTOMER],
+            }
         ],
     },
 ];

@@ -56,6 +56,20 @@ export default class AuthController {
         const {body} = req;
         const data = body.data;
 
+        // Checking user existence.
+        const user = await User.findOne({
+            email: data.email
+        });
+        if (!user)
+            throw new HttpError({...error.AUTH.USER_NOT_FOUND, status: 400});
+
+        // Check encrypted password matched with database.
+        if (!bcrypt.compareSync(data.password, user.password))
+            throw new HttpError({
+                ...error.AUTH.PASSWORD_INVALID,
+                status: 400,
+            });
+
         // Check authentic code match server data and remove in codes map.
         if (data.authenticCode !== this.#userAuthCodesCache.get(data.email)) {
             throw new HttpError({
@@ -64,13 +78,6 @@ export default class AuthController {
             });
         }
         this.#userAuthCodesCache.del(data.email);
-
-        // Checking user existence.
-        const user = await User.findOne({
-            email: data.email,
-        });
-        if (!user)
-            throw new HttpError({...error.AUTH.USER_NOT_FOUND, status: 400});
 
         // Generate a JWT token for user.
         const payload = {
