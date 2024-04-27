@@ -15,6 +15,7 @@ const auth = (roles) => async (req, res, next) => {
                         req.payload = payload;
                         const user = await User.findById(payload.id, {
                             email: 1,
+                            role: 1,
                             active: 1,
                         });
 

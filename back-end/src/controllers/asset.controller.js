@@ -1,7 +1,9 @@
 import { Asset } from "../models/asset";
+import { User } from "../models/user";
 import { HttpError } from "../utils/http.error";
 import errorCode from "../constants/error.code";
 import _ from "lodash";
+import userRole from "../constants/user.role";
 
 export default class AssetController {
     constructor() {}
@@ -92,16 +94,26 @@ export default class AssetController {
     };
 
     listAsset = async (req, res) => {
-        const { user } = req;
-        const { query } = req;
+        const { user, query } = req;
+        const { CUSTOMER, AUCTIONEER, ADMIN } = userRole;
 
-        const toSortFields = query.sort || null;
-
-        const filter = {
-            owner: user._id,
-        };
+        const filter = {};
         const regexFields = ["name", "description"];
         const queryFields = ["verified"];
+
+        if (user.role === CUSTOMER) {
+            filter.owner = user._id;
+        } else if (user.role === AUCTIONEER || user.role === ADMIN) {
+            if (query.owner)
+                filter.owner = { $in: await User.find({ email: query.owner }) };
+
+            if (user.role === AUCTIONEER) filter.auctioneer = user._id;
+            if (query.auctioneer && user.role === ADMIN)
+                filter.auctioneer = {
+                    $in: await User.find({ email: query.auctioneer }),
+                };
+        }
+
         Object.keys(query).forEach((key) => {
             if (regexFields.includes(key)) {
                 filter[key] = { $regex: query[key] };
@@ -110,25 +122,25 @@ export default class AssetController {
             }
         });
 
-        let totalAssets = await Asset.countDocuments(filter);
-        let page = parseInt(query.page) || 1;
-        let limit = parseInt(query.limit) || 10;
-        let skip = (page - 1) * limit;
-        let totalPages = Math.ceil(totalAssets / limit);
+        const totalAssets = await Asset.countDocuments(filter);
+        const page = parseInt(query.page) || 1;
+        const limit = parseInt(query.limit) || 10;
+        const skip = (page - 1) * limit;
+        const totalPages = Math.ceil(totalAssets / limit);
 
         const assets = await Asset.find(filter)
-            .sort(toSortFields)
+            .sort(query.sort)
             .skip(skip)
-            .limit(limit);
+            .limit(limit)
+            .populate({ path: "owner", select: "email" })
+            .populate({ path: "auctioneer", select: "email" });
 
         const payload = {
-            page: page,
-            totalPages: totalPages,
-            assets: assets,
+            page,
+            totalPages,
+            assets,
         };
-        res.status(200).json({
-            ok: true,
-            data: payload,
-        });
+
+        res.status(200).json({ ok: true, data: payload });
     };
 }

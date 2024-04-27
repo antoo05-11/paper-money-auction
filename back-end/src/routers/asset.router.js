@@ -38,7 +38,7 @@ export default [
                 httpMethod: "get",
                 path: "/asset",
                 method: "listAsset",
-                roles: [userRole.CUSTOMER],
+                roles: [userRole.CUSTOMER, userRole.AUCTIONEER, userRole.ADMIN],
             },
         ],
     },
