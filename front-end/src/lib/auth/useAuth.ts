@@ -1,19 +1,26 @@
+'use client';
 import { useEffect } from "react";
 import { useSessionUser } from "./useUser";
 import { useCookie } from "./useCookie";
 import { User } from "../constant/dataInterface";
 
 export const useAuth = () => {
-  // we can re export the user methods or object from this hook
   const { user, addUser, removeUser, setUser } = useSessionUser();
   const {setSessionCookie, getSessionCookie, removeSessionCookie} = useCookie();
 
-  useEffect(() => {
-    const user = getSessionCookie();
-    if (user) {
-      addUser(JSON.parse(user));
+  const refresh = () => {
+    let existingUser = null;
+    const getFromCookie = async () => (existingUser = getSessionCookie());
+    getFromCookie();
+
+    if (existingUser) {
+      try {
+        addUser((existingUser));
+      } catch (e) {
+        console.log(e);
+      }
     }
-  }, [addUser, getSessionCookie]);
+  };
 
   const login = (user: User) => {
     addUser(user);
@@ -23,5 +30,5 @@ export const useAuth = () => {
     removeUser();
   };
 
-  return { user, login, logout, setUser };
+  return { user, login, logout, setUser, refresh };
 };

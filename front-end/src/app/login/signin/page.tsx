@@ -64,33 +64,17 @@ export default function LoginForm() {
 
   async function onSubmit(values: formData) {
     setAuthData(values);
-    const res = {
-      "data": {
-          "token": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2Mjg4NzE2Yjg0MjA0MmU4YjQ4ZmFiNiIsIm5hbWUiOiJiYWNoIiwicm9sZSI6ImN1c3RvbWVyIiwiaWF0IjoxNzE0MTU0MjQyLCJleHAiOjE3MTQyNDA2NDJ9.yRHaiTkElU0vqTPj5GdwXFgGdAyXSrQzgeS8HyNBfjY",
-          "user": {
-              "id": "66288716b842042e8b48fab6",
-              "name": "bach",
-              "role": "customer"
-          }
+    await loginUser(values).then((res: any) => {
+      if (res.status == HTTP_STATUS.OK) {
+          setVerify(true);
       }
-  };
-    const { data: { token, user: { id, name, role } } } = res;
-    const session = {token, id, name, role};
-    // console.log(typeof session);
-    login(session);
-    router.push('/me');
-    // await loginUser(values).then((res: any) => {
-    //   if (res.status == HTTP_STATUS.OK) {
-    //       setVerify(true);
-    //   }
-    // })
+    })
   }
   async function submit2FACode(value: string) {
     await login2FA({...authData, authenticCode: value}).then((res: any) => {
       if (res.status == HTTP_STATUS.OK) {
-        console.log(res.data.data);
-        const session = [res.data.data.token, ...res.data.data.user];
-        console.log(session);
+        const { data: { token, user: { id, name, role } } } = res.data;
+        const session = {token, id, name, role};
         login(session);
         router.push('/me');
       }

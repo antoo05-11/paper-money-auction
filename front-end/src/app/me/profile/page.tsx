@@ -69,7 +69,6 @@ export default function Page() {
 
   const [profileData, setProfileData] = useState(null);
   const auth = useAuth();
-  console.log(auth.user);
 
   useEffect(() => {
     let ignore = false;

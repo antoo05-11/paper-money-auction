@@ -1,4 +1,3 @@
-"use client";
 import { Lexend } from "next/font/google";
 import "./globals.css";
 import PageHeader from "./component/page-header";
@@ -7,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth/useAuth";
 import { AuthContext } from "@/lib/auth/AuthContext";
+import { CookiesProviders } from "@/lib/auth/cookiesProvider";
 
 const lexend = Lexend({ subsets: ["latin"] });
 
@@ -15,17 +15,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { user, login, logout, setUser } = useAuth();
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
       <html lang="en">
         <body className={lexend.className}>
           {/* <PageHeader /> */}
+          <CookiesProviders>
           {children}
           {/* <PageFooter /> */}
+          </CookiesProviders>
         </body>
         <Toaster />
       </html>
-    </AuthContext.Provider>
   );
 }

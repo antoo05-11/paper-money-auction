@@ -1,5 +1,7 @@
-import Cookies from 'js-cookie';
+// import Cookies from 'js-cookie';
+import { useCookies } from 'next-client-cookies';
 export const useCookie = () => {
+    const Cookies = useCookies();
     const setSessionCookie = (session: any): void => {
         Cookies.set('user', JSON.stringify(session), { expires: 1});
     };
