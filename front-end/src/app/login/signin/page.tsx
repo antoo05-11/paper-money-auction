@@ -23,11 +23,11 @@ import { REGEXP_ONLY_DIGITS } from "input-otp"
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import Link from "next/link";
-import { login, login2FA } from "@/app/api/apiEndpoints";
+import { loginUser, login2FA } from "@/app/api/apiEndpoints";
 import { HTTP_STATUS } from "@/lib/constant/constant";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { setSessionCookie } from "@/lib/auth/session";
+import { useAuth } from "@/lib/auth/useAuth";
 const formSchema = z.object({
   email: z.string().min(2, {
     message: "Email must be at least 2 characters.",
@@ -44,6 +44,8 @@ export default function LoginForm() {
       password: "",
     },
   });
+
+  const { login } = useAuth();
   const router = useRouter();
 
   const [verifyState, setVerify] = useState(false);
@@ -62,7 +64,7 @@ export default function LoginForm() {
 
   async function onSubmit(values: formData) {
     setAuthData(values);
-    await login(values).then((res: any) => {
+    await loginUser(values).then((res: any) => {
       if (res.status == HTTP_STATUS.OK) {
           setVerify(true);
       }
@@ -71,7 +73,9 @@ export default function LoginForm() {
   async function submit2FACode(value: string) {
     await login2FA({...authData, authenticCode: value}).then((res: any) => {
       if (res.status == HTTP_STATUS.OK) {
-        setSessionCookie(res.data.data);
+        const { data: { token, user: { id, name, role } } } = res.data;
+        const session = {token, id, name, role};
+        login(session);
         router.push('/me');
       }
     });
