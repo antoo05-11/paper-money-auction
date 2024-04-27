@@ -28,10 +28,11 @@ export default class UserController {
         });
     };
 
-    createStaff = async (req, res) => {
+    createAuctioneer = async (req, res) => {
         const { body } = req;
         const { data } = body;
 
+        data.role = userRole.AUCTIONEER;
         // Generate email
         const year = new Date().getFullYear() % 100;
         const num_of_staff = (

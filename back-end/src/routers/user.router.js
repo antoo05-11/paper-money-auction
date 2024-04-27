@@ -8,16 +8,16 @@ export default [
         methods: [
             {
                 httpMethod: "post",
-                path: "/user/create/customer",
+                path: "/user/customer",
                 method: "createCustomer",
                 schema: userValidation.createCustomer,
             },
             {
                 httpMethod: "post",
-                path: "/user/create/staff",
-                method: "createStaff",
+                path: "/user/auctioneer",
+                method: "createAuctioneer",
                 roles: [userRole.ADMIN],
-                schema: userValidation.createStaff,
+                schema: userValidation.createAuctioneer,
             },
             {
                 httpMethod: "get",
@@ -41,14 +41,14 @@ export default [
             },
             {
                 httpMethod: "put",
-                path: "/user/payment",
+                path: "/user/payment-method",
                 method: "updatePaymentMethod",
                 roles: [userRole.CUSTOMER],
                 schema: userValidation.updatePayment,
             },
             {
                 httpMethod: "get",
-                path: "/user/payment",
+                path: "/user/payment-method",
                 method: "viewPaymentMethod",
                 roles: [userRole.CUSTOMER],
             },
