@@ -12,16 +12,17 @@ export default function (router, apis) {
             const path = e.path;
             const method = e.method;
             const roles = e.roles;
+            const verified = e.verified;
             const schema = e.schema;
             const files = e.files;
 
             const middlewares = [];
             if (!_.isEmpty(roles)) {
-                middlewares.push(auth(roles));
+                middlewares.push(auth(roles, verified));
             }
 
             if (!_.isEmpty(files)) {
-                middlewares.push(upload.array(files));
+                middlewares.push(upload.fields(files));
             }
 
             if (!_.isEmpty(schema)) {

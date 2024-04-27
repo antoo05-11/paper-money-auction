@@ -9,10 +9,15 @@ export default [
             // Create Asset
             {
                 httpMethod: "post",
-                path: "/asset/create",
+                path: "/asset",
                 method: "createAsset",
                 roles: [userRole.CUSTOMER],
+                verified: true, 
                 schema: assetValidation.createAsset,
+                files: [
+                    { name: "pics", maxCount: 3 },
+                    { name: "docs", maxCount: 3 },
+                ],
             },
             {
                 httpMethod: "post",
