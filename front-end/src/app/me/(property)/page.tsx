@@ -1,8 +1,8 @@
-'use client';
+"use client";
 import { Button } from "@/components/ui/button";
 
 import { Input } from "@/components/ui/input";
-import { Upload, UserPlus } from 'lucide-react';
+import { Upload, UserPlus } from "lucide-react";
 import MyPropertyTable from "./_component/MyPropertyTable";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import PropertyForm from "./_component/PropertyForm";
