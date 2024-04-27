@@ -80,7 +80,7 @@ export default class AuctionController {
             throw new HttpError({...errorCode.AUCTION.NOT_FOUND, status: 400});
 
         // Check valid registration time.
-        if(auction.registration_open > Date.now() || auction.registration_close < Date.now()) {
+        if (auction.registration_open > Date.now() || auction.registration_close < Date.now()) {
             throw new HttpError({...errorCode.AUCTION.NOT_IN_REGISTRATION_TIME, status: 400});
         }
 
@@ -108,7 +108,7 @@ export default class AuctionController {
         return res.status(200).json({
             data: participation
         });
-    }
+    };
 
     joinSession = async (req, res) => {
         const user = req.user;
@@ -143,10 +143,38 @@ export default class AuctionController {
         });
     };
 
-    list_bidder = async (req, res) => {
+    listBidders = async (req, res) => {
+        const auctionID = req.params.id;
 
+        const auction = await Auction.findById(new mongoose.Types.ObjectId(auctionID));
+        if (!auction) throw new HttpError({...errorCode.AUCTION.NOT_FOUND, status: 400});
+
+        const participations = await Participation.find({auction: auctionID})
+        return res.status(200).json({
+            data: participations
+        });
     };
-    verify_bidder = async (req, res) => {
 
+    verifyBidder = async (req, res) => {
+        const auctionID = req.params.id || "";
+        const bidderId = req.params.bidderId || "";
+        const user = req.user;
+
+        const auction = await Auction.findById(new mongoose.Types.ObjectId(auctionID));
+        if (!auction) throw new HttpError({...errorCode.AUCTION.NOT_FOUND, status: 400});
+        if (auction.auctioneer.toString() !== user._id.toString()) {
+            throw new HttpError({...errorCode.AUCTION.NOT_AUTHORIZED, status: 400});
+        }
+
+        const participation = await Participation.findOne({
+            auction: auctionID,
+            bidder: bidderId
+        });
+        participation.verified = true;
+        await participation.save();
+
+        return res.status(200).json({
+            data: participation
+        });
     };
 }

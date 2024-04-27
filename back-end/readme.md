@@ -252,6 +252,7 @@ npm run start
             }
         }
     ```
+2. Get docs??
 
     ```js
     POST /api/auction/:id/docs
@@ -262,3 +263,96 @@ npm run start
     Form:
         Key: docs
     ```
+2. Register auction.
+
+   ```js
+    POST /api/auction/:id/register
+
+    Header:
+        Authorization: "Bearer <customer's token>"
+
+    Response:
+       {
+           "data": {
+               "auction": "66239657cd6034add971485a",
+               "bidder": "6616c959dad79db7d9869274",
+               "alias": "Bidder 4",
+               "verified": false,
+               "_id": "662ccf3d3908fc015176fcdf",
+               "createdAt": "2024-04-27T10:11:09.481Z",
+               "updatedAt": "2024-04-27T10:11:09.481Z"
+           }
+        }
+    ```
+   
+4. Get auction token to join session.
+
+   ```js
+    GET /api/auction/:id/joinsession
+
+    Header:
+        Authorization: "Bearer <customer's token>"
+
+    Response:
+        {
+            "data": {
+                "token": "Bearer <token>",
+                "participation": {
+                    "alias": "Bidder 4"
+                }
+            }
+        }
+    ```
+5. View bidder list. (For auctioneer)
+
+   ```json
+   GET /api/auction/:id/bidders
+
+   Header:
+        Authorization: "Bearer <auctioneer's token>"
+    
+   Response:
+   {
+    "data": [
+        {
+            "_id": "662b3334b406b4c3877fe818",
+            "auction": "66239657cd6034add971485a",
+            "bidder": "6616c9d2cf9e137488558187",
+            "alias": "kitcat",
+            "verified": true,
+            "createdAt": "2024-04-26T04:53:08.675Z",
+            "updatedAt": "2024-04-26T04:53:08.675Z"
+        },
+        {
+            "_id": "662b33862460a912c170dcbf",
+            "auction": "66239657cd6034add971485a",
+            "bidder": "660b7dbc025900586c734084",
+            "alias": "lion",
+            "verified": true,
+            "createdAt": "2024-04-26T04:54:30.258Z",
+            "updatedAt": "2024-04-26T04:54:30.258Z"
+        }
+    ]
+   }
+   ```
+   
+6. Verify auction bidder. (For auctioneer)
+ ```json
+  GET /api/auction/:id/verifyBidder/:bidderId
+
+  Header:
+        Authorization: "Bearer <auctioneer's token>"
+   
+  Response:
+    {
+       "data": {
+           "_id": "662cd08398b97a1cb079020e",
+           "auction": "66239657cd6034add971485a",
+           "bidder": "6616c959dad79db7d9869274",
+           "alias": "Bidder 4",
+           "verified": true,
+           "createdAt": "2024-04-27T10:16:35.405Z",
+           "updatedAt": "2024-04-27T11:24:02.717Z"
+       }
+    }
+   ```

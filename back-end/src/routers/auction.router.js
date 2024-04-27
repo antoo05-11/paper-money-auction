@@ -6,13 +6,12 @@ export default [
     {
         controller: AuctionController,
         methods: [
-            // Create Auction
             {
                 httpMethod: "post",
                 path: "/auction",
                 method: "createAuction",
                 roles: [userRole.AUCTIONEER],
-                schema: auctionValidation.createAuction,
+                schema: auctionValidation.createAuction
             },
             {
                 httpMethod: "post",
@@ -23,25 +22,25 @@ export default [
             },
             {
                 httpMethod: "get",
-                path: "auction",
-                method: "list_auction",
+                path: "/auction",
+                method: "listAuction",
             },
             {
                 httpMethod: "get",
-                path: "auction/registered",
-                method: "list_registered_auction",
+                path: "/auction/registered",
+                method: "listRegisteredAuction",
                 roles: [userRole.CUSTOMER],
             },
             {
                 httpMethod: "get",
-                path: "auction/managing",
-                method: "list_managing_auction",
+                path: "/auction/managing",
+                method: "listManagingAuction",
                 roles: [userRole.AUCTIONEER],
             },
             {
                 httpMethod: "get",
-                path: "auction/owned",
-                method: "list_owned_auction",
+                path: "/auction/owned",
+                method: "listOwnedAuction",
                 roles: [userRole.CUSTOMER],
             },
             {
@@ -57,14 +56,14 @@ export default [
             },
             {
                 httpMethod: "get",
-                path: "auction/:id/bidder",
-                method: "list_bidder",
+                path: "/auction/:id/bidders",
+                method: "listBidders",
                 roles: [userRole.AUCTIONEER],
             },
             {
                 httpMethod: "put",
-                path: "auction/:id/bidder",
-                method: "verify_bidder",
+                path: "/auction/:id/verifyBidder/:bidderId",
+                method: "verifyBidder",
                 roles: [userRole.AUCTIONEER],
             },
             {
