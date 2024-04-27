@@ -52,6 +52,18 @@ export default {
             code: "AUCTION_NOT_FOUND",
             message: "Your auction is not in the system.",
         },
+        NOT_REGISTERED_YET: {
+            code: "NOT_REGISTERED_YET",
+            message: "You must register the auction first."
+        },
+        REGISTERED: {
+            code: "REGISTERED",
+            message: "You have registered the auction."
+        },
+        NOT_IN_REGISTRATION_TIME: {
+            code: "NOT_IN_REGISTRATION_TIME",
+            message: "This is not registration time."
+        },
         NOT_TIME_YET: {
             code: "NOT_TIME_YET",
             message: "Your auction cannot be opened now.",
@@ -67,6 +79,10 @@ export default {
         ENDED: {
             code: "AUCTION_ENDED",
             message: "Your auction has ended.",
+        },
+        NOT_AUTHORIZED: {
+            code: "NOT_AUTHORIZED",
+            message: "You are not authorized to do this action to the auction."
         },
         BIDDING: {
             TOO_QUICK: {
