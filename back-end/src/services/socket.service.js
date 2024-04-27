@@ -4,7 +4,6 @@ import errorCode from "../constants/error.code";
 import {Server} from 'socket.io';
 import {Service} from "./service";
 import {Auction} from "../models/auction";
-import {Participation} from "../models/participation";
 import mongoose from "mongoose";
 import {Bidding} from "../models/bidding";
 import cron from "node-cron";
@@ -34,6 +33,7 @@ cron.schedule('* * * * *', () => {
         }
     });
 });
+
 
 class SocketService extends Service {
     #sessions = new NodeCache({stdTTL: 6 * 60 * 60, checkperiod: 120}); // Map socketId _ AuctionSession.
@@ -85,102 +85,121 @@ class SocketService extends Service {
     };
 
     #startSession = async (socket, auctionToken, roles) => {
-        const socketInfo = this.#authSession(socket, auctionToken, roles);
-        if (socketInfo) {
+        try {
+            const socketInfo = this.#authSession(socket, auctionToken, roles);
+            if (socketInfo) {
 
-            const auction = await Auction.findById(new mongoose.Types.ObjectId(socketInfo.sessionId));
+                const auction = await Auction.findById(socketInfo.sessionId);
 
-            // Check valid auction status to start.
-            if (!auction) {
-                socket.emit('start_session_response', errorCode.AUCTION.NOT_FOUND);
-                return;
+                // Check valid auction status to start.
+                if (!auction) {
+                    socket.emit('start_session_response', errorCode.AUCTION.NOT_FOUND);
+                    return;
+                }
+                if (auction.auction_start - Date.now() > 5 * 60 * 1000) {
+                    socket.emit('start_session_response', errorCode.AUCTION.NOT_TIME_YET);
+                    return;
+                }
+                if (auction.auction_end - Date.now() < 5 * 60 * 1000) {
+                    socket.emit('start_session_response', errorCode.AUCTION.ENDED);
+                    return;
+                }
+                if (this.#sessions.has(socketInfo.sessionId)) {
+                    socket.emit('start_session_response', errorCode.AUCTION.STARTED);
+                    return;
+                }
+
+                // Create new session auction in cache.
+                this.#sessions.set(socketInfo.sessionId,
+                    await new AuctionSession(auction).init(),
+                    (auction.auction_end - Date.now()) / 1000);
+                // Distribute biddings info to clients if exists.
+                const biddings = this.#sessions.get(socketInfo.sessionId).getBiddings(socketInfo.role);
+                if (biddings && biddings.length > 0) {
+                    this.io.to(socketInfo.sessionId).emit("biddings_update", biddings);
+                }
+
+                socket.emit('start_session_response', true);
             }
-            if (auction.auction_start - Date.now() > 5 * 60 * 1000) {
-                socket.emit('start_session_response', errorCode.AUCTION.NOT_TIME_YET);
-                return;
-            }
-            if (auction.auction_end - Date.now() < 5 * 60 * 1000) {
-                socket.emit('start_session_response', errorCode.AUCTION.ENDED);
-                return;
-            }
-            if (this.#sessions.has(socketInfo.sessionId)) {
-                socket.emit('start_session_response', errorCode.AUCTION.STARTED);
-                return;
-            }
-
-            // Create new session auction in cache.
-            const participations = await Participation.find({auction: auction._id});
-            const biddings = await Bidding.find({auction: auction._id});
-
-            this.#sessions.set(socketInfo.sessionId,
-                new AuctionSession(auction, participations, biddings),
-                (auction.auction_end - Date.now()) / 1000);
-
-            const sessionStarted = this.#sessions.get(socketInfo.sessionId);
-            if (biddings && biddings.length > 0) {
-                this.io.to(socketInfo.sessionId).emit("biddings_update", sessionStarted.getBiddings());
-            }
-
-            socket.emit('start_session_response', true);
+        } catch (e) {
+            console.log("Socket error: " + e.message);
+            socket.emit("socket_error", true);
         }
     };
 
     #joinSession = (socket, auctionToken, roles) => {
-        const socketId = socket.id;
+        try {
+            const socketId = socket.id;
 
-        const socketInfo = this.#authSession(socket, auctionToken, roles);
+            const socketInfo = this.#authSession(socket, auctionToken, roles);
 
-        if (socketInfo) {
+            if (socketInfo) {
 
-            if (!this.#sessions.has(socketInfo.sessionId)) {
-                socket.emit('join_session_response', errorCode.AUCTION.NOT_ON_GOING);
-                return; // Session starting is required.
+                if (!this.#sessions.has(socketInfo.sessionId)) {
+                    socket.emit('join_session_response', errorCode.AUCTION.NOT_ON_GOING);
+                    return; // Session starting is required.
+                }
+
+                const session = this.#sessions.get(socketInfo.sessionId);
+
+                if (!session.isOnGoing()) {
+                    socket.emit('join_session_response', errorCode.AUCTION.NOT_ON_GOING);
+                    return;
+                }
+
+                if (session) {
+                    let userSessions = this.#users.get(socketId) || new Set();
+                    userSessions.add(socketInfo);
+                    this.#users.set(socketId, userSessions);
+                    session.addUser(socketInfo.userId);
+                    socket.join(socketInfo.sessionId);
+                    this.io.to(socketInfo.sessionId).emit('join_session_response', true);
+                    this.io.to(socketInfo.sessionId).emit('attendees_update', JSON.stringify(session.getRecentUsers()));
+                    socket.emit('biddings_update', session.getBiddings(socketInfo.role));
+                }
+                console.log(session.toString());
             }
-
-            const session = this.#sessions.get(socketInfo.sessionId);
-
-            if (!session.isOnGoing()) {
-                socket.emit('join_session_response', errorCode.AUCTION.NOT_ON_GOING);
-                return;
-            }
-
-            if (session) {
-                let userSessions = this.#users.get(socketId) || new Set();
-                userSessions.add(socketInfo);
-                this.#users.set(socketId, userSessions);
-                session.addUser(socketInfo.userId);
-                socket.join(socketInfo.sessionId);
-                this.io.to(socketInfo.sessionId).emit('join_session_response', true);
-                this.io.to(socketInfo.sessionId).emit('attendees_update', JSON.stringify(session.getSessionBriefInfo()));
-            }
-            console.log(session.toString());
+        } catch (e) {
+            console.log("Socket error: " + e.message);
+            socket.emit("socket_error", true);
         }
     };
 
     #disconnect = (socket) => {
-        console.log(`User ${socket.id} left session.`);
-        const user = this.#users.get(socket.id);
-        if (!user) return;
-        for (const each of user) {
-            const session = this.#sessions.get(each.sessionId);
-            session.removeUser(each.userId);
-            console.log(this.#sessions.get(each.sessionId).toString());
-            this.io.to(each.sessionId).emit('attendees_update', JSON.stringify(session.getSessionBriefInfo()));
-        }
+        try {
+            console.log(`User ${socket.id} left session.`);
+            const user = this.#users.get(socket.id);
+            if (!user) return;
+            for (const each of user) {
+                const session = this.#sessions.get(each.sessionId);
+                session.removeUser(each.userId);
+                console.log(this.#sessions.get(each.sessionId).toString());
+                this.io.to(each.sessionId).emit('attendees_update', JSON.stringify(session.getRecentUsers()));
+            }
 
-        this.#users.delete(socket.id);
+            this.#users.delete(socket.id);
+
+        } catch (e) {
+            console.log("Socket error: " + e.message);
+            socket.emit("socket_error", true);
+        }
     };
 
     #makeOffer = (socket, auctionToken, offer, roles) => {
-        const socketInfo = this.#authSession(socket, auctionToken, roles);
-        if (!socketInfo) {
-            socket.emit('make_offer_response', errorCode.AUCTION.INVALID_TOKEN);
-            return;
+        try {
+            const socketInfo = this.#authSession(socket, auctionToken, roles);
+            if (!socketInfo) {
+                socket.emit('make_offer_response', errorCode.AUCTION.INVALID_TOKEN);
+                return;
+            }
+            const session = this.#sessions.get(socketInfo.sessionId)
+            const makeOfferResponse = session.makeOffer(socketInfo.userId, offer);
+            if (makeOfferResponse !== true) socket.emit("make_offer_response", makeOfferResponse);
+            else this.io.to(socketInfo.sessionId).emit("biddings_update", session.getBiddings(socketInfo.role));
+        } catch (e) {
+            console.log("Socket error: " + e.message);
+            socket.emit("socket_error", true);
         }
-        const session = this.#sessions.get(socketInfo.sessionId)
-        const makeOfferResponse = session.makeOffer(socketInfo.userId, offer);
-        if (makeOfferResponse !== true) socket.emit("make_offer_response", makeOfferResponse);
-        else this.io.to(socketInfo.sessionId).emit("biddings_update", session.getBiddings());
     };
 }
 

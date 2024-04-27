@@ -2,25 +2,32 @@ import {User} from "./user";
 import {utils} from "../../../utils/utils";
 import {Bidding} from "../../../models/bidding";
 import errorCode from "../../../constants/error.code";
+import {Participation} from "../../../models/participation";
 
 export class AuctionSession {
     #recentUsers = []; // [User]
-    #users = new Map(); // [User]
+    #users = new Map(); // [ORM User]
     #biddings = []; // [{User, offer, createdAt}]
     #auction; // ORM Auction.
 
     static MAX_RECENT_USER = 20;
     static TIME_INTERVAL_BETWEEN_2_BIDDINGS = 2 * 60 * 1000;
 
-    constructor(auction, participations, biddings) {
-        console.assert(auction && participations && biddings, "All inputs is required.");
+    constructor(auction) {
         this.#auction = auction;
+        this.#biddings = [];
+    }
+
+    init = async () => {
+        const auctionId = this.#auction._id.toString();
+
+        const participations = await Participation.find({auction: auctionId})
+            .populate('bidder', 'name ssid phone');
         for (const participation of participations) {
-            this.#users.set(participation.bidder.toString(), new User({
-                userId: participation.bidder.toString(),
-                alias: participation.alias
-            }));
+            this.#users.set(participation.bidder._id.toString(), new User(participation.bidder, participation.alias));
         }
+
+        const biddings = await Bidding.find({auction: auctionId});
         for (const bidding of biddings) {
             const userId = bidding.bidder.toString();
             const offer = bidding.price;
@@ -31,21 +38,18 @@ export class AuctionSession {
                 createdAt: createdAt
             })
         }
-    }
-
-    getRemainTime = () => {
-        return this.#auction.auction_end - Date.now();
+        return this;
     }
 
     isOnGoing = () => {
         return this.#auction.auction_start < Date.now() && this.#auction.auction_end > Date.now();
     }
 
-    toString() {
+    toString = () => {
         return `Session(sessionId = ${this.#auction._id}, recentUsers = ${this.#recentUsers})`
     }
 
-    makeOffer(userId, offer) {
+    makeOffer = (userId, offer) => {
         const user = this.#users.get(userId);
 
         // Get latest offer.
@@ -72,9 +76,8 @@ export class AuctionSession {
         } else return errorCode.AUCTION.BIDDING.NOT_BIG_ENOUGH;
     }
 
-    addUser(userId) {
+    addUser = (userId) => {
         const user = this.#users.get(userId);
-        console.log(user)
         user.joinSession();
         if (!this.#recentUsers.includes(user)) {
             if (this.#recentUsers.length === AuctionSession.MAX_RECENT_USER)
@@ -83,21 +86,25 @@ export class AuctionSession {
         }
     }
 
-    removeUser(userId) {
+    removeUser = (userId) => {
         const user = this.#users.get(userId);
         const pos = this.#recentUsers.indexOf(user);
         if (pos > -1) this.#recentUsers.splice(pos, 1);
         user.leaveSession();
     }
 
-    getSessionBriefInfo() {
-        return this.#recentUsers;
+    getRecentUsers = (role) => {
+        const recentUser = [];
+        for (const user of this.#recentUsers) {
+            recentUser.push(user.getJSON(role));
+        }
+        return recentUser;
     }
 
-    getBiddings() {
+    getBiddings = (role) => {
         const biddings = [];
         for (const bidding of this.#biddings) {
-            biddings.push({alias: bidding.user.alias, price: bidding.offer, createdAt: bidding.create});
+            biddings.push({user: bidding.user.getJSON(role), price: bidding.offer, createdAt: bidding.create});
         }
         return biddings;
     }

@@ -31,5 +31,9 @@ socket.on('start_session_response', (message) => {
     }
 })
 
+socket.on('biddings_update', (message) => {
+    console.log(message);
+});
+
 
 const sampleAuctionToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZXNzaW9uSWQiOiI2NjIzOTY1N2NkNjAzNGFkZDk3MTQ4NWEiLCJ1c2VySWQiOiI2NjBiODFjYzM1NjZjMzA3ZGE0NGY0NTgiLCJyb2xlIjoiYXVjdGlvbmVlciIsImlhdCI6MTcxNDEyNzg1MiwiZXhwIjoxNzQ1NjYzODUyfQ.cr2MISLT8WYJHUre3hSbRPlSd_sB5ggjMo-YlztAvCQ';
