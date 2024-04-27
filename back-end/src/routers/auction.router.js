@@ -11,14 +11,8 @@ export default [
                 path: "/auction",
                 method: "createAuction",
                 roles: [userRole.AUCTIONEER],
-                schema: auctionValidation.createAuction
-            },
-            {
-                httpMethod: "post",
-                path: "/auction/:id/docs",
-                method: "uploadDocs",
-                roles: [userRole.AUCTIONEER],
-                files: "docs",
+                schema: auctionValidation.createAuction,
+                files: [{ name: "docs", maxCount: 3 }],
             },
             {
                 httpMethod: "get",
@@ -71,7 +65,7 @@ export default [
                 path: "/auction/:id/joinSession",
                 method: "joinSession",
                 roles: [userRole.AUCTIONEER, userRole.CUSTOMER],
-            }
+            },
         ],
     },
 ];

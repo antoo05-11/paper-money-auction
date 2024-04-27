@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/user";
 import error from "../constants/error.code";
 
-const auth = (roles) => async (req, res, next) => {
+const auth = (roles, verified) => async (req, res, next) => {
     const authorization = req.headers.authorization;
 
     if (authorization && authorization.startsWith("Bearer ")) {
@@ -17,6 +17,7 @@ const auth = (roles) => async (req, res, next) => {
                             email: 1,
                             role: 1,
                             active: 1,
+                            verified: 1,
                         });
 
                         if (
@@ -35,6 +36,12 @@ const auth = (roles) => async (req, res, next) => {
                         if (!user || !user.active) {
                             res.status(403).json({
                                 ...error.AUTH.USER_DELETED,
+                            });
+                        }
+
+                        if (verified && !user.verified) {
+                            res.status(403).json({
+                                ...error.USER.NOT_VERIFIED,
                             });
                         }
 
