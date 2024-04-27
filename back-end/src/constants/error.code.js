@@ -54,15 +54,15 @@ export default {
         },
         NOT_REGISTERED_YET: {
             code: "NOT_REGISTERED_YET",
-            message: "You must register the auction first."
+            message: "You must register the auction first.",
         },
         REGISTERED: {
             code: "REGISTERED",
-            message: "You have registered the auction."
+            message: "You have registered the auction.",
         },
         NOT_IN_REGISTRATION_TIME: {
             code: "NOT_IN_REGISTRATION_TIME",
-            message: "This is not registration time."
+            message: "This is not registration time.",
         },
         NOT_TIME_YET: {
             code: "NOT_TIME_YET",
@@ -82,7 +82,7 @@ export default {
         },
         NOT_AUTHORIZED: {
             code: "NOT_AUTHORIZED",
-            message: "You are not authorized to do this action to the auction."
+            message: "You are not authorized to do this action to the auction.",
         },
         BIDDING: {
             TOO_QUICK: {
@@ -107,6 +107,10 @@ export default {
         NOT_VERIFIED: {
             code: "USER_NOT_VERIFIED",
             message: "Your account must be verified for this action.",
+        },
+        AUCTIONEER_NOT_FOUND: {
+            code: "AUCTIONEER_NOT_FOUND",
+            message: "Your auctioneer is not in the system.",
         },
     },
 

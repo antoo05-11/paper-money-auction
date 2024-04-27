@@ -31,10 +31,12 @@ export default class AssetController {
         const { user } = req;
         const { params } = req;
 
-        const asset = await Asset.findById(params.id);
+        const asset = await Asset.findById(params.id)
+            .populate({ path: "owner", select: "email" })
+            .populate({ path: "auctioneer", select: "email" });
         if (!asset)
             throw new HttpError({ ...errorCode.ASSET.NOT_FOUND, status: 403 });
-        if (asset.owner.toString() != user._id.toString())
+        if (asset.owner._id.toString() != user._id.toString())
             throw new HttpError({
                 ...errorCode.AUTH.ROLE_INVALID,
                 status: 403,
@@ -96,5 +98,31 @@ export default class AssetController {
         };
 
         res.status(200).json({ ok: true, data: payload });
+    };
+
+    verifyAsset = async (req, res) => {
+        const { params } = req;
+        const { data } = req.body;
+
+        const auctioneer = await User.findById(data.auctioneer);
+        if (!auctioneer)
+            throw new HttpError({
+                ...errorCode.USER.AUCTIONEER_NOT_FOUND,
+                status: 403,
+            });
+
+        const asset = await Asset.findByIdAndUpdate(params.id, data, {
+            new: true,
+        })
+            .populate({ path: "owner", select: "email" })
+            .populate({ path: "auctioneer", select: "email" });
+        if (!asset)
+            throw new HttpError({ ...errorCode.ASSET.NOT_FOUND, status: 403 });
+
+        const payload = asset;
+        res.status(200).json({
+            ok: true,
+            data: payload,
+        });
     };
 }
