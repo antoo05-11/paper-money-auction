@@ -112,6 +112,10 @@ export default {
             code: "AUCTIONEER_NOT_FOUND",
             message: "Your auctioneer is not in the system.",
         },
+        CUSTOMER_NOT_FOUND: {
+            code: "CUSTOMER_NOT_FOUND",
+            message: "Your customer is not in the system.",
+        },
     },
 
     PARAMS_INVALID: {

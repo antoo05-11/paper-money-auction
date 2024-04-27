@@ -2,6 +2,7 @@ import userRole from "../constants/user.role";
 import { User } from "../models/user";
 import { HttpError } from "../utils/http.error";
 import bcrypt from "bcrypt";
+import errorCode from "../constants/error.code";
 import _ from "lodash";
 
 export default class UserController {
@@ -78,6 +79,32 @@ export default class UserController {
             data: {
                 user: user,
             },
+        });
+    };
+
+    viewCustomerProfile = async (req, res) => {
+        const { params } = req;
+
+        const user = await User.findById(params.id);
+        if (!user)
+            throw new HttpError({
+                ...errorCode.USER.CUSTOMER_NOT_FOUND,
+                status: 403,
+            });
+
+        const payload = _.pick(user, [
+            "_id",
+            "name",
+            "ssid",
+            "email",
+            "phone",
+            "address",
+            "verified",
+            "active",
+        ]);
+        res.status(200).json({
+            ok: true,
+            data: payload,
         });
     };
 
