@@ -24,12 +24,14 @@ export default [
                 path: "/asset/:id",
                 method: "viewAsset",
                 roles: [userRole.CUSTOMER, userRole.ADMIN, userRole.AUCTIONEER],
+                verified: true,
             },
             {
                 httpMethod: "get",
                 path: "/asset",
                 method: "listAsset",
                 roles: [userRole.CUSTOMER, userRole.AUCTIONEER, userRole.ADMIN],
+                verified: true,
             },
             {
                 httpMethod: "put",
