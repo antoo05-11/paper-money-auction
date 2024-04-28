@@ -52,6 +52,18 @@ export default [
                 method: "viewPaymentMethod",
                 roles: [userRole.CUSTOMER],
             },
+            {
+                httpMethod: "get",
+                path: "/user/staff",
+                method: "getAllStaff",
+                roles: [userRole.ADMIN],
+            },
+            {
+                httpMethod: "get",
+                path: "/user/customer",
+                method: "getAllCustomer",
+                roles: [userRole.ADMIN],
+            },
         ],
     },
 ];
