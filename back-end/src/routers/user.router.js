@@ -54,14 +54,8 @@ export default [
             },
             {
                 httpMethod: "get",
-                path: "/user/staff",
-                method: "getAllStaff",
-                roles: [userRole.ADMIN],
-            },
-            {
-                httpMethod: "get",
-                path: "/user/customer",
-                method: "getAllCustomer",
+                path: "/user/getAll",
+                method: "getAllUser",
                 roles: [userRole.ADMIN],
             },
         ],

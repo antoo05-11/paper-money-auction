@@ -147,13 +147,13 @@ export default class UserController {
         });
     };
 
-    getAllStaff = async (req, res) => {
+    getAllUser = async (req, res) => {
         const { query } = req;
 
         const toSortFields = query.sort || null;
 
         const filter = {
-            role: userRole.AUCTIONEER
+            role: query.role
         };
         const regexFields = ["name", "ssid", "email", "phone"];
         const queryFields = ["active"];
@@ -165,13 +165,13 @@ export default class UserController {
             }
         });
 
-        let totalStaff = await User.countDocuments(filter);
+        let totalUser = await User.countDocuments(filter);
         let page = parseInt(query.page) || 1;
         let limit = parseInt(query.limit) || 10;
         let skip = (page - 1) * limit;
-        let totalPages = Math.ceil(totalStaff / limit);
+        let totalPages = Math.ceil(totalUser / limit);
 
-        const listStaff = await User.find(filter, "name ssid email phone active")
+        const listUser = await User.find(filter, "name ssid email phone active")
             .sort(toSortFields)
             .skip(skip)
             .limit(limit);
@@ -179,47 +179,7 @@ export default class UserController {
         const payload = {
             page: page,
             totalPages: totalPages,
-            listStaff: listStaff,
-        };
-        res.status(200).json({
-            ok: true,
-            data: payload,
-        });
-    };
-
-    getAllCustomer = async (req, res) => {
-        const { query } = req;
-
-        const toSortFields = query.sort || null;
-
-        const filter = {
-            role: userRole.CUSTOMER
-        };
-        const regexFields = ["name", "ssid", "email", "phone"];
-        const queryFields = ["active"];
-        Object.keys(query).forEach((key) => {
-            if (regexFields.includes(key)) {
-                filter[key] = { $regex: query[key] };
-            } else if (queryFields.includes(key)) {
-                filter[key] = query[key];
-            }
-        });
-
-        let totalCustomer = await User.countDocuments(filter);
-        let page = parseInt(query.page) || 1;
-        let limit = parseInt(query.limit) || 10;
-        let skip = (page - 1) * limit;
-        let totalPages = Math.ceil(totalCustomer / limit);
-
-        const listCustomer = await User.find(filter, "name ssid email phone active")
-            .sort(toSortFields)
-            .skip(skip)
-            .limit(limit);
-
-        const payload = {
-            page: page,
-            totalPages: totalPages,
-            listCustomer: listCustomer,
+            listUser: listUser,
         };
         res.status(200).json({
             ok: true,
