@@ -8,7 +8,7 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button"
 
 import {
@@ -27,12 +27,20 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { LogOut, User } from "lucide-react";
 import Link from "next/link";
-
+import { useAuth } from "@/lib/auth/useAuth";
 
 export default function TopBar() {
+    const router = useRouter();
     const pathname = usePathname();
     const routes = pathname.split('/').filter(path => path !== '');
     const listRoutes = routes.map((route, index) => '/' + routes.slice(0, index + 1).join('/'));
+
+    const auth = useAuth();
+    
+    function logOut() {
+       auth.logout();
+       router.push('/');
+    }
 
     return (
         <div className="container flex justify-between items-center h-14 mb-5">
@@ -65,7 +73,7 @@ export default function TopBar() {
 
                 {!pathname.includes("/admin") && (
                     <DropdownMenuContent className="mr-3">
-                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                        <DropdownMenuLabel>{auth.user?.name}</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
                             <DropdownMenuItem>
@@ -76,10 +84,10 @@ export default function TopBar() {
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem className="">
-                                <Link href={"/"} className="flex flex-row">
+                                <Button onClick={logOut} className="flex flex-row">
                                     <LogOut className="mr-2 h-4 w-4" />
                                     <span>Log out</span>
-                                </Link>
+                                </Button>
                             </DropdownMenuItem>
                         </DropdownMenuGroup>
                     </DropdownMenuContent>

@@ -3,6 +3,13 @@ export type userLoginData = {
     password: string
 };
 
+export interface User {
+    name: string,
+    id: string,
+    role: string,
+    token: string
+}
+
 export type userData = {
     name: string | null,
     ssid: string | null,

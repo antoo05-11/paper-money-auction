@@ -2,7 +2,7 @@ import { assetData, auctionData, auctioneerData, filterAssetData, paymentData, u
 import request from './request';
 
 //authentication
-export function login(data: userLoginData) {
+export function loginUser(data: userLoginData) {
     return request.post('api/auth/login', {data: data});
 };
 
