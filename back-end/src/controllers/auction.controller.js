@@ -1,13 +1,15 @@
-import {HttpError} from "../utils/http.error";
-import errorCode from "../constants/error.code";
-import {Auction} from "../models/auction";
-import {Asset} from "../models/asset";
-import {Participation} from "../models/participation";
-import auctionStatus from "../constants/auction.status";
-import _ from "lodash";
-import jwt from "jsonwebtoken";
-import mongoose from "mongoose";
-import participationStatus from "../constants/participation.status";
+import {HttpError} from '../utils/http.error';
+import errorCode from '../constants/error.code';
+import {Auction} from '../models/auction';
+import {Asset} from '../models/asset';
+import {Participation} from '../models/participation';
+import auctionStatus from '../constants/auction.status';
+import _ from 'lodash';
+import jwt from 'jsonwebtoken';
+import participationStatus from '../constants/participation.status';
+import userRole from '../constants/user.role';
+import {Bidding} from '../models/bidding';
+import mongoose from 'mongoose';
 
 export default class AuctionController {
     constructor() {
@@ -21,7 +23,7 @@ export default class AuctionController {
         if (!asset)
             throw new HttpError({...errorCode.ASSET.NOT_FOUND, status: 403});
 
-        const uploadedDocs = _.map(req.files["docs"], "originalname"); // Replace this with real files url return from server
+        const uploadedDocs = _.map(req.files['docs'], 'originalname'); // Replace this with real files url return from server
 
         data.docs = uploadedDocs;
         data.auctioneer = user._id;
@@ -36,13 +38,34 @@ export default class AuctionController {
     };
 
     listAuction = async (req, res) => {
+        const auctions = await Auction.find();
+        return res.status(200).json(auctions);
     };
+
     listRegisteredAuction = async (req, res) => {
+        const user = req.user;
+        const participations = await Participation.find({bidder: user._id})
+            .populate([{
+                path: 'auction',
+                populate: [{path: 'asset', select: 'name'}, {path: 'winning_bidding', select: 'price'}]
+            }]);
+        return res.status(200).json(participations.auction);
     };
+
     listManagingAuction = async (req, res) => {
+        const user = req.user;
+        const auctions = await Auction.find({auctioneer: user._id,}).populate([{
+            path: 'asset',
+            select: 'name'
+        }, {path: 'winning_bidding', select: 'price'}])
+        return res.status(200).json(auctions);
     };
+
     listOwnedAuction = async (req, res) => {
+        const user = req.user;
+
     };
+
 
     viewAuction = async (req, res) => {
         const auctionId = req.params.id;
@@ -57,6 +80,96 @@ export default class AuctionController {
             });
         return res.status(200).json(auction);
     };
+
+
+    viewAuctionActivities = async (req, res) => {
+        const user = req.user;
+        const auctionId = req.params.id;
+        let biddings = [];
+
+        const auction = await Auction.findById(auctionId);
+        if (!auction)
+            throw new HttpError({
+                ...errorCode.AUCTION.NOT_FOUND,
+                status: 400,
+            });
+
+        if (user.role !== userRole.CUSTOMER) {
+            const rawBiddings = await Bidding.aggregate([
+                {
+                    '$match': {
+                        'auction': new mongoose.Types.ObjectId(auctionId)
+                    }
+                },
+                {
+                    '$lookup': {
+                        'from': 'participations',
+                        'let': {'bidderId': '$bidder'},
+                        'pipeline': [
+                            {
+                                '$match': {
+                                    '$expr': {
+                                        '$and': [
+                                            {'$eq': ['$auction', new mongoose.Types.ObjectId(auctionId)]},
+                                            {'$eq': ['$bidder', '$$bidderId']}
+                                        ]
+                                    }
+                                }
+                            },
+                            {
+                                '$project': {
+                                    'alias': 1,
+                                    'createdAt': 1,
+                                }
+                            }
+                        ],
+
+                        'as': 'bidderParticipation'
+                    }
+                },
+                {
+                    '$lookup': {
+                        'from': 'users',
+                        'localField': 'bidder',
+                        'foreignField': '_id',
+                        'as': 'bidderInfo',
+                        'pipeline': [
+                            {
+                                '$project': {
+                                    'name': 1,
+                                    'phone': 1
+                                }
+                            }
+                        ]
+                    }
+                }
+            ])
+
+            for (let bidding of rawBiddings) {
+                bidding = {...bidding}
+                bidding.bidder = {
+                    _id: bidding.bidderInfo[0]?._id,
+                    name: bidding.bidderInfo[0]?.name,
+                    alias: bidding.bidderParticipation[0]?.alias,
+                    createdAt: bidding.bidderParticipation[0]?.createdAt
+                }
+                delete bidding.bidderParticipation
+                delete bidding.bidderInfo
+                biddings.push(bidding);
+            }
+        } else {
+            const rawBiddings = await Bidding.find({
+                'auction': new mongoose.Types.ObjectId(auctionId),
+                'bidder': new mongoose.Types.ObjectId(user._id)
+            }, 'price createdAt');
+
+            for (let bidding of rawBiddings) {
+                const {bidder, ...rest} = bidding.toObject();
+                biddings.push(rest);
+            }
+        }
+        return res.status(200).json(biddings);
+    }
 
     getParticipationStatus = async (req, res) => {
         const user = req.user;
@@ -159,7 +272,7 @@ export default class AuctionController {
             {auctionId: auctionId, userID: user._id, role: user.role},
             process.env.JWT_AUCTION_KEY,
             {
-                expiresIn: "1h",
+                expiresIn: '1h',
             }
         );
         return res.status(200).json({
@@ -191,8 +304,8 @@ export default class AuctionController {
     };
 
     verifyBidder = async (req, res) => {
-        const auctionId = req.params.id || "";
-        const bidderId = req.params.bidderId || "";
+        const auctionId = req.params.id || '';
+        const bidderId = req.params.bidderId || '';
         const user = req.user;
 
         const auction = await Auction.findById(auctionId);

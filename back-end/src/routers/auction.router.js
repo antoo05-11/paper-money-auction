@@ -45,6 +45,12 @@ export default [
                 method: "viewAuction",
             },
             {
+                httpMethod: "get",
+                path: "/auction/:id/activities",
+                method: "viewAuctionActivities",
+                roles: [userRole.CUSTOMER, userRole.AUCTIONEER]
+            },
+            {
                 httpMethod: "post",
                 path: "/auction/:id/register",
                 method: "register",
