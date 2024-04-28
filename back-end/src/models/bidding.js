@@ -6,7 +6,10 @@ const biddingSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "Auction",
         },
-        bidder: String, // Only need Alias, no need to ref
+        bidder: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Auction",
+        },
         price: Number,
     },
     {

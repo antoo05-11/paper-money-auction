@@ -26,6 +26,12 @@ export default [
                 roles: [userRole.CUSTOMER, userRole.AUCTIONEER],
             },
             {
+                httpMethod: "get",
+                path: "/user/profile/:id",
+                method: "viewCustomerProfile",
+                roles: [userRole.ADMIN, userRole.AUCTIONEER],
+            },
+            {
                 httpMethod: "put",
                 path: "/user/profile",
                 method: "updateProfile",

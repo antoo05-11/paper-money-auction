@@ -3,10 +3,10 @@ import mongoose from "mongoose";
 const userSchema = new mongoose.Schema(
     {
         // Profile
-        email: { type: String, unique: true },
+        email: {type: String, unique: true},
         password: String,
         name: String,
-        ssid: { type: String, unique: true, sparse: true },
+        ssid: {type: String, unique: true, sparse: true},
         phone: String,
         address: String,
         // Payment (for User only)
@@ -14,9 +14,13 @@ const userSchema = new mongoose.Schema(
         account_number: String,
         holder: String,
         // System
-        role: String,
-        verified: { type: Boolean, default: false },
-        active: { type: Boolean, default: true },
+        role: {
+            type: String,
+            enum: ['customer', 'admin', 'auctioneer'],
+            default: 'customer'
+        },
+        verified: {type: Boolean, default: false},
+        active: {type: Boolean, default: true},
     },
     {
         versionKey: false,

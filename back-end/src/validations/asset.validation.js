@@ -5,4 +5,9 @@ export default {
         name: Joi.string().required(),
         description: Joi.string().required(),
     }).required(),
+
+    verifyAsset: Joi.object({
+        verified: Joi.boolean(),
+        auctioneer: Joi.string(),
+    }).required(),
 };

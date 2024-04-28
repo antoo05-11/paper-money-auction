@@ -1,37 +1,44 @@
-export class User {
-    #userId
-    #socketId
-    #sessionIds
+import userRole from "../../../constants/user.role";
 
-    constructor(socketId, userId) {
-        this.#socketId = socketId;
-        this.#userId = userId;
-        this.#sessionIds = new Set();
+export class User {
+    #joined = false;
+    #user = null;
+    #alias = '';
+
+    constructor(user, alias) {
+        this.#user = user;
+        this.#alias = alias;
+    }
+
+    getAlias = () => {
+        return this.#alias;
     }
 
     toString() {
-        return `User(userId = ${this.#userId}, socketId = ${this.#socketId})`
+        return `User(alias = ${this.#alias})`
     }
 
-    toJSON() {
-        return {
-            userId: this.#userId
-        };
+    getJSON = (role) => {
+        if (role == null || role === userRole.CUSTOMER) {
+            return {
+                alias: this.#alias
+            };
+        } else {
+            return {
+                _id: this.#user._id.toString(),
+                name: this.#user.name,
+                ssid: this.#user.ssid,
+                phone: this.#user.phone,
+                alias: this.#alias
+            };
+        }
     }
 
-    joinSession(sessionId) {
-        this.#sessionIds.add(sessionId);
+    joinSession() {
+        this.#joined = true;
     }
 
-    leaveSession(sessionId) {
-        this.#sessionIds.delete(sessionId);
-    }
-
-    getUserSessionIds() {
-        return this.#sessionIds;
-    }
-
-    getUserId() {
-        return this.#userId;
+    leaveSession() {
+        this.#joined = false;
     }
 }
