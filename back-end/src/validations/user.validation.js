@@ -32,4 +32,9 @@ export default {
         phone: Joi.string(),
         address: Joi.string(),
     }).required(),
+
+    updatePassword: Joi.object({
+        password: Joi.string().required(),
+        newPassword: Joi.string().required(),
+    }).required(),
 };

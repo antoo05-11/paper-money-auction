@@ -133,7 +133,28 @@ export default class UserController {
         });
     };
 
-    updatePassword = async (req, res) => {};
+    updatePassword = async (req, res) => {
+        const { user } = req;
+        const { data } = req.body;
+
+        if (!bcrypt.compareSync(data.password, user.password))
+            throw new HttpError({
+                ...errorCode.AUTH.PASSWORD_INVALID,
+                status: 400,
+            });
+
+        user.password = bcrypt.hashSync(
+            data.newPassword,
+            bcrypt.genSaltSync(12),
+            null
+        );
+
+        await user.save();
+
+        res.status(200).json({
+            ok: true,
+        });
+    };
 
     viewPaymentMethod = async (req, res) => {
         const payload = req.payload;

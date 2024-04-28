@@ -18,6 +18,7 @@ const auth = (roles, verified) => async (req, res, next) => {
                             role: 1,
                             active: 1,
                             verified: 1,
+                            password: 1,
                         });
 
                         if (
