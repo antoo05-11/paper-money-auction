@@ -22,12 +22,11 @@ const auctionSchema = new mongoose.Schema(
         max_number_of_bidder: Number,
         docs: [String],
         // Result
-        winning_bid: Number,
-        winner: {
+        winning_bidding: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
+            ref: "Bidding",
         },
-        status: String,
+        status: String
     },
     {
         versionKey: false,
