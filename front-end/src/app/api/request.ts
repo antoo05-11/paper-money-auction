@@ -1,31 +1,35 @@
-import Cookies from 'js-cookie';
-import axios from 'axios';
+import Cookies from "js-cookie";
+import axios from "axios";
 import { toast } from "sonner";
-import { AUTH, HTTP_STATUS } from '@/lib/constant/constant';
+import { AUTH, HTTP_STATUS } from "@/lib/constant/constant";
 
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  "https://paper-money-auction.onrender.com/";
 
 const service = axios.create({
-    withCredentials: false,
-    baseURL: API_BASE_URL,
-    timeout: (process.env.NEXT_PUBLIC_APP_API_TIMEOUT ? +process.env.NEXT_PUBLIC_APP_API_TIMEOUT : 60000)
+  withCredentials: false,
+  baseURL: API_BASE_URL,
+  timeout: process.env.NEXT_PUBLIC_APP_API_TIMEOUT
+    ? +process.env.NEXT_PUBLIC_APP_API_TIMEOUT
+    : 60000,
 });
 
 service.interceptors.request.use(
-    (config: any) => {
-      // do something before request is sent
-      const accessToken = Cookies.get('access_token');
-      if (accessToken) {
-        config.headers['Authorization'] = accessToken;
-      }
-  
-      return config
-    },
-    (error: any) => {
-      // do something with request error
-      return Promise.reject(error)
+  (config: any) => {
+    // do something before request is sent
+    const accessToken = Cookies.get("access_token");
+    console.log(123);
+    if (accessToken) {
+      config.headers["Authorization"] = accessToken;
     }
+
+    return config;
+  },
+  (error: any) => {
+    // do something with request error
+    return Promise.reject(error);
+  }
 );
 
 // response interceptor
@@ -43,8 +47,8 @@ service.interceptors.response.use(
         // })
       }
     }
-    return Promise.reject(error)
+    return Promise.reject(error);
   }
-)
+);
 
 export default service;
