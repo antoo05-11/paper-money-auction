@@ -11,6 +11,7 @@ export default [
                 path: "/auction",
                 method: "createAuction",
                 roles: [userRole.AUCTIONEER],
+                verified: true,
                 schema: auctionValidation.createAuction,
                 files: [{ name: "docs", maxCount: 3 }],
             },
@@ -24,6 +25,7 @@ export default [
                 path: "/auction/registered",
                 method: "listRegisteredAuction",
                 roles: [userRole.CUSTOMER],
+                verified: true,
             },
             {
                 httpMethod: "get",
