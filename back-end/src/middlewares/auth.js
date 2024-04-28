@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { User } from "../models/user";
+import {User} from "../models/user";
 import error from "../constants/error.code";
 
 const auth = (roles, verified) => async (req, res, next) => {
@@ -35,13 +35,13 @@ const auth = (roles, verified) => async (req, res, next) => {
                         }
 
                         if (!user || !user.active) {
-                            res.status(403).json({
+                            return res.status(403).json({
                                 ...error.AUTH.USER_DELETED,
                             });
                         }
 
                         if (verified && !user.verified) {
-                            res.status(403).json({
+                            return res.status(403).json({
                                 ...error.USER.NOT_VERIFIED,
                             });
                         }
@@ -50,26 +50,26 @@ const auth = (roles, verified) => async (req, res, next) => {
                         next();
                     } else {
                         if (err && err.name === "TokenExpiredError") {
-                            res.status(403).json({
+                            return res.status(403).json({
                                 ...error.AUTH.TOKEN_EXPIRED,
                             });
                         } else {
-                            res.status(403).json({
+                            return res.status(403).json({
                                 ...error.AUTH.TOKEN_INVALID,
                             });
                         }
                     }
                 });
             } catch (err) {
-                res.status(403).json({
+                return res.status(403).json({
                     ...error.AUTH.TOKEN_INVALID,
                 });
             }
         } else {
-            res.status(403).json(error);
+            return res.status(403).json(error);
         }
     } else {
-        res.status(403).json({
+        return res.status(403).json({
             ...error.AUTH.TOKEN_NOT_FOUND,
         });
     }

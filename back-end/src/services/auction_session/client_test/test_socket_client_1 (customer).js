@@ -27,6 +27,10 @@ socket.on('disconnect', () => {
     console.log('Disconnected from server');
 });
 
+socket.on('socket_error', (message)=>{
+     console.log('Message from server:', message);
+})
+
 socket.on('start_session_response', (message) => {
     console.log(message);
 });
@@ -39,4 +43,4 @@ socket.on('biddings_update', (message) => {
     console.log(message);
 });
 
-const sampleAuctionToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZXNzaW9uSWQiOiI2NjIzOTY1N2NkNjAzNGFkZDk3MTQ4NWEiLCJ1c2VySWQiOiI2NjE2Yzk1OWRhZDc5ZGI3ZDk4NjkyNzQiLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3MTQxMzE3ODEsImV4cCI6MTc0NTY2Nzc4MX0.du7UBTQEUjRuT5aXobRBdsvIPM6vrV0qe3etzA71th0';
+const sampleAuctionToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzZXNzaW9uSWQiOiI2NjIzOTY1N2NkNjAzNGFkZDk3MTQ4NWEiLCJ1c2VySWQiOiI2NjJkYzYwODQ4YWYzNTExMDA1MjJmODUiLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3MTQyOTIxMjYsImV4cCI6MTc0NTgyODEyNn0.tHGlHdy1weQfoqV0cfzh_RmYBdYNOmQGA4UlU1hoSKc';

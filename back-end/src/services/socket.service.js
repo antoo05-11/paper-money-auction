@@ -89,7 +89,7 @@ class SocketService extends Service {
             const socketInfo = this.#authSession(socket, auctionToken, roles);
             if (socketInfo) {
 
-                const auction = await Auction.findById(socketInfo.sessionId);
+                const auction = await Auction.findById(socketInfo.sessionId).populate('auctioneer', 'name ssid phone');;
 
                 // Check valid auction status to start.
                 if (!auction) {
@@ -122,7 +122,7 @@ class SocketService extends Service {
                 socket.emit('start_session_response', true);
             }
         } catch (e) {
-            console.log("Socket error: " + e.message);
+            console.log("Socket error: " + e);
             socket.emit("socket_error", true);
         }
     };
@@ -132,6 +132,8 @@ class SocketService extends Service {
             const socketId = socket.id;
 
             const socketInfo = this.#authSession(socket, auctionToken, roles);
+
+            const auctioneerRoomId = userRole.AUCTIONEER + socketInfo.sessionId;
 
             if (socketInfo) {
 
@@ -148,19 +150,28 @@ class SocketService extends Service {
                 }
 
                 if (session) {
+                    if (!session.addUser(socketInfo.userId)) {
+                        socket.emit('join_session_response', errorCode.AUCTION.NOT_AUTHORIZED);
+                    }
+
                     let userSessions = this.#users.get(socketId) || new Set();
                     userSessions.add(socketInfo);
                     this.#users.set(socketId, userSessions);
-                    session.addUser(socketInfo.userId);
+
+                    if (socketInfo.role === userRole.AUCTIONEER) socket.join(auctioneerRoomId);
                     socket.join(socketInfo.sessionId);
-                    this.io.to(socketInfo.sessionId).emit('join_session_response', true);
-                    this.io.to(socketInfo.sessionId).emit('attendees_update', JSON.stringify(session.getRecentUsers()));
+
+                    socket.emit('join_session_response', true);
+
+                    this.io.to(socketInfo.sessionId).except(auctioneerRoomId).emit('attendees_update', JSON.stringify(session.getRecentUsers(socketInfo.role)));
+                    this.io.to(auctioneerRoomId).emit('attendees_update', JSON.stringify(session.getRecentUsers(userRole.AUCTIONEER)));
+
                     socket.emit('biddings_update', session.getBiddings(socketInfo.role));
                 }
                 console.log(session.toString());
             }
         } catch (e) {
-            console.log("Socket error: " + e.message);
+            console.log("Socket error: " + e);
             socket.emit("socket_error", true);
         }
     };
@@ -180,7 +191,7 @@ class SocketService extends Service {
             this.#users.delete(socket.id);
 
         } catch (e) {
-            console.log("Socket error: " + e.message);
+            console.log("Socket error: " + e);
             socket.emit("socket_error", true);
         }
     };
@@ -188,6 +199,7 @@ class SocketService extends Service {
     #makeOffer = (socket, auctionToken, offer, roles) => {
         try {
             const socketInfo = this.#authSession(socket, auctionToken, roles);
+            const auctioneerRoomId = userRole.AUCTIONEER + socketInfo.sessionId;
             if (!socketInfo) {
                 socket.emit('make_offer_response', errorCode.AUCTION.INVALID_TOKEN);
                 return;
@@ -195,7 +207,10 @@ class SocketService extends Service {
             const session = this.#sessions.get(socketInfo.sessionId)
             const makeOfferResponse = session.makeOffer(socketInfo.userId, offer);
             if (makeOfferResponse !== true) socket.emit("make_offer_response", makeOfferResponse);
-            else this.io.to(socketInfo.sessionId).emit("biddings_update", session.getBiddings(socketInfo.role));
+            else {
+                this.io.to(socketInfo.sessionId).except(auctioneerRoomId).emit("biddings_update", session.getBiddings(socketInfo.role));
+                this.io.to(auctioneerRoomId).emit("biddings_update", session.getBiddings(userRole.AUCTIONEER));
+            }
         } catch (e) {
             console.log("Socket error: " + e.message);
             socket.emit("socket_error", true);

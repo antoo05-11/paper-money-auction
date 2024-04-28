@@ -3,6 +3,7 @@ import {utils} from "../../../utils/utils";
 import {Bidding} from "../../../models/bidding";
 import errorCode from "../../../constants/error.code";
 import {Participation} from "../../../models/participation";
+import {Auction} from "../../../models/auction";
 
 export class AuctionSession {
     #recentUsers = []; // [User]
@@ -26,6 +27,8 @@ export class AuctionSession {
         for (const participation of participations) {
             this.#users.set(participation.bidder._id.toString(), new User(participation.bidder, participation.alias));
         }
+
+        this.#users.set(this.#auction.auctioneer._id.toString(), new User(this.#auction.auctioneer, 'Auctioneer'));
 
         const biddings = await Bidding.find({auction: auctionId});
         for (const bidding of biddings) {
@@ -77,6 +80,7 @@ export class AuctionSession {
     }
 
     addUser = (userId) => {
+        if (!this.#users.has(userId)) return false;
         const user = this.#users.get(userId);
         user.joinSession();
         if (!this.#recentUsers.includes(user)) {
@@ -84,6 +88,7 @@ export class AuctionSession {
                 this.#recentUsers.shift();
             this.#recentUsers.push(user);
         }
+        return true;
     }
 
     removeUser = (userId) => {
