@@ -3,7 +3,6 @@ import {utils} from "../../../utils/utils";
 import {Bidding} from "../../../models/bidding";
 import errorCode from "../../../constants/error.code";
 import {Participation} from "../../../models/participation";
-import {Auction} from "../../../models/auction";
 
 export class AuctionSession {
     #recentUsers = []; // [User]

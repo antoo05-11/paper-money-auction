@@ -356,3 +356,48 @@ npm run start
        }
     }
    ```
+7. View auction (static info for all)
+
+```json
+GET /api/auction/:id
+
+Response:
+{
+    "_id": "66239657cd6034add971485a",
+    "asset": "6623805feaec9306204beb7b",
+    "auctioneer": {
+        "_id": "662dc406b679f45aa47c9adb",
+        "name": "Do Duc Anh"
+    },
+    "starting_price": 200000,
+    "bidding_increment": 10000,
+    "deposit": 20000,
+    "registration_open": "2024-04-23T00:00:00.000Z",
+    "registration_close": "2024-04-28T00:00:00.000Z",
+    "auction_start": "2024-04-28T00:00:00.000Z",
+    "auction_end": "2024-04-29T03:03:00.000Z",
+    "max_number_of_bidder": 100,
+    "docs": [
+        "paths_CtD"
+    ],
+    "status": "ongoing",
+    "winning_bidding": {
+        "_id": "662bc1307bfeb190a175d97f",
+        "price": 700000
+    }
+}
+```
+
+8. Check participation status (for customer only)
+
+```json
+GET /api/auction/:id/participationStatus
+
+Header:
+Authorization: "Bearer <customer's token>"
+        
+Response: 
+{
+    "status": "NOT_REGISTERED_YET" / "NOT_VERIFIED" / "VERIFIED"
+}
+```

@@ -60,6 +60,10 @@ export default {
             code: "REGISTERED",
             message: "You have registered the auction.",
         },
+        NOT_VERIFIED: {
+            code: "NOT_VERIFIED",
+            message: "You have not been verified to attend the auction yet.",
+        },
         NOT_IN_REGISTRATION_TIME: {
             code: "NOT_IN_REGISTRATION_TIME",
             message: "This is not registration time.",

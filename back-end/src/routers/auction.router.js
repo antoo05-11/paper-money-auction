@@ -41,8 +41,8 @@ export default [
             },
             {
                 httpMethod: "get",
-                path: "auction/:id",
-                method: "view_auction",
+                path: "/auction/:id",
+                method: "viewAuction",
             },
             {
                 httpMethod: "post",
@@ -68,6 +68,12 @@ export default [
                 method: "joinSession",
                 roles: [userRole.AUCTIONEER, userRole.CUSTOMER],
             },
+            {
+                httpMethod: "get",
+                path: "/auction/:id/participationStatus",
+                method: "getParticipationStatus",
+                roles: [userRole.CUSTOMER],
+            }
         ],
     },
 ];
