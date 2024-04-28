@@ -116,6 +116,10 @@ export default {
             code: "CUSTOMER_NOT_FOUND",
             message: "Your customer is not in the system.",
         },
+        MISSING_PROFILE_INFO: {
+            code: "MISSING_USER_PROFILE_INFO",
+            message: "Your profile has not full filled yet.",
+        },
     },
 
     PARAMS_INVALID: {

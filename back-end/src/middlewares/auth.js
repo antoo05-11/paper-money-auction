@@ -13,13 +13,7 @@ const auth = (roles, verified) => async (req, res, next) => {
                 jwt.verify(token, secret, async function (err, payload) {
                     if (payload) {
                         req.payload = payload;
-                        const user = await User.findById(payload.id, {
-                            email: 1,
-                            role: 1,
-                            active: 1,
-                            verified: 1,
-                            password: 1,
-                        });
+                        const user = await User.findById(payload.id);
 
                         if (
                             roles &&

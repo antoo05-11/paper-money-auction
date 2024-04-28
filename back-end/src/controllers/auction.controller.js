@@ -43,9 +43,7 @@ export default class AuctionController {
         const user = req.user;
         const auctionID = req.params.id;
 
-        const auction = await Auction.findById(
-            new mongoose.Types.ObjectId(auctionID)
-        );
+        const auction = await Auction.findById(auctionID);
         if (!auction)
             throw new HttpError({
                 ...errorCode.AUCTION.NOT_FOUND,
@@ -86,6 +84,7 @@ export default class AuctionController {
         participation = await Participation.create(participation);
 
         return res.status(200).json({
+            ok: true,
             data: participation,
         });
     };
@@ -94,9 +93,7 @@ export default class AuctionController {
         const user = req.user;
         const auctionID = req.params.id;
 
-        const auction = await Auction.findById(
-            new mongoose.Types.ObjectId(auctionID)
-        );
+        const auction = await Auction.findById(auctionID);
         if (!auction)
             throw new HttpError({
                 ...errorCode.AUCTION.NOT_FOUND,
@@ -122,6 +119,7 @@ export default class AuctionController {
             }
         );
         return res.status(200).json({
+            ok: true,
             data: {
                 token: `Bearer ${token}`,
                 participation: {
@@ -134,9 +132,7 @@ export default class AuctionController {
     listBidders = async (req, res) => {
         const auctionID = req.params.id;
 
-        const auction = await Auction.findById(
-            new mongoose.Types.ObjectId(auctionID)
-        );
+        const auction = await Auction.findById(auctionID);
         if (!auction)
             throw new HttpError({
                 ...errorCode.AUCTION.NOT_FOUND,
@@ -145,6 +141,7 @@ export default class AuctionController {
 
         const participations = await Participation.find({ auction: auctionID });
         return res.status(200).json({
+            ok: true,
             data: participations,
         });
     };
@@ -154,9 +151,7 @@ export default class AuctionController {
         const bidderId = req.params.bidderId || "";
         const user = req.user;
 
-        const auction = await Auction.findById(
-            new mongoose.Types.ObjectId(auctionID)
-        );
+        const auction = await Auction.findById(auctionID);
         if (!auction)
             throw new HttpError({
                 ...errorCode.AUCTION.NOT_FOUND,
@@ -177,6 +172,7 @@ export default class AuctionController {
         await participation.save();
 
         return res.status(200).json({
+            ok: true,
             data: participation,
         });
     };
