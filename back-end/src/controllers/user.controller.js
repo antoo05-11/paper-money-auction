@@ -6,7 +6,7 @@ import errorCode from "../constants/error.code";
 import _ from "lodash";
 
 export default class UserController {
-    constructor() {}
+    constructor() { }
 
     createCustomer = async (req, res) => {
         const { body } = req;
@@ -133,6 +133,7 @@ export default class UserController {
         });
     };
 
+
     updatePassword = async (req, res) => {
         const { user } = req;
         const { data } = req.body;
@@ -192,6 +193,46 @@ export default class UserController {
             data: {
                 user: user,
             },
+        });
+    };
+
+    getAllUser = async (req, res) => {
+        const { query } = req;
+
+        const toSortFields = query.sort || null;
+
+        const filter = {
+            role: query.role
+        };
+        const regexFields = ["name", "ssid", "email", "phone"];
+        const queryFields = ["active"];
+        Object.keys(query).forEach((key) => {
+            if (regexFields.includes(key)) {
+                filter[key] = { $regex: query[key] };
+            } else if (queryFields.includes(key)) {
+                filter[key] = query[key];
+            }
+        });
+
+        let totalUser = await User.countDocuments(filter);
+        let page = parseInt(query.page) || 1;
+        let limit = parseInt(query.limit) || 10;
+        let skip = (page - 1) * limit;
+        let totalPages = Math.ceil(totalUser / limit);
+
+        const listUser = await User.find(filter, "name ssid email phone active")
+            .sort(toSortFields)
+            .skip(skip)
+            .limit(limit);
+
+        const payload = {
+            page: page,
+            totalPages: totalPages,
+            listUser: listUser,
+        };
+        res.status(200).json({
+            ok: true,
+            data: payload,
         });
     };
 }
