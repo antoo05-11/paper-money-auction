@@ -67,6 +67,17 @@ export default class AuctionController {
             };
         });
 
+        if (query.status) {
+            if (query.status === "ON_GOING") {
+                dateMatchFilter['auction_start'] = {$lte: new Date()};
+                dateMatchFilter['auction_end'] = {$gte: new Date()};
+            } else if (query.status === "NOT_STARTED") {
+                dateMatchFilter['auction_start'] = {$gte: new Date()};
+            } else if (query.status === "ENDED") {
+                dateMatchFilter['auction_end'] = {$lte: new Date()};
+            }
+        }
+
         // Start find with filter.
         const auctions = await Auction.aggregate([
             addFieldsStage,
@@ -134,22 +145,168 @@ export default class AuctionController {
             }
         ]);
 
+        let payload = {};
+
+        if (auctions.length === 0) {
+            payload = {
+                page: pageIndex,
+                totalPages: 0,
+                auctions: []
+            };
+        } else {
+            payload = {
+                page: pageIndex,
+                totalPages: ceil(auctions[0].count / pageSize),
+                auctions: auctions[0].auctions
+            };
+        }
+        return res.status(200).json(payload)
+    };
+
+    listRegisteredAuction = async (req, res) => {
+        const user = req.user;
+        const {query} = req;
+
+        const pageSize = parseInt(query.page_size || 10);
+        const pageIndex = parseInt(query.page || 1);
+
+        // Create date match query, date sort: Add new date fields without time and compare.
+        let dateFields = ['auction_start', 'auction_end', 'registration_open', 'registration_close'];
+        const dateMatchFilter = {};
+        let dateSortObject = {'auction_start': -1};
+        dateFields.forEach(field => {
+            if (query[field]) {
+                dateMatchFilter[`formatted_${field}`] = {$eq: query[field]};
+            }
+            if (query[`${field}_sorted`]) {
+                dateSortObject = {}; // Sort one field one time.
+                dateSortObject[`${field}`] = query[`${field}_sorted`] === 'asc' ? 1 : -1;
+            }
+        });
+
+        const addFieldsStage = {
+            $addFields: {}
+        };
+        dateFields.forEach(field => {
+            addFieldsStage.$addFields[`formatted_${field}`] = {
+                $dateToString: {format: "%Y-%m-%d", date: `$${field}`},
+            };
+        });
+
+        if (query.status) {
+            if (query.status === "ON_GOING") {
+                dateMatchFilter['auction_start'] = {$lte: new Date()};
+                dateMatchFilter['auction_end'] = {$gte: new Date()};
+            } else if (query.status === "NOT_STARTED") {
+                dateMatchFilter['auction_start'] = {$gte: new Date()};
+            } else if (query.status === "ENDED") {
+                dateMatchFilter['auction_end'] = {$lte: new Date()};
+            }
+        }
+
+        // Start find with filter.
+        const auctions = await Auction.aggregate([
+            addFieldsStage,
+            {$match: dateMatchFilter},
+            {
+                $lookup: {
+                    from: 'participations',
+                    as: 'participations',
+                    localField: '_id',
+                    foreignField: 'auction',
+                    pipeline: [
+                        {
+                            $match: {
+                                bidder: {$eq: user._id}
+                            }
+                        }
+                    ]
+                }
+            },
+            {$match: {participations: {$ne: []}}},
+            {
+                $addFields: {
+                    participation: {
+                        $cond: {
+                            if: {$gt: [{$size: "$participations"}, 0]},
+                            then: {$arrayElemAt: ["$participations", 0]},
+                            else: {}
+                        }
+                    }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'assets',
+                    localField: 'asset',
+                    foreignField: '_id',
+                    pipeline: [
+                        {
+                            $match: {
+                                $or: [{name: {$regex: query.asset || ''}},
+                                    {description: {$regex: query.asset || ''}}]
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                name: 1
+                            }
+                        }
+                    ],
+                    as: 'assets'
+                }
+            },
+            {
+                $addFields: {
+                    asset: {
+                        $cond: {
+                            if: {$gt: [{$size: "$assets"}, 0]},
+                            then: {$arrayElemAt: ["$assets", 0]},
+                            else: {}
+                        }
+                    }
+                }
+            },
+            {$match: {assets: {$ne: []}}},
+            {$sort: dateSortObject},
+
+            {
+                $group: {
+                    _id: null,
+                    count: {$sum: 1},
+                    entries: {$push: "$$ROOT"}
+                }
+            }, {
+                $addFields: {
+                    auctions: {
+                        $slice: ['$entries', (pageIndex - 1) * pageSize, pageIndex * pageSize]
+                    }
+                }
+            },
+            {
+                $project: {
+                    count: 1,
+                    auctions: {
+                        auction_start: 1,
+                        auction_end: 1,
+                        registration_open: 1,
+                        registration_close: 1,
+                        asset: 1,
+                        participation: {
+                            verified: 1
+                        }
+                    }
+                }
+            }
+        ]);
+
         const payload = {
             page: pageIndex,
             totalPages: ceil(auctions[0].count / pageSize),
             auctions: auctions[0].auctions
         };
         return res.status(200).json(payload)
-    };
-
-    listRegisteredAuction = async (req, res) => {
-        const user = req.user;
-        const participations = await Participation.find({bidder: user._id})
-            .populate([{
-                path: 'auction',
-                populate: [{path: 'asset', select: 'name'}, {path: 'winning_bidding', select: 'price'}]
-            }]);
-        return res.status(200).json(participations.auction);
     };
 
     listManagingAuction = async (req, res) => {
