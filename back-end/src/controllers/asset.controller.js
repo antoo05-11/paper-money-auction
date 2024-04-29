@@ -36,7 +36,7 @@ export default class AssetController {
             .populate({ path: "auctioneer", select: "email" });
         if (!asset)
             throw new HttpError({ ...errorCode.ASSET.NOT_FOUND, status: 403 });
-        if (asset.owner._id.toString() != user._id.toString())
+        if (user.role === userRole.CUSTOMER && asset.owner._id.toString() != user._id.toString())
             throw new HttpError({
                 ...errorCode.AUTH.ROLE_INVALID,
                 status: 403,
