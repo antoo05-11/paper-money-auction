@@ -18,9 +18,12 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from 'lucide-react';
 
 import Link from "next/link";
+import { useAuth } from "@/lib/auth/useAuth";
+import UserMenu from "@/components/_layout/user-menu";
 
 export default function PageHeader() {
   const [navBar, setNavbar] = useState(false);
+  const auth = useAuth();
 
   const changeBackground = () => {
     if (window.scrollY >= 100) {
@@ -117,12 +120,15 @@ export default function PageHeader() {
             </NavigationMenu>
 
             <div className="flex ml-32">
-              <Link href={"/login/signin"}>
+              {auth?.user ? 
+                <UserMenu /> :
+                <Link href={"/login/signin"}>
                 <Button className="bg-highlightColor">
                   Đăng nhập
                   <ArrowRight size={18} className="ml-1" />
                 </Button>
               </Link>
+              }
             </div>
           </div>
         </div>

@@ -4,6 +4,7 @@ import {
   auctioneerData,
   filterAssetData,
   paymentData,
+  registerAuction,
   userData,
   userLoginData,
 } from "@/lib/constant/dataInterface";
@@ -27,7 +28,7 @@ export function reverifyUser(data: any) {
 }
 
 export function createCustomer(data: userData) {
-  return request.post("api/user/create/customer", { data: data });
+  return request.post("api/user/customer", { data: data });
 }
 
 //user profile
@@ -71,9 +72,14 @@ export function listAsset(data: filterAssetData) {
 }
 
 export function createStaff(data: auctioneerData) {
-  return request.post("api/user/create/staff", { data: data });
+  return request.post("api/user/auctioneer", { data: data });
 }
 
+export function verifyAsset(id: String) {
+  return request.put(`/api/asset/${id}`);
+}
+
+// auction
 export function createAuction(data: auctionData) {
   return request.post("api/aution/create", { data: data });
 }
@@ -85,4 +91,17 @@ export function addAuctionDocument(id: String, docs: BinaryData) {
 export function listAuction(data: any) {
   if (data) return request.get("api/auction", { params: data });
   else return request.get("api/auction");
+}
+export function viewAuctionInfo(id: String) {
+  return request.get(`api/asset/${id}/info`);
+}
+export function viewAuctionAct(id: String) {
+  return request.get(`api/asset/${id}/act`);
+}
+export function register_Auction(id: String, data: registerAuction) {
+  return request.post(`api/asset/${id}/register`, { data: data });
+}
+
+export function joinAuctionSession(id: String) {
+  return request.get(`api/asset/${id}/joinsession`);
 }
