@@ -29,7 +29,7 @@ export function reverifyUser(data: any) {
 }
 
 export function createCustomer(data: userData) {
-  return request.post("api/user/create/customer", { data: data });
+  return request.post("api/user/customer", { data: data });
 }
 
 //list user
@@ -78,7 +78,7 @@ export function listAsset(data: filterAssetData) {
 }
 
 export function createStaff(data: auctioneerData) {
-  return request.post("api/user/create/staff", { data: data });
+  return request.post("api/user/auctioneer", { data: data });
 }
 
 export function verifyAsset(id: String) {
