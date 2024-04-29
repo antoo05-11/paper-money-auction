@@ -81,7 +81,6 @@ export default class AuctionController {
         return res.status(200).json(auction);
     };
 
-
     viewAuctionActivities = async (req, res) => {
         const user = req.user;
         const auctionId = req.params.id;
@@ -118,8 +117,7 @@ export default class AuctionController {
                             },
                             {
                                 '$project': {
-                                    'alias': 1,
-                                    'createdAt': 1,
+                                    'alias': 1
                                 }
                             }
                         ],
@@ -142,6 +140,14 @@ export default class AuctionController {
                             }
                         ]
                     }
+                },
+                {
+                    '$project': {
+                        'price': 1,
+                        'createdAt': 1,
+                        'bidderParticipation': 1,
+                        'bidderInfo': 1
+                    }
                 }
             ])
 
@@ -150,22 +156,60 @@ export default class AuctionController {
                 bidding.bidder = {
                     _id: bidding.bidderInfo[0]?._id,
                     name: bidding.bidderInfo[0]?.name,
-                    alias: bidding.bidderParticipation[0]?.alias,
-                    createdAt: bidding.bidderParticipation[0]?.createdAt
+                    phone: bidding.bidderInfo[0]?.phone,
+                    alias: bidding.bidderParticipation[0]?.alias
                 }
                 delete bidding.bidderParticipation
                 delete bidding.bidderInfo
                 biddings.push(bidding);
             }
         } else {
-            const rawBiddings = await Bidding.find({
-                'auction': new mongoose.Types.ObjectId(auctionId),
-                'bidder': new mongoose.Types.ObjectId(user._id)
-            }, 'price createdAt');
+            const rawBiddings = await Bidding.aggregate([
+                {
+                    '$match': {
+                        'auction': new mongoose.Types.ObjectId(auctionId)
+                    }
+                },
+                {
+                    '$lookup': {
+                        'from': 'participations',
+                        'let': {'bidderId': '$bidder'},
+                        'pipeline': [
+                            {
+                                '$match': {
+                                    '$expr': {
+                                        '$and': [
+                                            {'$eq': ['$auction', new mongoose.Types.ObjectId(auctionId)]},
+                                            {'$eq': ['$bidder', '$$bidderId']}
+                                        ]
+                                    }
+                                }
+                            },
+                            {
+                                '$project': {
+                                    'alias': 1
+                                }
+                            }
+                        ],
+                        'as': 'bidderParticipation'
+                    }
+                },
+                {
+                    '$project': {
+                        'price': 1,
+                        'createdAt': 1,
+                        'bidderParticipation': 1
+                    }
+                }
+            ])
 
             for (let bidding of rawBiddings) {
-                const {bidder, ...rest} = bidding.toObject();
-                biddings.push(rest);
+                bidding = {...bidding}
+                bidding.bidder = {
+                    alias: bidding.bidderParticipation[0]?.alias
+                }
+                delete bidding.bidderParticipation
+                biddings.push(bidding);
             }
         }
         return res.status(200).json(biddings);
