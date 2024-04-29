@@ -43,3 +43,13 @@ export const AUTH = {
         code: "PASSWORD_INVALID",
     }
 }
+
+export const ROLES = {
+    ADMIN: 'admin',
+    AUCTIONEER: 'auctioneer',
+    CUSTOMER: 'customer'
+}
+
+export const MESSAGES = {
+    NOT_AUTHORIZED: 'You don&apos;t have permisson to access this page.'
+}

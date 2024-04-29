@@ -10,7 +10,6 @@ import { useAuth } from "@/lib/auth/useAuth";
 
 export default function Page() {
   const auth = useAuth();
-  console.log(auth);
   return (
     <div className="container">
       <div className="flex justify-between mb-5">

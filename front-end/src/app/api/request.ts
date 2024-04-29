@@ -17,7 +17,6 @@ const service = axios.create({
 
 service.interceptors.request.use(
   (config: any) => {
-    // do something before request is sent
     const user = Cookies.get("user");
     if (user) {
       const accessToken = JSON.parse(user).token;
@@ -27,7 +26,6 @@ service.interceptors.request.use(
     return config;
   },
   (error: any) => {
-    // do something with request error
     return Promise.reject(error);
   }
 );
