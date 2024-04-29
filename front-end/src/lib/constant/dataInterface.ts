@@ -16,6 +16,7 @@ export type userData = {
   ssid: string | null;
   phone: string | null;
   email: string | null;
+  verified: boolean;
   active: boolean;
   address: string | null;
   password: string | null;
