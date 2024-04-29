@@ -11,15 +11,15 @@ export interface User {
 }
 
 export type userData = {
-  _id: string | null;
-  name: string | null;
-  ssid: string | null;
-  phone: string | null;
-  email: string | null;
-  verified: boolean;
-  active: boolean;
-  address: string | null;
-  password: string | null;
+  _id?: string | null;
+  name?: string | null;
+  ssid?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  verified?: boolean;
+  active?: boolean;
+  address?: string | null;
+  password?: string | null;
 };
 
 export type filterUserData = {
