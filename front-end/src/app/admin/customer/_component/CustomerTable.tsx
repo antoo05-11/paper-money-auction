@@ -23,18 +23,13 @@ import { CustomAlert } from "../../../component/CustomAlert";
 
 import { getAllUser } from "@/app/api/apiEndpoints";
 import { useEffect, useState } from "react";
-
-interface User {
-    _id: string;
-    email: string;
-    name: string;
-    ssid: string;
-    phone: string;
-    active: boolean;
-}
+import { usePathname, useRouter } from "next/navigation";
+import { userData } from "@/lib/constant/dataInterface";
 
 export default function CustomerTable() {
-    const [listUser, setListUser] = useState<User[] | undefined>();
+    const [listUser, setListUser] = useState<userData[]>();
+    const pathName = usePathname();
+    const route = useRouter();
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -48,7 +43,8 @@ export default function CustomerTable() {
                     page: undefined,
                     limit: undefined
                 });
-                setListUser(response.data.listUser);
+                setListUser(response.data.data.listUser);
+                console.log(response);
             } catch (error) {
                 console.error("Error fetching customer data:", error);
             }
@@ -66,9 +62,9 @@ export default function CustomerTable() {
                         <TableHeader>
                             <TableRow>
                                 <TableHead className="w-[50px]">STT</TableHead>
-                                <TableHead className="w-[150px]">Mã khách hàng</TableHead>
                                 <TableHead>Họ và tên</TableHead>
                                 <TableHead>Email</TableHead>
+                                <TableHead>Số điện thoại</TableHead>
                                 <TableHead className="text-center">Trạng thái</TableHead>
                                 <TableHead className="text-center">Chi tiết</TableHead>
                             </TableRow>
@@ -77,16 +73,22 @@ export default function CustomerTable() {
                             {listUser && listUser.map((user, index) => (
                                 <TableRow key={user._id}>
                                     <TableCell className="font-medium">{index + 1}</TableCell>
-                                    <TableCell>#{user.ssid}</TableCell>
                                     <TableCell>{user.name}</TableCell>
                                     <TableCell>{user.email}</TableCell>
+                                    <TableCell>{user.phone}</TableCell>
                                     <TableCell className="text-center">
                                         <Badge variant={user.active ? "common" : "secondary"}>
                                             {user.active ? "Hoạt động" : "Đình chỉ"}
                                         </Badge>
                                     </TableCell>
                                     <TableCell className="text-center">
-                                        <Button variant={"ghost"} className="text-purpleColor"><Eye /></Button>
+                                        <Button
+                                            variant={"ghost"}
+                                            className="text-purpleColor"
+                                            onClick={(e) => { route.push(pathName + '/' + user._id) }}
+                                        >
+                                            <Eye />
+                                        </Button>
 
                                         <AlertDialog>
                                             <AlertDialogTrigger asChild>
@@ -99,7 +101,6 @@ export default function CustomerTable() {
                                 </TableRow>
                             ))}
                         </TableBody>
-
                     </Table>
                 </div>
             </div>
