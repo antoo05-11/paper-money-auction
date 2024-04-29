@@ -19,6 +19,17 @@ export type userData = {
   password: string | null;
 };
 
+export type filterUserData = {
+  name: string | null;
+  ssid: string | null;
+  phone: string | null;
+  email: string | null;
+  active: boolean | null;
+  role: string | null;
+  page: string | undefined;
+  limit: string | undefined;
+}
+
 export type paymentData = {
   bank: string;
   account_number: string;
