@@ -18,9 +18,9 @@ const service = axios.create({
 service.interceptors.request.use(
   (config: any) => {
     // do something before request is sent
-    const accessToken = Cookies.get("access_token");
-    console.log(123);
-    if (accessToken) {
+    const user = Cookies.get("user");
+    if (user) {
+      const accessToken = JSON.parse(user).token;
       config.headers["Authorization"] = accessToken;
     }
 
