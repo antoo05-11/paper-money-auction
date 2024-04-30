@@ -258,6 +258,21 @@ export default class AuctionController {
         const user = req.user;
         const {query} = req;
 
+        let auctioneerId;
+        if (user.role === userRole.ADMIN) {
+            auctioneerId = query.auctioneer_id;
+            if (!auctioneerId) {
+                const error = {...errorCode.LACK_INFO_QUERY};
+                error.message += " Field `auctioneer_id` is required in query package."
+                throw new HttpError({
+                    ...error,
+                    status: 400,
+                });
+            }
+        } else auctioneerId = user._id;
+
+        console.log(auctioneerId)
+
         const pageSize = parseInt(query.page_size || 10);
         const pageIndex = parseInt(query.page || 1);
 
@@ -267,7 +282,7 @@ export default class AuctionController {
         const auctions = await Auction.aggregate([
             addFieldsStage,
             {$match: dateMatchFilter},
-            {$match: {auctioneer: {$eq: user._id}}},
+            {$match: {auctioneer: {$eq: new mongoose.Types.ObjectId(auctioneerId)}}},
             {
                 $lookup: {
                     from: 'assets',
@@ -380,7 +395,8 @@ export default class AuctionController {
                         {
                             $project: {
                                 _id: 1,
-                                name: 1}
+                                name: 1
+                            }
                         }
                     ],
                     as: 'assets'

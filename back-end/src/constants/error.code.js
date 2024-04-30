@@ -139,4 +139,9 @@ export default {
         code: "INTERNAL_SERVER_ERROR",
         message: "Internal server error.",
     },
+
+    LACK_INFO_QUERY: {
+        code: "LACK_INFO_QUERY",
+        message: "Need more information for query."
+    }
 };

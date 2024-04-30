@@ -31,7 +31,7 @@ export default [
                 httpMethod: "get",
                 path: "/auction/managing",
                 method: "listManagingAuction",
-                roles: [userRole.AUCTIONEER],
+                roles: [userRole.AUCTIONEER, userRole.ADMIN],
             },
             {
                 httpMethod: "get",
