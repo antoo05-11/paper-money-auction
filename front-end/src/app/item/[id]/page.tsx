@@ -123,7 +123,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
                       {!registered && (
                         <AlertDialog>
                           <AlertDialogTrigger>
-                            Đăng kí tham gia đấu giá
+                            <Button>Đăng kí tham gia đấu giá</Button>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
