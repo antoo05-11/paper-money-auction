@@ -102,6 +102,7 @@ export default class AuctionController {
                 $project: {
                     count: 1,
                     auctions: {
+                        _id: 1,
                         auction_start: 1,
                         auction_end: 1,
                         registration_open: 1,
@@ -223,6 +224,7 @@ export default class AuctionController {
                 $project: {
                     count: 1,
                     auctions: {
+                         _id: 1,
                         auction_start: 1,
                         auction_end: 1,
                         registration_open: 1,
@@ -336,6 +338,7 @@ export default class AuctionController {
                 $project: {
                     count: 1,
                     auctions: {
+                         _id: 1,
                         auction_start: 1,
                         auction_end: 1,
                         registration_open: 1,
@@ -433,6 +436,7 @@ export default class AuctionController {
                 $project: {
                     count: 1,
                     auctions: {
+                         _id: 1,
                         auction_start: 1,
                         auction_end: 1,
                         registration_open: 1,
@@ -538,6 +542,7 @@ export default class AuctionController {
                 },
                 {
                     $project: {
+                        _id: 1,
                         price: 1,
                         createdAt: 1,
                         bidderParticipation: 1,
