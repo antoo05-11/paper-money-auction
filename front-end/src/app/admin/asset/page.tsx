@@ -26,8 +26,8 @@ export default function Page() {
     const fetchData = async () => {
       const listFisrt = await listAsset(input);
       // const json = await listFisrt.json()
-      const data_asset = await listFisrt.data;
-      console.log(data_asset);
+      const data_asset = await listFisrt.data.data.assets;
+      // console.log(data_asset);
       setListAsset(data_asset);
     };
     const result = fetchData()
@@ -47,9 +47,10 @@ export default function Page() {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[100px]">STT</TableHead>
-                <TableHead>Mã tài sản</TableHead>
+                <TableHead>Tên tài sản</TableHead>
                 <TableHead>Chủ nhân tài sản</TableHead>
                 <TableHead>Mô tả tài sản</TableHead>
+                <TableHead>Trạng thái</TableHead>
                 <TableHead className="text-right">Chi tiết</TableHead>
               </TableRow>
             </TableHeader>
@@ -58,13 +59,16 @@ export default function Page() {
                 return (
                   <TableRow>
                     <TableCell className="font-medium">INV001</TableCell>
-                    <TableCell>Paid</TableCell>
-                    <TableCell>Credit Card</TableCell>
-                    <TableCell>1234567890</TableCell>
+                    <TableCell>{data?.name}</TableCell>
+                    <TableCell>{data?.owner?.email}</TableCell>
+                    <TableCell>{data?.description}</TableCell>
+                    <TableCell>
+                      {data?.verified ? "Đã được duyệt" : "Chưa được duyệt"}
+                    </TableCell>
                     <TableCell className="text-right">
                       <Button
                         onClick={(e) => {
-                          route.push(path_name + data?.id);
+                          route.push(path_name + "/" + data?._id);
                         }}
                       >
                         Chi tiết

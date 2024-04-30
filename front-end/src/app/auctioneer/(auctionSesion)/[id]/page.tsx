@@ -37,7 +37,7 @@ import { useState } from "react";
 import { viewAuctionInfo } from "@/app/api/apiEndpoints";
 import { useEffect } from "react";
 import { joinAuctionSession } from "@/app/api/apiEndpoints";
-export default function CustomerDetail({ params, searchParams }: any) {
+export default function CustomerDetail({ params }: any) {
   const id = params.id;
   const [infor_auction, set_infor_auction] = useState();
   const [startSession, setStartSession] = useState(false);
