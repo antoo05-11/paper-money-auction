@@ -26,8 +26,8 @@ export default function Page() {
     const fetchData = async () => {
       const listFisrt = await listAsset(input);
       // const json = await listFisrt.json()
-      const data_asset = await listFisrt.data;
-      console.log(data_asset);
+      const data_asset = await listFisrt.data.data.assets;
+      // console.log(data_asset);
       setListAsset(data_asset);
     };
     const result = fetchData()
