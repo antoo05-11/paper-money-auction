@@ -11,13 +11,27 @@ export interface User {
 }
 
 export type userData = {
+  _id?: string | null;
+  name?: string | null;
+  ssid?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  verified?: boolean;
+  active?: boolean;
+  address?: string | null;
+  password?: string | null;
+};
+
+export type filterUserData = {
   name: string | null;
   ssid: string | null;
   phone: string | null;
-  email: string;
-  address: string | null;
-  password: string | null;
-};
+  email: string | null;
+  active: boolean | null;
+  role: string | null;
+  page: string | undefined;
+  limit: string | undefined;
+}
 
 export type paymentData = {
   bank: string;

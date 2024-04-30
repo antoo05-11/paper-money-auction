@@ -1,3 +1,4 @@
+"use client"
 import { Button } from "@/components/ui/button";
 import {
     Table,
@@ -16,8 +17,37 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { CustomAlert } from "../../../component/CustomAlert";
+import { usePathname, useRouter } from "next/navigation";
+import { getAllUser } from "@/app/api/apiEndpoints";
+import { useEffect, useState } from "react";
+import { userData } from "@/lib/constant/dataInterface";
 
 export default function StaffTable() {
+    const [listUser, setListUser] = useState<userData[]>();
+    const pathName = usePathname();
+    const route = useRouter();
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await getAllUser({
+                    name: null,
+                    ssid: null,
+                    phone: null,
+                    email: null,
+                    active: null,
+                    role: "auctioneer",
+                    page: undefined,
+                    limit: undefined
+                })
+                setListUser(response.data.data.listUser);
+                console.log(response);
+            } catch (error) {
+                console.error("Error fetching auctioneer data:", error);
+            }
+        }
+        fetchData();
+    }, [])
+
     return (
         <Card className="shadow">
             <div className="flex flex-col justify-center items-center my-7 container">
@@ -27,58 +57,44 @@ export default function StaffTable() {
                         <TableHeader>
                             <TableRow>
                                 <TableHead className="w-[50px]">STT</TableHead>
-                                <TableHead className="w-[150px]">Mã nhân viên</TableHead>
                                 <TableHead>Họ và tên</TableHead>
                                 <TableHead>Email</TableHead>
+                                <TableHead>Số điện thoại</TableHead>
                                 <TableHead className="text-center">Trạng thái</TableHead>
                                 <TableHead className="text-center">Chi tiết</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            <TableRow>
-                                <TableCell className="font-medium">1</TableCell>
-                                <TableCell>#FFF</TableCell>
-                                <TableCell>Duy ngu</TableCell>
-                                <TableCell>duyngu@g.c</TableCell>
-                                <TableCell className="text-center">
-                                    <Badge variant="common">Hoạt động</Badge>
-                                </TableCell>
-                                <TableCell className="text-center">
-                                    <Button variant={"ghost"} className="text-purpleColor"><Eye /></Button>
+                            {listUser && listUser.map((user, index) => (
+                                <TableRow key={user._id}>
+                                    <TableCell className="font-medium">{index + 1}</TableCell>
+                                    <TableCell>{user.name}</TableCell>
+                                    <TableCell>{user.email}</TableCell>
+                                    <TableCell>{user.phone}</TableCell>
+                                    <TableCell className="text-center">
+                                        <Badge variant={user.active ? "common" : "secondary"}>
+                                            {user.active ? "Hoạt động" : "Đình chỉ"}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-center">
+                                        <Button
+                                            variant={"ghost"}
+                                            className="text-purpleColor"
+                                            onClick={(e) => { route.push(pathName + '/' + user._id) }}
+                                        >
+                                            <Eye />
+                                        </Button>
 
-                                    <AlertDialog>
-                                        <AlertDialogTrigger asChild>
-                                            <Button variant={"ghost"} className="text-red-500"><Ban /></Button>
-                                        </AlertDialogTrigger>
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button variant={"ghost"} className="text-red-500"><Ban /></Button>
+                                            </AlertDialogTrigger>
 
-                                        <CustomAlert variant="BAN" />
-                                    </AlertDialog>
-                                </TableCell>
-                            </TableRow>
-                            <TableRow>
-                                <TableCell className="font-medium">1</TableCell>
-                                <TableCell>#FFF</TableCell>
-                                <TableCell>Duy ngu</TableCell>
-                                <TableCell>duyngu@g.c</TableCell>
-                                <TableCell className="text-center">
-                                    <Badge>Đình chỉ</Badge>
-                                </TableCell>
-                                <TableCell className="text-center">
-                                    <Button variant={"ghost"} className="text-purpleColor">
-                                        <Eye />
-                                    </Button>
-
-                                    <AlertDialog>
-                                        <AlertDialogTrigger asChild>
-                                            <Button variant={"ghost"} className="text-highlightColor">
-                                                <Undo2 />
-                                            </Button>
-                                        </AlertDialogTrigger>
-
-                                        <CustomAlert variant="UNDO" />
-                                    </AlertDialog>
-                                </TableCell>
-                            </TableRow>
+                                            <CustomAlert variant="BAN" />
+                                        </AlertDialog>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
                         </TableBody>
                     </Table>
                 </div>

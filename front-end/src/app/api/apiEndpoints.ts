@@ -7,6 +7,7 @@ import {
   registerAuction,
   userData,
   userLoginData,
+  filterUserData,
 } from "@/lib/constant/dataInterface";
 import request from "./request";
 
@@ -31,12 +32,21 @@ export function createCustomer(data: userData) {
   return request.post("api/user/customer", { data: data });
 }
 
+//list user
+export function getAllUser(data: filterUserData) {
+  return request.get("api/user/getAll", { params: { ...data } });
+}
+
 //user profile
 export function getProfile() {
   return request.get("api/user/profile");
 }
 
-export function updateProfile(data: userData) {
+export function getUserProfileByID(id: String) {
+  return request.get(`api/user/profile/${id}`);
+}
+
+export function updateProfile(data: filterUserData) {
   return request.put("api/user/profile", { data: data });
 }
 
