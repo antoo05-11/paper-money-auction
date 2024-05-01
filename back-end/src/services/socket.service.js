@@ -50,9 +50,15 @@ class SocketService extends Service {
     init(httpServer) {
         super.init();
 
-        this.io = new Server(httpServer);
+        this.io = new Server(httpServer, {
+            path: "/socket/", cors: {
+                origin: '*',
+            }
+        });
 
         this.io.on('connection', (socket) => {
+
+            console.log(socket.id + " connected.");
 
             socket.on('start_session', async (auctionToken) => this.#startSession(socket, auctionToken, [userRole.AUCTIONEER]))
 
@@ -89,7 +95,8 @@ class SocketService extends Service {
             const socketInfo = this.#authSession(socket, auctionToken, roles);
             if (socketInfo) {
 
-                const auction = await Auction.findById(socketInfo.sessionId).populate('auctioneer', 'name ssid phone');;
+                const auction = await Auction.findById(socketInfo.sessionId).populate('auctioneer', 'name ssid phone');
+                ;
 
                 // Check valid auction status to start.
                 if (!auction) {
