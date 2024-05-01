@@ -1,4 +1,5 @@
 import {Service} from "./service";
+import * as path from "node:path";
 
 const PromiseFtp = require('promise-ftp');
 
@@ -18,26 +19,19 @@ class FtpService extends Service {
             host: process.env.FTP_HOST,
             user: process.env.FTP_USER,
             password: process.env.FTP_PASSWORD,
+            autoReconnect: true,
         })
             .then((serverMessage) => {
                 console.log('Server message: ' + serverMessage);
             });
     }
 
-    #reconnect = () => {
-        const RECONNECT_ATTEMPT = 3;
-        this.#ftpClient.reconnect(RECONNECT_ATTEMPT);
-    }
-
-    uploadFile = async (files) => {
-        this.#reconnect();
+    uploadFiles = async (files, nameIdMap, remoteDir) => {
         for (const fileKey in files) {
             const file = files[fileKey];
-            const remotePath = process.env.FTP_URL + file.name;
-
-            await this.#ftpClient.put(file.data, remotePath);
+            const remotePath = remoteDir + nameIdMap.get(file.originalname) + path.extname(file.originalname);
+            await this.#ftpClient.put(file.buffer, remotePath);
         }
-        await this.#ftpClient.end();
     }
 }
 
