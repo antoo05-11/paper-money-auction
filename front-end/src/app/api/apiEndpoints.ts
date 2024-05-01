@@ -103,15 +103,20 @@ export function listAuction(data: any) {
   else return request.get("api/auction");
 }
 export function viewAuctionInfo(id: String) {
-  return request.get(`api/asset/${id}/info`);
+  return request.get(`api/auction/${id}`);
 }
 export function viewAuctionAct(id: String) {
-  return request.get(`api/asset/${id}/act`);
+  return request.get(`api/auction/${id}/act`);
 }
 export function register_Auction(id: String, data: registerAuction) {
-  return request.post(`api/asset/${id}/register`, { data: data });
+  return request.post(`api/auction/${id}/register`, { data: data });
 }
 
-export function joinAuctionSession(id: String) {
-  return request.get(`api/asset/${id}/joinsession`);
+export function joinAuctionSession(auction_id: String) {
+  return request.get(`api/auction/${auction_id}/joinsession`);
+}
+
+//bidder
+export function listBidder(auction_id: any) {
+  return request.get(`/api/auction/${auction_id}/bidders`);
 }

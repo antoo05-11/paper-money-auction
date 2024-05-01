@@ -32,7 +32,7 @@ export default function AuctionSessionTable(list_aution: any) {
         <TableBody>
           {list_aution?.list_auction?.map((auction: any) => {
             return (
-              <TableRow>
+              <TableRow key={auction?._id}>
                 <TableCell className="font-medium">1</TableCell>
                 <TableCell>{auction?.asset?.name}</TableCell>
                 <TableCell>10/04/2024 08:00:00</TableCell>

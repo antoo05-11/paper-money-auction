@@ -46,10 +46,12 @@ export default function CustomerDetail({ params, searchParams }: any) {
   const [autionToken, setAutionToken] = useState();
   useEffect(() => {
     const fetchData = async () => {
-      const listFisrt = await viewAuctionInfo(id);
-      // const json = await listFisrt.json()
-      const data_asset = await listFisrt.data;
-      set_infor_auction(data_asset);
+      const data_get = await viewAuctionInfo(id);
+      // const json = await data_get.json()
+      const data_use = await data_get.data;
+      // console.log(data_use);
+
+      set_infor_auction(data_use);
     };
     const result = fetchData()
       // make sure to catch any error
@@ -203,3 +205,5 @@ export default function CustomerDetail({ params, searchParams }: any) {
     </div>
   );
 }
+
+function CountTime(endTime: any) {}

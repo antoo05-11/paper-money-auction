@@ -35,10 +35,10 @@ export default function Page() {
   useEffect(() => {
     let input: any = null;
     const fetchData = async () => {
-      const listFisrt = await listAsset(input);
-      // const json = await listFisrt.json()
-      const data_asset = await listFisrt.data.data.assets;
-      // console.log(data_asset);
+      const data_get = await listAsset(input);
+      // const json = await data_get.json()
+      const data_asset = await data_get.data.data.assets;
+      console.log(data_asset);
       setListAsset(data_asset);
     };
     const result = fetchData()
