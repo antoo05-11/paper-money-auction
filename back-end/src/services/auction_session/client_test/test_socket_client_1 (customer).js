@@ -12,7 +12,7 @@ socket.on('connect', () => {
 socket.on('join_session_response', (response) => {
     console.log(response);
     if (response === true)
-        socket.emit('make_offer', sampleAuctionToken, 700000);
+        socket.emit('withdraw_offer', sampleAuctionToken);
 });
 
 socket.on('attendees_update', (response) => {
@@ -28,7 +28,7 @@ socket.on('disconnect', () => {
 });
 
 socket.on('socket_error', (message)=>{
-     console.log('Message from server:', message);
+     console.log('error from server:', message);
 })
 
 socket.on('start_session_response', (message) => {

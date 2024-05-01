@@ -101,6 +101,10 @@ export default {
                 code: "BIDDING_ERROR",
                 message: "Your bidding price is not big enough.",
             },
+            NEVER_MADE_OFFER: {
+                code: "NEVER_MADE_OFFER",
+                message: "Withdrawing offer is not allowed because you have never made offer before.",
+            },
         },
     },
 

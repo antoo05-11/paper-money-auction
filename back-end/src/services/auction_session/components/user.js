@@ -4,14 +4,23 @@ export class User {
     #joined = false;
     #user = null;
     #alias = '';
+    #penalty = false;
 
     constructor(user, alias) {
         this.#user = user;
         this.#alias = alias;
     }
 
-    getAlias = () => {
-        return this.#alias;
+    getUserId = () =>{
+        return this.#user._id.toString();
+    }
+
+    setPenalty = (isPenalty) => {
+        this.#penalty = isPenalty;
+    }
+
+    isPenalty = () => {
+        return this.#penalty;
     }
 
     toString() {
@@ -21,7 +30,8 @@ export class User {
     getJSON = (role) => {
         if (role == null || role === userRole.CUSTOMER) {
             return {
-                alias: this.#alias
+                alias: this.#alias,
+                penalty: this.#penalty
             };
         } else {
             return {
@@ -29,7 +39,8 @@ export class User {
                 name: this.#user.name,
                 ssid: this.#user.ssid,
                 phone: this.#user.phone,
-                alias: this.#alias
+                alias: this.#alias,
+                penalty: this.#penalty
             };
         }
     }

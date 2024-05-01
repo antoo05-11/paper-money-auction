@@ -12,7 +12,7 @@ const ParticipationSchema = new mongoose.Schema(
         },
         alias: { type: String, unique: true },
         verified: { type: Boolean, default: false },
-        penalty: { type: String, default: false }
+        penalty: { type: Boolean, default: false }
     },
     {
         timestamps: true,
