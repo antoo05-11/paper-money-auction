@@ -84,5 +84,3 @@ export default function Page() {
     </div>
   );
 }
-
-function CountTime(endTime: any) {}

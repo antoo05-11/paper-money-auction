@@ -45,7 +45,7 @@ export default function CustomerDetail({ params }: any) {
   const [startSession, setStartSession] = useState(true);
   const [onSession, setOnSession] = useState(false);
   const [list_bidder, update_list_bidder] = useState();
-  const [autionToken, setAutionToken] = useState();
+  const [autionToken, setAutionToken] = useState<string>();
   const [time, setTime] = useState(Date.now());
   useEffect(() => {
     const fetchData = async () => {
@@ -62,14 +62,18 @@ export default function CustomerDetail({ params }: any) {
 
   useEffect(() => {
     const getAuctionToken = async (id: any) => {
-      const token = await joinAuctionSession(id);
-      console.log("token: " + token);
-      // socket.on("connect", async () => {
-      //   console.log("Connected to server");
+      const data_use = await joinAuctionSession(id);
+      const token: string = await data_use.data.data?.token?.replace(
+        "Bearer ",
+        ""
+      );
+      console.log(token);
+      socket.on("connect", async () => {
+        console.log("Connected to server");
 
-      //   await socket.emit("start_session", toke);
-      // });
-      setAutionToken(token.data);
+        await socket.emit("start_session", token);
+      });
+      setAutionToken(token);
     };
     if (onSession) {
       const result = getAuctionToken(id).catch(console.error);
@@ -79,8 +83,8 @@ export default function CustomerDetail({ params }: any) {
     <div className="flex flex-col justify-center items-center">
       <Button
         onClick={() => {
-          const hihi = new Date(infor_auction?.auction_end);
-          console.log(hihi);
+          // const hihi = new Date(infor_auction?.auction_end);
+          console.log(autionToken);
         }}
       >
         Test
