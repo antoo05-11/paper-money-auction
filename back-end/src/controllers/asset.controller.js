@@ -38,10 +38,10 @@ export default class AssetController {
         session.startTransaction();  // Start the transaction
 
         try {
-            const asset = (await Asset.create(data, {session: session})).toObject();
-            const nameIdMap = new Map();
+            const asset = (await Asset.create([data], {session: session}))[0].toObject();
 
-               for (const file of asset.pics) {
+            const nameIdMap = new Map();
+            for (const file of asset.pics) {
                 nameIdMap.set(file.name, file._id.toString());
             }
             for (const file of asset.docs) {
@@ -51,22 +51,16 @@ export default class AssetController {
             await ftpService.uploadFiles(req.files["pics"], nameIdMap, `${process.env.FTP_PUBLIC_PATH}asset-docs/`);
             await ftpService.uploadFiles(req.files["docs"], nameIdMap, `${process.env.FTP_PUBLIC_PATH}asset-docs/`);
 
-            for (const pic of asset.pics) {
-                pic.url = `${process.env.FTP_URL}asset-docs/${pic._id}${path.extname(pic.name)}`
-            }
-            for (const doc of asset.docs) {
-                doc.url = `${process.env.FTP_URL}asset-docs/${doc._id}${path.extname(doc.name)}`
-            }
-
             await session.commitTransaction();
             await session.endSession();
 
             return res.status(200).json({
                 ok: true,
-                data: asset
+                data: asset,
+                assetDocRootUrl: `${process.env.FTP_URL}asset-docs/`
             });
         } catch (e) {
-            console.log(e)
+            console.log(e);
             await session.abortTransaction();
             await session.endSession();
             throw new HttpError({...errorCode.INTERNAL_SERVER_ERROR, status: 403});
@@ -77,9 +71,9 @@ export default class AssetController {
         const {user} = req;
         const {params} = req;
 
-        const asset = await Asset.findById(params.id)
+        const asset = (await Asset.findById(params.id)
             .populate({path: "owner", select: "email"})
-            .populate({path: "auctioneer", select: "email"});
+            .populate({path: "auctioneer", select: "email"}));
         if (!asset)
             throw new HttpError({...errorCode.ASSET.NOT_FOUND, status: 403});
         if (
@@ -91,10 +85,10 @@ export default class AssetController {
                 status: 403,
             });
 
-        const payload = asset;
         res.status(200).json({
             ok: true,
-            data: payload,
+            data: asset,
+            assetDocRootUrl: `${process.env.FTP_URL}asset-docs/`
         });
     };
 
@@ -154,6 +148,7 @@ export default class AssetController {
             page,
             totalPages,
             assets,
+            assetDocRootUrl: `${process.env.FTP_URL}asset-docs/`
         };
 
         res.status(200).json({ok: true, data: payload});
@@ -178,10 +173,10 @@ export default class AssetController {
         if (!asset)
             throw new HttpError({...errorCode.ASSET.NOT_FOUND, status: 403});
 
-        const payload = asset;
         res.status(200).json({
             ok: true,
-            data: payload,
+            data: asset,
+            assetDocRootUrl: `${process.env.FTP_URL}asset-docs/`
         });
     };
 }
