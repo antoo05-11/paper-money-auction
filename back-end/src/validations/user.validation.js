@@ -14,12 +14,9 @@ export default {
         address: Joi.string(),
     }).required(),
 
-    createStaff: Joi.object({
+    createAuctioneer: Joi.object({
         name: Joi.string().required(),
         ssid: Joi.string().required(),
-        role: Joi.string()
-            .valid(...roleValues)
-            .required(),
     }).required(),
 
     updatePayment: Joi.object({
@@ -34,5 +31,10 @@ export default {
         ssid: Joi.string(),
         phone: Joi.string(),
         address: Joi.string(),
+    }).required(),
+
+    updatePassword: Joi.object({
+        password: Joi.string().required(),
+        newPassword: Joi.string().required(),
     }).required(),
 };

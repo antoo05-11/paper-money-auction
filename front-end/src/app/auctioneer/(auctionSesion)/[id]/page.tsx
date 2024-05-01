@@ -37,20 +37,22 @@ import { useState } from "react";
 import { viewAuctionInfo } from "@/app/api/apiEndpoints";
 import { useEffect } from "react";
 import { joinAuctionSession } from "@/app/api/apiEndpoints";
-export default function CustomerDetail({ params, searchParams }: any) {
+import { socket } from "@/app/socket";
+import ListBidder from "../../_component/ListBidder";
+export default function CustomerDetail({ params }: any) {
   const id = params.id;
-  const [infor_auction, set_infor_auction] = useState();
-  const [startSession, setStartSession] = useState(false);
+  const [infor_auction, set_infor_auction] = useState<any>();
+  const [startSession, setStartSession] = useState(true);
   const [onSession, setOnSession] = useState(false);
-  const [registered, setRegister] = useState(false);
-  const [autionToken, setAutionToken] = useState();
+  const [list_bidder, update_list_bidder] = useState();
+  const [autionToken, setAutionToken] = useState<string>();
+  const [time, setTime] = useState(Date.now());
   useEffect(() => {
     const fetchData = async () => {
-      const data_get = await viewAuctionInfo(id);
-      // const json = await data_get.json()
-      const data_use = await data_get.data;
-      // console.log(data_use);
-
+      const listFisrt = await viewAuctionInfo(id);
+      // const json = await listFisrt.json()
+      const data_use = await listFisrt.data;
+      console.log(data_use);
       set_infor_auction(data_use);
     };
     const result = fetchData()
@@ -60,8 +62,18 @@ export default function CustomerDetail({ params, searchParams }: any) {
 
   useEffect(() => {
     const getAuctionToken = async (id: any) => {
-      const token = await joinAuctionSession(id);
-      setAutionToken(token.data);
+      const data_use = await joinAuctionSession(id);
+      const token: string = await data_use.data.data?.token?.replace(
+        "Bearer ",
+        ""
+      );
+      console.log(token);
+      socket.on("connect", async () => {
+        console.log("Connected to server");
+
+        await socket.emit("start_session", token);
+      });
+      setAutionToken(token);
     };
     if (onSession) {
       const result = getAuctionToken(id).catch(console.error);
@@ -69,6 +81,14 @@ export default function CustomerDetail({ params, searchParams }: any) {
   }, [onSession]);
   return (
     <div className="flex flex-col justify-center items-center">
+      <Button
+        onClick={() => {
+          // const hihi = new Date(infor_auction?.auction_end);
+          console.log(autionToken);
+        }}
+      >
+        Test
+      </Button>
       <div className="w-[80%] top-0 bot-0">
         <Card className="top-0 bot-0">
           <CardHeader>
@@ -86,76 +106,68 @@ export default function CustomerDetail({ params, searchParams }: any) {
               <Card className=" bg-cyan-400 row-span-4">
                 <CardTitle>Dat gia</CardTitle>
                 <CardContent>
-                  <p>Gia cao nhat hien tai</p>
-                  <p>Gia khoi diem</p>
-                  <p>Buoc gia</p>
-                  <p>Gia cao nhat cua ban</p>
-                  <p>Ban dang tra gia</p>
+                  <p>Giá cao nhất hiện tại</p>
+                  <p>Người trả giá cao nhất</p>
+                  <p>Giá khởi điểm: {infor_auction?.starting_price} vnd</p>
+                  <p>Bước giá: {infor_auction?.bidding_increment} vnd</p>
                   {startSession && (
-                    <div>
-                      {registered && (
-                        <div>
-                          {onSession && (
-                            <div className="grid grid-cols-4">
-                              <Input type="number" className="col-span-3" />
-                              <Button className="col-span-1">Trả giá</Button>
-                            </div>
-                          )}
-                          {!onSession && (
-                            <Button
-                              className="w-full"
-                              onClick={(e) => {
-                                setOnSession(true);
-                              }}
-                            >
-                              Tham gia phiên đấu giá
-                            </Button>
-                          )}
-                        </div>
-                      )}
-                      {!registered && (
-                        <Button className="w-full">
-                          Đã quá thời hạn đăng kí tham gia
-                        </Button>
-                      )}
-                    </div>
-                  )}
-                  {!startSession && (
-                    <div>
-                      {!registered && (
+                    <div className="w-full">
+                      {!onSession && (
                         <AlertDialog>
                           <AlertDialogTrigger>
-                            <Button>Đăng kí tham gia đấu giá</Button>
+                            <Button className="w-full">
+                              Bắt đầu phiên đấu giá
+                            </Button>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
                               <AlertDialogTitle>
-                                Bạn có chắc chắn muốn tham gia phiên đấu giá này
+                                Bạn có chắc chắn muốn bắt phiên đấu giá này
                               </AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Sau khi đăng kí bạn sẽ phải chờ sự phê duyệt từ
-                                đấu giá viên
-                              </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
                               <AlertDialogAction
                                 onClick={(e) => {
-                                  setRegister(true);
+                                  setOnSession(true);
                                 }}
                               >
-                                Đồng ý
+                                Bắt đầu
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>
                       )}
-                      {registered && (
-                        <Button className="col-span-1 w-full">
-                          Bạn đã đăng kí tham gia
-                        </Button>
+                      {onSession && (
+                        <AlertDialog>
+                          <AlertDialogTrigger>
+                            <Button>Kết thúc phiên đấu giá</Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Bạn có chắc chắn muốn kết thúc phiên đấu giá này
+                              </AlertDialogTitle>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={(e) => {
+                                  setStartSession(true);
+                                }}
+                              >
+                                Kết thúc
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       )}
                     </div>
+                  )}
+                  {!startSession && (
+                    <Button className="w-full">
+                      Chưa đến giờ bắt đầu phiên đấu giá
+                    </Button>
                   )}
                 </CardContent>
               </Card>
@@ -197,7 +209,9 @@ export default function CustomerDetail({ params, searchParams }: any) {
               </TableBody>
             </Table>
           </TabsContent>
-          <TabsContent value="inform">Change your password here.</TabsContent>
+          <TabsContent value="inform">
+            <ListBidder auction_id={infor_auction?._id}></ListBidder>
+          </TabsContent>
           <TabsContent value="describe">Change your password here.</TabsContent>
           <TabsContent value="document">Change your password here.</TabsContent>
         </Tabs>

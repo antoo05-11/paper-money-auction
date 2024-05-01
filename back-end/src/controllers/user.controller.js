@@ -2,10 +2,11 @@ import userRole from "../constants/user.role";
 import { User } from "../models/user";
 import { HttpError } from "../utils/http.error";
 import bcrypt from "bcrypt";
+import errorCode from "../constants/error.code";
 import _ from "lodash";
 
 export default class UserController {
-    constructor() {}
+    constructor() { }
 
     createCustomer = async (req, res) => {
         const { body } = req;
@@ -28,10 +29,11 @@ export default class UserController {
         });
     };
 
-    createStaff = async (req, res) => {
+    createAuctioneer = async (req, res) => {
         const { body } = req;
         const { data } = body;
 
+        data.role = userRole.AUCTIONEER;
         // Generate email
         const year = new Date().getFullYear() % 100;
         const num_of_staff = (
@@ -80,6 +82,32 @@ export default class UserController {
         });
     };
 
+    viewCustomerProfile = async (req, res) => {
+        const { params } = req;
+
+        const user = await User.findById(params.id);
+        if (!user)
+            throw new HttpError({
+                ...errorCode.USER.CUSTOMER_NOT_FOUND,
+                status: 403,
+            });
+
+        const payload = _.pick(user, [
+            "_id",
+            "name",
+            "ssid",
+            "email",
+            "phone",
+            "address",
+            "verified",
+            "active",
+        ]);
+        res.status(200).json({
+            ok: true,
+            data: payload,
+        });
+    };
+
     updateProfile = async (req, res) => {
         const { body } = req;
         const { data } = body;
@@ -105,7 +133,29 @@ export default class UserController {
         });
     };
 
-    updatePassword = async (req, res) => {};
+
+    updatePassword = async (req, res) => {
+        const { user } = req;
+        const { data } = req.body;
+
+        if (!bcrypt.compareSync(data.password, user.password))
+            throw new HttpError({
+                ...errorCode.AUTH.PASSWORD_INVALID,
+                status: 400,
+            });
+
+        user.password = bcrypt.hashSync(
+            data.newPassword,
+            bcrypt.genSaltSync(12),
+            null
+        );
+
+        await user.save();
+
+        res.status(200).json({
+            ok: true,
+        });
+    };
 
     viewPaymentMethod = async (req, res) => {
         const payload = req.payload;
@@ -143,6 +193,46 @@ export default class UserController {
             data: {
                 user: user,
             },
+        });
+    };
+
+    getAllUser = async (req, res) => {
+        const { query } = req;
+
+        const toSortFields = query.sort || null;
+
+        const filter = {
+            role: query.role
+        };
+        const regexFields = ["name", "ssid", "email", "phone"];
+        const queryFields = ["active"];
+        Object.keys(query).forEach((key) => {
+            if (regexFields.includes(key)) {
+                filter[key] = { $regex: query[key] };
+            } else if (queryFields.includes(key)) {
+                filter[key] = query[key];
+            }
+        });
+
+        let totalUser = await User.countDocuments(filter);
+        let page = parseInt(query.page) || 1;
+        let limit = parseInt(query.limit) || 10;
+        let skip = (page - 1) * limit;
+        let totalPages = Math.ceil(totalUser / limit);
+
+        const listUser = await User.find(filter, "name ssid email phone active")
+            .sort(toSortFields)
+            .skip(skip)
+            .limit(limit);
+
+        const payload = {
+            page: page,
+            totalPages: totalPages,
+            listUser: listUser,
+        };
+        res.status(200).json({
+            ok: true,
+            data: payload,
         });
     };
 }

@@ -4,11 +4,11 @@ import TopBar from "../../components/_layout/topbar";
 import { redirect } from "next/navigation";
 import { useAuth } from "@/lib/auth/useAuth";
 import { ROLES } from "@/lib/constant/constant";
+import { serverRole } from "@/lib/utils";
 
 const AuctionneerLayout = ({ children }: { children: React.ReactNode }) => {
-    // const { user } = useAuth();
-    // if (user?.role == ROLES.AUCTIONEER) {
-    if (true) {
+    const role = serverRole();
+    if (role == ROLES.AUCTIONEER) {
         return (
             <div className="h-full">
                 <MobileSidebar />

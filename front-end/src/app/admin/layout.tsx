@@ -5,11 +5,11 @@ import { useAuth } from "@/lib/auth/useAuth";
 import { MESSAGES, ROLES } from "@/lib/constant/constant";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
+import { serverRole } from "@/lib/utils";
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
-  // const { user } = useAuth();
-  // if (user?.role == ROLES.ADMIN) {
-  if (true) {
+  const role = serverRole();
+  if (role == ROLES.ADMIN) {
   return (
     <div className="h-full">
       <MobileSidebar />

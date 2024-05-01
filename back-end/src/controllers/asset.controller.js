@@ -1,7 +1,10 @@
 import { Asset } from "../models/asset";
+import { Auction } from "../models/auction";
+import { User } from "../models/user";
 import { HttpError } from "../utils/http.error";
 import errorCode from "../constants/error.code";
 import _ from "lodash";
+import userRole from "../constants/user.role";
 
 export default class AssetController {
     constructor() {}
@@ -10,59 +13,13 @@ export default class AssetController {
         const { data } = req.body;
 
         data.owner = user._id;
+
+        const uploadedPics = _.map(req.files["pics"], "originalname"); // Replace this with real files url return from server
+        const uploadedDocs = _.map(req.files["docs"], "originalname"); // Replace this with real files url return from server
+
+        data.pics = uploadedPics;
+        data.docs = uploadedDocs;
         const asset = await Asset.create(data);
-
-        const payload = asset;
-        res.status(200).json({
-            ok: true,
-            data: payload,
-        });
-    };
-
-    uploadPics = async (req, res) => {
-        const { user } = req;
-        const { params } = req;
-
-        const asset = await Asset.findById(params.id);
-        if (!asset)
-            throw new HttpError({ ...errorCode.ASSET.NOT_FOUND, status: 403 });
-        if (asset.owner.toString() != user._id.toString())
-            throw new HttpError({
-                ...errorCode.AUTH.ROLE_INVALID,
-                status: 403,
-            });
-
-        // TODO: Upload file to server and return files url
-        const uploadedPics = _.map(req.files, "originalname"); // Replace this with real files url return from server
-
-        asset.pics = asset.pics.concat(uploadedPics);
-        await asset.save();
-
-        const payload = asset;
-        res.status(200).json({
-            ok: true,
-            data: payload,
-        });
-    };
-
-    uploadDocs = async (req, res) => {
-        const { user } = req;
-        const { params } = req;
-
-        const asset = await Asset.findById(params.id);
-        if (!asset)
-            throw new HttpError({ ...errorCode.ASSET.NOT_FOUND, status: 403 });
-        if (asset.owner.toString() != user._id.toString())
-            throw new HttpError({
-                ...errorCode.AUTH.ROLE_INVALID,
-                status: 403,
-            });
-
-        // TODO: Upload file to server and return files url
-        const uploadedDocs = _.map(req.files, "originalname"); // Replace this with real files url return from server
-
-        asset.docs = asset.docs.concat(uploadedDocs);
-        await asset.save();
 
         const payload = asset;
         res.status(200).json({
@@ -75,10 +32,15 @@ export default class AssetController {
         const { user } = req;
         const { params } = req;
 
-        const asset = await Asset.findById(params.id);
+        const asset = await Asset.findById(params.id)
+            .populate({ path: "owner", select: "email" })
+            .populate({ path: "auctioneer", select: "email" });
         if (!asset)
             throw new HttpError({ ...errorCode.ASSET.NOT_FOUND, status: 403 });
-        if (asset.owner.toString() != user._id.toString())
+        if (
+            user.role === userRole.CUSTOMER &&
+            asset.owner._id.toString() != user._id.toString()
+        )
             throw new HttpError({
                 ...errorCode.AUTH.ROLE_INVALID,
                 status: 403,
@@ -92,14 +54,34 @@ export default class AssetController {
     };
 
     listAsset = async (req, res) => {
-        const { user } = req;
-        const { query } = req;
+        const { user, query } = req;
+        const { CUSTOMER, AUCTIONEER, ADMIN } = userRole;
 
-        const toSortFields = query.sort || null;
+        const filter = {};
+        if (user.role === CUSTOMER) {
+            filter.owner = user._id;
+        } else if (user.role === ADMIN) {
+            if (query.owner)
+                filter.owner = { $in: await User.find({ email: query.owner }) };
 
-        const filter = {
-            owner: user._id,
-        };
+            if (query.auctioneer)
+                filter.auctioneer = {
+                    $in: await User.find({ email: query.auctioneer }),
+                };
+        } else if (user.role === AUCTIONEER) {
+            filter.auctioneer = user._id;
+            const pendingAssets = await Auction.find({
+                auctioneer: user._id,
+            }).select("asset");
+
+            filter._id = {
+                $nin: _.map(pendingAssets, "asset"),
+            };
+
+            if (query.owner)
+                filter.owner = { $in: await User.find({ email: query.owner }) };
+        }
+
         const regexFields = ["name", "description"];
         const queryFields = ["verified"];
         Object.keys(query).forEach((key) => {
@@ -110,22 +92,48 @@ export default class AssetController {
             }
         });
 
-        let totalAssets = await Asset.countDocuments(filter);
-        let page = parseInt(query.page) || 1;
-        let limit = parseInt(query.limit) || 10;
-        let skip = (page - 1) * limit;
-        let totalPages = Math.ceil(totalAssets / limit);
+        const totalAssets = await Asset.countDocuments(filter);
+        const page = parseInt(query.page) || 1;
+        const limit = parseInt(query.limit) || 10;
+        const skip = (page - 1) * limit;
+        const totalPages = Math.ceil(totalAssets / limit);
 
         const assets = await Asset.find(filter)
-            .sort(toSortFields)
+            .sort(query.sort)
             .skip(skip)
-            .limit(limit);
+            .limit(limit)
+            .populate({ path: "owner", select: "email" })
+            .populate({ path: "auctioneer", select: "email" });
 
         const payload = {
-            page: page,
-            totalPages: totalPages,
-            assets: assets,
+            page,
+            totalPages,
+            assets,
         };
+
+        res.status(200).json({ ok: true, data: payload });
+    };
+
+    verifyAsset = async (req, res) => {
+        const { params } = req;
+        const { data } = req.body;
+
+        const auctioneer = await User.findById(data.auctioneer);
+        if (!auctioneer)
+            throw new HttpError({
+                ...errorCode.USER.AUCTIONEER_NOT_FOUND,
+                status: 403,
+            });
+
+        const asset = await Asset.findByIdAndUpdate(params.id, data, {
+            new: true,
+        })
+            .populate({ path: "owner", select: "email" })
+            .populate({ path: "auctioneer", select: "email" });
+        if (!asset)
+            throw new HttpError({ ...errorCode.ASSET.NOT_FOUND, status: 403 });
+
+        const payload = asset;
         res.status(200).json({
             ok: true,
             data: payload,

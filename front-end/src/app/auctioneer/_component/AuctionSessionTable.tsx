@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Eye } from 'lucide-react';
+import { Eye } from "lucide-react";
 
 import {
     Table,
@@ -11,12 +11,16 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { auctionData } from "@/lib/constant/dataInterface";
 import { listAuction, listAuctionManaging } from "@/app/api/apiEndpoints";
 import { Badge } from "@/components/ui/badge";
 
+
 export default function AuctionSessionTable({ staffID }: any) {
+    const route = useRouter();
+    const path_name = usePathname();
     const [listItem, setListItem] = useState<auctionData[]>();
     useEffect(() => {
         const fetchData = async () => {
@@ -73,7 +77,9 @@ export default function AuctionSessionTable({ staffID }: any) {
                             <TableCell>{auction.registration_close ? new Date(auction.registration_close).toLocaleString() : ''}</TableCell>
                             <TableCell>{getAuctionStatus(auction)}</TableCell>
                             <TableCell className="text-center">
-                                <Button variant={"ghost"} className="text-purpleColor"><Eye /></Button>
+                                <Button variant={"ghost"} className="text-purpleColor" onClick={() => {
+                                    route.push(path_name + "/" + auction?._id);
+                                }}><Eye /></Button>
                             </TableCell>
                         </TableRow>
                     )))}

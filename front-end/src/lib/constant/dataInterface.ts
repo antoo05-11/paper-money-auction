@@ -22,6 +22,15 @@ export type userData = {
   password?: string | null;
 };
 
+export type profileData = {
+  name?: string | null;
+  ssid?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  verified?: boolean;
+  address?: string | null;
+}
+
 export type filterUserData = {
   name: string | null;
   ssid: string | null;

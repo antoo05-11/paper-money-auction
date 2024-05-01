@@ -20,11 +20,11 @@ export function login2FA(data: any) {
   return request.post("api/auth/login/authenticate", { data: data });
 }
 
-export function verifyUser() {
+export function requestVerify() {
   return request.get("api/auth/verify");
 }
 
-export function reverifyUser(data: any) {
+export function verifyUserByCode(data: any) {
   return request.post("api/auth/verify", { data: data });
 }
 
@@ -60,8 +60,10 @@ export function updatePayment(data: paymentData) {
 }
 
 //asset
-export function createAsset(data: assetData) {
-  return request.post("api/asset/create", { data: data });
+export function createAsset(data: any) {
+  const config = {     
+    headers: { 'content-type': 'multipart/form-data' }};
+  return request.post("api/asset", { data: data }, config);
 }
 
 export function addAssetPicture(id: String, pics: BinaryData) {
@@ -85,8 +87,8 @@ export function createStaff(data: auctioneerData) {
   return request.post("api/user/auctioneer", { data: data });
 }
 
-export function verifyAsset(id: String) {
-  return request.put(`/api/asset/${id}`);
+export function verifyAsset(id: String, data: any) {
+  return request.put(`/api/asset/${id}`, { data: data });
 }
 
 // auction
@@ -103,17 +105,22 @@ export function listAuction(data: any) {
   else return request.get("api/auction");
 }
 export function viewAuctionInfo(id: String) {
-  return request.get(`api/asset/${id}/info`);
+  return request.get(`api/auction/${id}`);
 }
 export function viewAuctionAct(id: String) {
-  return request.get(`api/asset/${id}/act`);
+  return request.get(`api/auction/${id}/act`);
 }
 export function register_Auction(id: String, data: registerAuction) {
-  return request.post(`api/asset/${id}/register`, { data: data });
+  return request.post(`api/auction/${id}/register`, { data: data });
 }
 
-export function joinAuctionSession(id: String) {
-  return request.get(`api/asset/${id}/joinsession`);
+export function joinAuctionSession(auction_id: String) {
+  return request.get(`api/auction/${auction_id}/joinsession`);
+}
+
+//bidder
+export function listBidder(auction_id: any) {
+  return request.get(`/api/auction/${auction_id}/bidders`);
 }
 
 export function listAuctionManaging(data: any) {
