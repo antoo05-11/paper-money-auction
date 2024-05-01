@@ -52,7 +52,7 @@ export default function StaffDetail({ params, searchParams }: any) {
           {/* <CardDescription></CardDescription> */}
         </CardHeader>
         <CardContent>
-          <div className="grid w-full items-center gap-4">
+          {user && <div className="grid w-full items-center gap-4">
             <div className="grid grid-cols-2 gap-4  ">
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="name">Họ và tên</Label>
@@ -86,7 +86,7 @@ export default function StaffDetail({ params, searchParams }: any) {
               </div>
             </div>
           </div>
-
+          }
           <div className="mt-3">
             <AuctionSessionTable staffID={user?._id} />
           </div>

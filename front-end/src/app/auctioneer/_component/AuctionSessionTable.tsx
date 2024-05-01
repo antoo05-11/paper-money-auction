@@ -25,11 +25,13 @@ export default function AuctionSessionTable({ staffID }: any) {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await listAuctionManaging({
-                    auctioneer_id: staffID
-                });
-                const res = response.data.auctions;
-                setListItem(res)
+                if (staffID) {
+                    const response = await listAuctionManaging({
+                        auctioneer_id: staffID
+                    });
+                    const res = response.data.auctions;
+                    setListItem(res);
+                }
             } catch (error) {
                 console.error("Error fetching user data:", error);
             }

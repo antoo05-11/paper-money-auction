@@ -9,11 +9,17 @@ import AuctionSessionForm from "../_component/AuctionSessionForm";
 import { Card } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { listAuction } from "@/app/api/apiEndpoints";
+import { useCookie } from "@/lib/auth/useCookie";
+import { useAuth } from "@/lib/auth/useAuth";
 export default function Page() {
   const [list_auction, update_list_auction] = useState();
   const [filter, setFilter] = useState<any>(null);
+
+  const auth = useAuth();
+
   useEffect(() => {
     const fetchData = async (filter: any) => {
+
       const data = await listAuction(filter);
       const data_use = await data?.data?.auctions;
       update_list_auction(data_use);
@@ -47,7 +53,7 @@ export default function Page() {
       </div>
       <Card className="shadow">
         <div className="flex flex-col justify-center items-center my-7 container">
-          <AuctionSessionTable list_auction={list_auction} />
+          <AuctionSessionTable staffID={auth.user?.id} />
         </div>
       </Card>
     </div>
