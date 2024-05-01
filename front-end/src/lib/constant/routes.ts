@@ -27,8 +27,8 @@ export const adminRoutes = [
   },
   {
     icon: List,
-    label: "Staff",
-    href: "/admin/staff",
+    label: "Asset",
+    href: "/admin/asset",
   },
 ];
 
