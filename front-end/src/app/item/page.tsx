@@ -23,7 +23,7 @@ export default function ListItem() {
     const fetchData = async () => {
       const listFisrt = await listAuction(input);
       // const json = await listFisrt.json()
-      const data_asset = await listFisrt.data;
+      const data_asset = await listFisrt.data.auctions;
       console.log(data_asset);
       setListItem(data_asset);
     };
@@ -46,6 +46,7 @@ export default function ListItem() {
 }
 
 function CardItem(infor_auction: any) {
+  console.log(infor_auction?._id);
   const route = useRouter();
   const path_name = usePathname();
   return (
