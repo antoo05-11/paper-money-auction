@@ -20,11 +20,11 @@ export function login2FA(data: any) {
   return request.post("api/auth/login/authenticate", { data: data });
 }
 
-export function verifyUser() {
+export function requestVerify() {
   return request.get("api/auth/verify");
 }
 
-export function reverifyUser(data: any) {
+export function verifyUserByCode(data: any) {
   return request.post("api/auth/verify", { data: data });
 }
 
