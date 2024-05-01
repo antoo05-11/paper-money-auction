@@ -22,6 +22,15 @@ export type userData = {
   password?: string | null;
 };
 
+export type profileData = {
+  name?: string | null;
+  ssid?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  verified?: boolean;
+  address?: string | null;
+}
+
 export type filterUserData = {
   name: string | null;
   ssid: string | null;
@@ -60,15 +69,18 @@ export type auctioneerData = {
 };
 
 export type auctionData = {
-  asset: string;
-  starting_price: number;
-  bidding_increment: number;
-  deposit: number;
-  registration_open: Date;
-  registration_close: Date;
-  auction_start: Date;
-  auction_end: Date;
-  max_number_of_bidder: number;
+  _id: string;
+  asset: {
+    name: string;
+  };
+  starting_price?: number;
+  bidding_increment?: number;
+  deposit?: number;
+  registration_open?: Date;
+  registration_close?: Date;
+  auction_start?: Date;
+  auction_end?: Date;
+  max_number_of_bidder?: number;
 };
 
 export type registerAuction = {
