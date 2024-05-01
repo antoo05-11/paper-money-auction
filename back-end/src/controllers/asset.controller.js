@@ -1,4 +1,5 @@
 import { Asset } from "../models/asset";
+import { Auction } from "../models/auction";
 import { User } from "../models/user";
 import { HttpError } from "../utils/http.error";
 import errorCode from "../constants/error.code";
@@ -36,7 +37,10 @@ export default class AssetController {
             .populate({ path: "auctioneer", select: "email" });
         if (!asset)
             throw new HttpError({ ...errorCode.ASSET.NOT_FOUND, status: 403 });
-        if (user.role === userRole.CUSTOMER && asset.owner._id.toString() != user._id.toString())
+        if (
+            user.role === userRole.CUSTOMER &&
+            asset.owner._id.toString() != user._id.toString()
+        )
             throw new HttpError({
                 ...errorCode.AUTH.ROLE_INVALID,
                 status: 403,
@@ -56,16 +60,26 @@ export default class AssetController {
         const filter = {};
         if (user.role === CUSTOMER) {
             filter.owner = user._id;
-        } else if (user.role === AUCTIONEER || user.role === ADMIN) {
+        } else if (user.role === ADMIN) {
             if (query.owner)
                 filter.owner = { $in: await User.find({ email: query.owner }) };
 
-            if (query.auctioneer && user.role === ADMIN)
+            if (query.auctioneer)
                 filter.auctioneer = {
                     $in: await User.find({ email: query.auctioneer }),
                 };
+        } else if (user.role === AUCTIONEER) {
+            filter.auctioneer = user._id;
+            const pendingAssets = await Auction.find({
+                auctioneer: user._id,
+            }).select("asset");
 
-            if (user.role === AUCTIONEER) filter.auctioneer = user._id;
+            filter._id = {
+                $nin: _.map(pendingAssets, "asset"),
+            };
+
+            if (query.owner)
+                filter.owner = { $in: await User.find({ email: query.owner }) };
         }
 
         const regexFields = ["name", "description"];
