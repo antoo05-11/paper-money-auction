@@ -224,7 +224,7 @@ export default class AuctionController {
                 $project: {
                     count: 1,
                     auctions: {
-                         _id: 1,
+                        _id: 1,
                         auction_start: 1,
                         auction_end: 1,
                         registration_open: 1,
@@ -338,7 +338,7 @@ export default class AuctionController {
                 $project: {
                     count: 1,
                     auctions: {
-                         _id: 1,
+                        _id: 1,
                         auction_start: 1,
                         auction_end: 1,
                         registration_open: 1,
@@ -436,7 +436,7 @@ export default class AuctionController {
                 $project: {
                     count: 1,
                     auctions: {
-                         _id: 1,
+                        _id: 1,
                         auction_start: 1,
                         auction_end: 1,
                         registration_open: 1,
@@ -688,32 +688,59 @@ export default class AuctionController {
         const user = req.user;
         const auctionId = req.params.id;
 
-        const auction = await Auction.findById(auctionId);
+        const auction = await Auction.findById(auctionId).populate('asset', 'owner');
+
+        let alias = 'auctioneer';
+        let role = user.role;
+
         if (!auction)
             throw new HttpError({
                 ...errorCode.AUCTION.NOT_FOUND,
                 status: 400,
             });
 
-        const participation = await Participation.findOne({
-            bidder: user._id,
-            auction: auctionId,
-        });
-        if (!participation) {
+        if (auction.auction_start - Date.now() > 5 * 60 * 1000 || auction.auction_end < Date.now()) {
             throw new HttpError({
-                ...errorCode.AUCTION.NOT_REGISTERED_YET,
-                status: 404,
-            });
-        }
-        if (participation.verified === false) {
-            throw new HttpError({
-                ...errorCode.AUCTION.NOT_REGISTERED_YET,
-                status: 404,
+                ...errorCode.AUCTION.NOT_IN_JOINING_TIME,
+                status: 400,
             });
         }
 
+        if (user.role === userRole.AUCTIONEER) {
+            if (auction.auctioneer.toString() !== user._id.toString()) {
+                throw new HttpError({
+                    ...errorCode.AUCTION.NOT_AUTHORIZED,
+                    status: 400,
+                });
+            }
+        } else if (user.role === userRole.CUSTOMER) {
+            const participation = await Participation.findOne({
+                bidder: user._id,
+                auction: auctionId,
+            });
+            if (!participation) {
+                if (auction.asset.owner.toString() !== user._id.toString()) {
+                    throw new HttpError({
+                        ...errorCode.AUCTION.NOT_REGISTERED_YET,
+                        status: 404,
+                    });
+                } else {
+                    alias = 'asset owner';
+                    role = userRole.ASSET_OWNER;
+                }
+            } else {
+                if (participation.verified === false) {
+                    throw new HttpError({
+                        ...errorCode.AUCTION.NOT_REGISTERED_YET,
+                        status: 404,
+                    });
+                }
+            }
+        }
+
+
         const token = jwt.sign(
-            {auctionId: auctionId, userID: user._id, role: user.role},
+            {auctionId: auctionId, userID: user._id, role: role},
             process.env.JWT_AUCTION_KEY,
             {
                 expiresIn: '1h',
@@ -724,7 +751,7 @@ export default class AuctionController {
             data: {
                 token: `Bearer ${token}`,
                 participation: {
-                    alias: participation.alias,
+                    alias: alias,
                 }
             },
         });

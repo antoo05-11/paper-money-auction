@@ -56,7 +56,7 @@ class SocketService extends Service {
 
             socket.on('start_session', async (auctionToken) => this.#startSession(socket, auctionToken, [userRole.AUCTIONEER]))
 
-            socket.on('join_session', (auctionToken) => this.#joinSession(socket, auctionToken, [userRole.AUCTIONEER, userRole.CUSTOMER]));
+            socket.on('join_session', (auctionToken) => this.#joinSession(socket, auctionToken, [userRole.AUCTIONEER, userRole.CUSTOMER, userRole.ASSET_OWNER]));
 
             socket.on('make_offer', (auctionToken, offer) => this.#makeOffer(socket, auctionToken, offer, [userRole.CUSTOMER]))
 
