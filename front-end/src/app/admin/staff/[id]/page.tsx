@@ -88,7 +88,7 @@ export default function StaffDetail({ params, searchParams }: any) {
           </div>
 
           <div className="mt-3">
-            <AuctionSessionTable />
+            <AuctionSessionTable staffID={user?._id} />
           </div>
         </CardContent>
       </Card>

@@ -115,3 +115,7 @@ export function register_Auction(id: String, data: registerAuction) {
 export function joinAuctionSession(id: String) {
   return request.get(`api/asset/${id}/joinsession`);
 }
+
+export function listAuctionManaging(data: any) {
+  return request.get("api/auction/managing", { data: data })
+}
