@@ -84,7 +84,7 @@ export function listAsset(data: filterAssetData) {
   else return request.get("api/asset");
 }
 
-export function createStaff(data: auctioneerData) {
+export function createStaff(data: userData) {
   return request.post("api/user/auctioneer", { data: data });
 }
 
