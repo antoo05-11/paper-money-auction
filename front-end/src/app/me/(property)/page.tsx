@@ -35,10 +35,10 @@ export default function Page() {
   const debouncedFilter = useDebounce(filter,1000);
 
   useEffect(() => {
-    // setLoading(true);
+    setLoading(true);
     listAsset(debouncedFilter).then(res => {
       setAsset(res.data.data.assets);
-      // setLoading(false);
+      setLoading(false);
     })
   }, [debouncedFilter]);
 
