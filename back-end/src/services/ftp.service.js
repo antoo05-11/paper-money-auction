@@ -27,8 +27,10 @@ class FtpService extends Service {
     }
 
     uploadFiles = async (files, nameIdMap, remoteDir) => {
-        if (this.#ftpClient.getConnectionStatus().toString() !== "connected") {
+        try {
             this.#ftpClient.reconnect();
+        } catch (e) {
+            console.log(e);
         }
         for (const fileKey in files) {
             const file = files[fileKey];
