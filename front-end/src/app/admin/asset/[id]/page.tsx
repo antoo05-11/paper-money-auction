@@ -84,7 +84,7 @@ export default function Page({ params, searchParams }: any) {
         ssid: null,
         phone: null,
         email: null,
-        active: null,
+        active: true,
         role: "auctioneer",
         page: undefined,
         limit: undefined,
