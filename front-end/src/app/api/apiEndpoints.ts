@@ -64,7 +64,7 @@ export function createAsset(data: any) {
   const config = {
     headers: { 'content-type': 'multipart/form-data' }
   };
-  return request.post("api/asset", { data: data }, config);
+  return request.post("api/asset", data, config);
 }
 
 export function addAssetPicture(id: String, pics: BinaryData) {

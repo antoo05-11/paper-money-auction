@@ -9,7 +9,6 @@ import PropertyForm from "./_component/PropertyForm";
 import { useAuth } from "@/lib/auth/useAuth";
 
 export default function Page() {
-  const auth = useAuth();
   return (
     <div className="container">
       <div className="flex justify-between mb-5">
