@@ -20,6 +20,7 @@ class FtpService extends Service {
             user: process.env.FTP_USER,
             password: process.env.FTP_PASSWORD,
             autoReconnect: true,
+            keepalive: 1000
         })
             .then((serverMessage) => {
                 console.log('Server message: ' + serverMessage);
@@ -28,7 +29,7 @@ class FtpService extends Service {
 
     uploadFiles = async (files, nameIdMap, remoteDir) => {
         try {
-            this.#ftpClient.reconnect();
+           await this.#ftpClient.reconnect();
         } catch (e) {
             console.log(e);
         }
