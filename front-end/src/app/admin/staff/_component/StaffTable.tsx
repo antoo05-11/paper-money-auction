@@ -26,6 +26,7 @@ export default function StaffTable() {
     const [listUser, setListUser] = useState<userData[]>();
     const pathName = usePathname();
     const route = useRouter();
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -61,7 +62,7 @@ export default function StaffTable() {
                                 <TableHead>Email</TableHead>
                                 <TableHead>Số điện thoại</TableHead>
                                 <TableHead className="text-center">Trạng thái</TableHead>
-                                <TableHead className="text-center">Chi tiết</TableHead>
+                                {pathName.includes("staff") && <TableHead className="text-center">Chi tiết</TableHead>}
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -76,23 +77,26 @@ export default function StaffTable() {
                                             {user.active ? "Hoạt động" : "Đình chỉ"}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell className="text-center">
-                                        <Button
-                                            variant={"ghost"}
-                                            className="text-purpleColor"
-                                            onClick={(e) => { route.push(pathName + '/' + user._id) }}
-                                        >
-                                            <Eye />
-                                        </Button>
+                                    {pathName.includes("staff") &&
+                                        <TableCell className="text-center">
+                                            <Button
+                                                variant={"ghost"}
+                                                className="text-purpleColor"
+                                                onClick={(e) => { route.push(pathName + '/' + user._id) }}
+                                            >
+                                                <Eye />
+                                            </Button>
 
-                                        <AlertDialog>
-                                            <AlertDialogTrigger asChild>
-                                                <Button variant={"ghost"} className="text-red-500"><Ban /></Button>
-                                            </AlertDialogTrigger>
+                                            <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <Button variant={"ghost"} className="text-red-500"><Ban /></Button>
+                                                </AlertDialogTrigger>
 
-                                            <CustomAlert variant="BAN" />
-                                        </AlertDialog>
-                                    </TableCell>
+                                                <CustomAlert variant="BAN" />
+                                            </AlertDialog>
+                                        </TableCell>
+                                    }
+
                                 </TableRow>
                             ))}
                         </TableBody>

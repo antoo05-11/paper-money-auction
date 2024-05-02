@@ -45,11 +45,9 @@ export default function PropertyForm() {
                 "name": name,
                 "description": description
             };
-            formData.append('data', new Blob([JSON.stringify({
+            formData.append('data', JSON.stringify({
                 name: name,
                 description: description
-            })], {
-                type: "application/json"
             }));
             createAsset(formData).then(res => {
                 if (res.status === HTTP_STATUS.OK) {
