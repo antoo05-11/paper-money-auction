@@ -49,8 +49,15 @@ export type paymentData = {
 };
 
 export type assetData = {
-  name: string;
-  description: string;
+  _id?: String;
+  owner?: {
+    email: String;
+  };
+  name?: string;
+  description?: string;
+  pics?: [String];
+  verified?: boolean;
+  auctioneer?: String;
 };
 
 export type filterAssetData = {
