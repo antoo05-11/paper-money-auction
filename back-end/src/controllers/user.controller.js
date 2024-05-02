@@ -235,4 +235,34 @@ export default class UserController {
             data: payload,
         });
     };
+    suspendUser = async (req, res) => {
+        const { params } = req;
+
+        const user = await User.findByIdAndUpdate(params.id, { active: false }, {
+            new: true,
+        }).select({
+            _id: 0,
+            name: 1,
+            ssid: 1,
+            email: 1,
+            phone: 1,
+            address: 1,
+            verified: 1,
+            active: 1,
+        });
+
+        if (!user) {
+            throw new HttpError({
+                ...errorCode.USER.NOT_FOUND,
+                status: 404,
+            });
+        }
+
+        res.status(200).json({
+            ok: true,
+            data: {
+                user: user,
+            },
+        });
+    }
 }

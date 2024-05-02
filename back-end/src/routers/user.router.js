@@ -64,6 +64,12 @@ export default [
                 method: "getAllUser",
                 roles: [userRole.ADMIN],
             },
+            {
+                httpMethod: "put",
+                path: "/user/suspend/:id",
+                method: "suspendUser",
+                roles: [userRole.ADMIN],
+            },
         ],
     },
 ];
