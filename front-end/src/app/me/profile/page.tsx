@@ -37,8 +37,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { useContext, useEffect, useState } from "react";
-import { getProfile } from "@/app/api/apiEndpoints";
+import { getProfile, requestVerify } from "@/app/api/apiEndpoints";
 import { useAuth } from "@/lib/auth/useAuth";
+import { profileData } from "@/lib/constant/dataInterface";
+import VerifyAccount from "./verify-dialog";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 
 const frameworks = [
   {
@@ -63,24 +66,19 @@ const frameworks = [
   },
 ]
 
-export default function Page() {
+export default function ProfileCustomerPage() {
   const [open, setOpen] = useState(false);
+  const [openVerify, setOpenVerify] = useState(false);
   const [value, setValue] = useState("");
+  const [isLoading, setLoading] = useState(true);
+  const [isVerifying, setVerify] = useState(false);
 
-  const [profileData, setProfileData] = useState(null);
-  const auth = useAuth();
-
+  const [profileData, setProfileData] = useState<profileData | null>(null);
   useEffect(() => {
-    let ignore = false;
-    setProfileData(null);
-    getProfile().then(res => {
-      if (!ignore) {
-        setProfileData(res.data);
-      }
+    getProfile().then((res) => {
+      setProfileData(res.data.data.user);
+      setLoading(false);
     });
-    return () => {
-      ignore = true;
-    }
   }, []);
 
   return (
@@ -101,23 +99,34 @@ export default function Page() {
                 <CardContent className="space-y-2">
                   <div className="space-y-1">
                     <Label htmlFor="name">Họ và tên</Label>
-                    <Input id="name" defaultValue="" placeholder="Nguyễn Văn A" className="rounded-full" />
+                    <Input id="name" defaultValue="" placeholder={profileData?.name ?? ''} className="rounded-full" />
                   </div>
                   <div className="space-y-1">
-                    <Label htmlFor="username">CCCD</Label>
-                    <Input id="username" defaultValue="" placeholder="123456789000" className="rounded-full" />
+                    <Label htmlFor="ssid">CCCD</Label>
+                    <Input id="ssid" defaultValue="" placeholder={profileData?.ssid ?? ''} className="rounded-full" />
+                  </div>
+                  <div className="">
+                    <Label htmlFor="email" className="justify-between items-end flex" >
+                      Email
+                      {profileData?.verified == false && 
+                        <Dialog open={openVerify} onOpenChange={setOpenVerify} >
+                        <DialogTrigger asChild>
+                          <Button className="h-1/4 text-xs" >Xác minh email</Button>
+                        </DialogTrigger>
+            
+                        <VerifyAccount setClose={setOpenVerify}/>
+                      </Dialog>
+                      }
+                    </Label>
+                    <Input id="email" defaultValue="" placeholder={profileData?.email ?? ''} className="rounded-full mb-5 mt-2" />
                   </div>
                   <div className="space-y-1">
-                    <Label htmlFor="username">Email</Label>
-                    <Input id="username" defaultValue="" placeholder="abc@g.c" className="rounded-full" />
+                    <Label htmlFor="phone">Phone</Label>
+                    <Input id="phone" defaultValue="" placeholder={profileData?.phone ?? ''} className="rounded-full" />
                   </div>
                   <div className="space-y-1">
-                    <Label htmlFor="username">Phone</Label>
-                    <Input id="username" defaultValue="" placeholder="0123456789" className="rounded-full" />
-                  </div>
-                  <div className="space-y-1">
-                    <Label htmlFor="username">Địa chỉ</Label>
-                    <Input id="username" defaultValue="" placeholder="Hà Nộ, Việt Nam" className="rounded-full" />
+                    <Label htmlFor="address">Địa chỉ</Label>
+                    <Input id="address" defaultValue="" placeholder={profileData?.address ?? ''} className="rounded-full" />
                   </div>
                 </CardContent>
                 <CardFooter>

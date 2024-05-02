@@ -39,10 +39,11 @@ export default function UserMenu() {
     const auth = useAuth();
 
     const isAdmin = auth?.user?.role == ROLES.ADMIN;
-    
+    const isAuctioneer = auth?.user?.role == ROLES.AUCTIONEER;
+
     function logOut() {
-       auth.logout();
-       router.push('/');
+        auth.logout();
+        router.push('/');
     }
 
     return (
@@ -55,35 +56,35 @@ export default function UserMenu() {
                         <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
                 </DropdownMenuTrigger>
-                    <DropdownMenuContent className="mr-3">
-                        <DropdownMenuLabel>{auth.user?.name}</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
+                <DropdownMenuContent className="mr-3">
+                    <DropdownMenuLabel>{auth.user?.name}</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
                         <DropdownMenuGroup>
-                            {!isAdmin && (
-                            <DropdownMenuGroup>
-                                <DropdownMenuItem>
-                                <Link href={'/me'} className="flex flex-row">
+                            <DropdownMenuItem>
+                                <Link href={isAdmin ? "/admin" : (isAuctioneer ? "/auctioneer" : "/me")} className="flex flex-row">
                                     <User className="mr-2 h-4 w-4" />
                                     <span>Me</span>
                                 </Link>
-                                </DropdownMenuItem>
+                            </DropdownMenuItem>
+                            {!isAdmin &&
                                 <DropdownMenuItem>
-                                    <Link href={pathname.includes("me") ? "/me/profile" : "/auctioneer/profile"} className="flex flex-row">
+                                    <Link href={isAuctioneer ? "/auctioneer/profile" : "/me/profile"} className="flex flex-row">
                                         <User className="mr-2 h-4 w-4" />
                                         <span>Profile</span>
                                     </Link>
                                 </DropdownMenuItem>
-                                </DropdownMenuGroup>
-                            )}
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem className="">
-                                <Button onClick={logOut} className="flex flex-row">
-                                    <LogOut className="mr-2 h-4 w-4" />
-                                    <span>Log out</span>
-                                </Button>
-                            </DropdownMenuItem>
+                            }
                         </DropdownMenuGroup>
-                    </DropdownMenuContent>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem className="">
+                            <Button onClick={logOut} className="flex flex-row">
+                                <LogOut className="mr-2 h-4 w-4" />
+                                <span>Log out</span>
+                            </Button>
+                        </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                </DropdownMenuContent>
             </DropdownMenu>
         </div>
     );
