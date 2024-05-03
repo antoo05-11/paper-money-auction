@@ -1,16 +1,28 @@
-// import mongoose from "mongoose";
-//
-// const transactionSchema = new mongoose.Schema({
-//     id: String,
-//     userId: String,
-//     type: String,
-//     last_balance: Number,
-//     depositRequiredFee: Number,
-//     postId: String,
-//     createdTime: Date,
-//     status: String,
-// }, {
-//     versionKey: false
-// });
-//
-// export const Transaction = mongoose.model("Transaction", transactionSchema);
+import mongoose from "mongoose";
+
+const transactionSchema = new mongoose.Schema(
+    {
+        bidder: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+        },
+        auction: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Auction",
+        },
+        amount: {
+            type: Number,
+            required: true,
+        },
+        type: {
+            type: String,
+            required: true,
+        },
+    },
+    {
+        versionKey: false,
+        timestamps: true,
+    }
+);
+
+export const Transaction = mongoose.model("Transaction", transactionSchema);
