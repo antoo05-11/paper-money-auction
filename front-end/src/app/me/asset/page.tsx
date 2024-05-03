@@ -5,19 +5,22 @@ import { Input } from "@/components/ui/input";
 import { Upload, UserPlus } from "lucide-react";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import PropertyForm from "./_component/PropertyForm";
-import { useAuth } from "@/lib/auth/useAuth";
 import { columns } from "./_component/columns";
 import { DataTable } from "../../../components/ui/data-table";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { assetData, filterAssetData } from "@/lib/constant/dataInterface";
 import { listAsset } from "@/app/api/apiEndpoints";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useDebounce } from "@/lib/hook/useDebounce";
 import { Skeleton } from "@/components/ui/skeleton";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function Page() {
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname()
+  const searchParam = useSearchParams();
   const [asset, setAsset] = useState<assetData[]>([]);
   const [filter, setFilter] = useState<filterAssetData>(
     {
@@ -28,11 +31,47 @@ export default function Page() {
       auctioneer: undefined,
       verified: undefined,
       page: 1,
-      skip: 10,
+      skip: 2,
     }
   );
 
   const debouncedFilter = useDebounce(filter,1000);
+
+  useEffect(() => {
+    const sortParam = searchParam.get('name');
+    const nameParam = searchParam.get('description');
+    const desParam = searchParam.get('owner');
+    const ownerParam = searchParam.get('sort');
+    const auctioneerParam = searchParam.get('auctioneer');
+    const verifiedParam = searchParam.get('verified');
+    const pageParam = searchParam.get('page');
+    const skipParam = searchParam.get('skip');
+    const updatedQueryParams: filterAssetData = {
+      sort: sortParam ? sortParam : undefined,
+      name: nameParam ? nameParam : undefined,
+      description: desParam ? desParam : undefined,
+      owner: ownerParam ? ownerParam : undefined,
+      auctioneer: auctioneerParam ? auctioneerParam : undefined,
+      verified: verifiedParam ? Boolean(verifiedParam) : undefined,
+      page: pageParam ? parseInt(pageParam as string) : 1,
+      skip: skipParam ? parseInt(skipParam as string) : 2,
+    };
+    setFilter(updatedQueryParams);
+  }, [searchParam]);
+
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParam.toString())
+      params.set(name, value)
+ 
+      return params.toString()
+    },
+    [searchParam]
+  )
+
+  function queryString() {
+    
+  }
 
   useEffect(() => {
     setLoading(true);
@@ -61,6 +100,7 @@ export default function Page() {
       // setAsset(res.data.data.assets);
       setAsset(dataAsset);
       setLoading(false);
+      router.push(pathname + '?' + queryString);
     })
   }, [debouncedFilter]);
 

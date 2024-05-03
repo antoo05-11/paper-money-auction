@@ -1,6 +1,7 @@
 import {
   BadgeDollarSign,
   Bell,
+  BookUser,
   Compass,
   FileClock,
   LandPlot,
@@ -42,9 +43,14 @@ export const guestRoutes = [
 
 export const userRoutes = [
   {
+    icon: BookUser,
+    label: "Thông tin cá nhân",
+    href: "/me",
+  },
+  {
     icon: LandPlot,
     label: "Đăng ký tài sản đấu giá",
-    href: "/me",
+    href: "/me/asset",
   },
   {
     icon: FileClock,
