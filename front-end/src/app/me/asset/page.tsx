@@ -18,9 +18,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function Page() {
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const pathname = usePathname()
-  const searchParam = useSearchParams();
+  const [pageCount, setPageCount] = useState(0);
   const [asset, setAsset] = useState<assetData[]>([]);
   const [filter, setFilter] = useState<filterAssetData>(
     {
@@ -36,71 +34,327 @@ export default function Page() {
   );
 
   const debouncedFilter = useDebounce(filter,1000);
-
-  useEffect(() => {
-    const sortParam = searchParam.get('name');
-    const nameParam = searchParam.get('description');
-    const desParam = searchParam.get('owner');
-    const ownerParam = searchParam.get('sort');
-    const auctioneerParam = searchParam.get('auctioneer');
-    const verifiedParam = searchParam.get('verified');
-    const pageParam = searchParam.get('page');
-    const skipParam = searchParam.get('skip');
-    const updatedQueryParams: filterAssetData = {
-      sort: sortParam ? sortParam : undefined,
-      name: nameParam ? nameParam : undefined,
-      description: desParam ? desParam : undefined,
-      owner: ownerParam ? ownerParam : undefined,
-      auctioneer: auctioneerParam ? auctioneerParam : undefined,
-      verified: verifiedParam ? Boolean(verifiedParam) : undefined,
-      page: pageParam ? parseInt(pageParam as string) : 1,
-      skip: skipParam ? parseInt(skipParam as string) : 2,
-    };
-    setFilter(updatedQueryParams);
-  }, [searchParam]);
-
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParam.toString())
-      params.set(name, value)
- 
-      return params.toString()
-    },
-    [searchParam]
-  )
-
-  function queryString() {
-    
-  }
+  console.log(filter);
 
   useEffect(() => {
     setLoading(true);
     listAsset(debouncedFilter).then(res => {
-      const dataAsset = [
-        {
-          _id: '1',
-          owner: {
-            _id: 'thoseid',
-            email: 'caomn@gmail.com'
-          },
-          name: 'Tien rong macao',
-          description: 'Tien qua dep',
-          pics: [{
-            name: 'buc anh dep',
-            _id: 'idanh'
-            
-          }],
-          docs: [{
-            name: 'tai lieu hay',
-            _id: 'doc_id'
-          }],
-          verified: true
-        },
-      ];
       // setAsset(res.data.data.assets);
+    }).finally(() => {
+      var dataAsset = [];
+      if (1) {
+        dataAsset = [
+          {
+            _id: '1',
+            owner: {
+              _id: 'thoseid',
+              email: 'caomn@gmail.com'
+            },
+            name: 'Tien rong macao',
+            description: 'Tien qua dep',
+            pics: [{
+              name: 'buc anh dep',
+              _id: 'idanh'
+              
+            }],
+            docs: [{
+              name: 'tai lieu hay',
+              _id: 'doc_id'
+            }],
+            verified: true
+          },
+          {
+            _id: '2',
+            owner: {
+              _id: 'thoseid',
+              email: 'caomn@gmail.com'
+            },
+            name: 'Tien rong macao',
+            description: 'Tien qua dep',
+            pics: [{
+              name: 'buc anh dep',
+              _id: 'idanh'
+              
+            }],
+            docs: [{
+              name: 'tai lieu hay',
+              _id: 'doc_id'
+            }],
+            verified: true
+          },
+          {
+            _id: '3',
+            owner: {
+              _id: 'thoseid',
+              email: 'caomn@gmail.com'
+            },
+            name: 'Tien rong macao',
+            description: 'Tien qua dep',
+            pics: [{
+              name: 'buc anh dep',
+              _id: 'idanh'
+              
+            }],
+            docs: [{
+              name: 'tai lieu hay',
+              _id: 'doc_id'
+            }],
+            verified: true
+          },
+          {
+            _id: '4',
+            owner: {
+              _id: 'thoseid',
+              email: 'caomn@gmail.com'
+            },
+            name: 'Tien rong macao',
+            description: 'Tien qua dep',
+            pics: [{
+              name: 'buc anh dep',
+              _id: 'idanh'
+              
+            }],
+            docs: [{
+              name: 'tai lieu hay',
+              _id: 'doc_id'
+            }],
+            verified: true
+          },
+          {
+            _id: '5',
+            owner: {
+              _id: 'thoseid',
+              email: 'caomn@gmail.com'
+            },
+            name: 'Tien rong macao',
+            description: 'Tien qua dep',
+            pics: [{
+              name: 'buc anh dep',
+              _id: 'idanh'
+              
+            }],
+            docs: [{
+              name: 'tai lieu hay',
+              _id: 'doc_id'
+            }],
+            verified: true
+          },
+          {
+            _id: '6',
+            owner: {
+              _id: 'thoseid',
+              email: 'caomn@gmail.com'
+            },
+            name: 'Tien rong macao',
+            description: 'Tien qua dep',
+            pics: [{
+              name: 'buc anh dep',
+              _id: 'idanh'
+              
+            }],
+            docs: [{
+              name: 'tai lieu hay',
+              _id: 'doc_id'
+            }],
+            verified: true
+          },
+          {
+            _id: '7',
+            owner: {
+              _id: 'thoseid',
+              email: 'caomn@gmail.com'
+            },
+            name: 'Tien rong macao',
+            description: 'Tien qua dep',
+            pics: [{
+              name: 'buc anh dep',
+              _id: 'idanh'
+              
+            }],
+            docs: [{
+              name: 'tai lieu hay',
+              _id: 'doc_id'
+            }],
+            verified: true
+          },
+          {
+            _id: '8',
+            owner: {
+              _id: 'thoseid',
+              email: 'caomn@gmail.com'
+            },
+            name: 'Tien rong macao',
+            description: 'Tien qua dep',
+            pics: [{
+              name: 'buc anh dep',
+              _id: 'idanh'
+              
+            }],
+            docs: [{
+              name: 'tai lieu hay',
+              _id: 'doc_id'
+            }],
+            verified: true
+          },
+        ];
+        const dataAsset2 = [
+          {
+            _id: '1',
+            owner: {
+              _id: 'thoseid',
+              email: 'caomn@gmail.com'
+            },
+            name: 'Tien rong macao',
+            description: 'Tien qua dep',
+            pics: [{
+              name: 'buc anh dep',
+              _id: 'idanh'
+              
+            }],
+            docs: [{
+              name: 'tai lieu hay',
+              _id: 'doc_id'
+            }],
+            verified: true
+          },
+          {
+            _id: '2',
+            owner: {
+              _id: 'thoseid',
+              email: 'caomn@gmail.com'
+            },
+            name: 'Tien rong macao',
+            description: 'Tien qua dep',
+            pics: [{
+              name: 'buc anh dep',
+              _id: 'idanh'
+              
+            }],
+            docs: [{
+              name: 'tai lieu hay',
+              _id: 'doc_id'
+            }],
+            verified: true
+          },
+          {
+            _id: '3',
+            owner: {
+              _id: 'thoseid',
+              email: 'caomn@gmail.com'
+            },
+            name: 'Tien rong macao',
+            description: 'Tien qua dep',
+            pics: [{
+              name: 'buc anh dep',
+              _id: 'idanh'
+              
+            }],
+            docs: [{
+              name: 'tai lieu hay',
+              _id: 'doc_id'
+            }],
+            verified: true
+          },
+          {
+            _id: '4',
+            owner: {
+              _id: 'thoseid',
+              email: 'caomn@gmail.com'
+            },
+            name: 'Tien rong macao',
+            description: 'Tien qua dep',
+            pics: [{
+              name: 'buc anh dep',
+              _id: 'idanh'
+              
+            }],
+            docs: [{
+              name: 'tai lieu hay',
+              _id: 'doc_id'
+            }],
+            verified: true
+          },
+          {
+            _id: '5',
+            owner: {
+              _id: 'thoseid',
+              email: 'caomn@gmail.com'
+            },
+            name: 'Tien rong macao',
+            description: 'Tien qua dep',
+            pics: [{
+              name: 'buc anh dep',
+              _id: 'idanh'
+              
+            }],
+            docs: [{
+              name: 'tai lieu hay',
+              _id: 'doc_id'
+            }],
+            verified: true
+          },
+          {
+            _id: '6',
+            owner: {
+              _id: 'thoseid',
+              email: 'caomn@gmail.com'
+            },
+            name: 'Tien rong macao',
+            description: 'Tien qua dep',
+            pics: [{
+              name: 'buc anh dep',
+              _id: 'idanh'
+              
+            }],
+            docs: [{
+              name: 'tai lieu hay',
+              _id: 'doc_id'
+            }],
+            verified: true
+          },
+          {
+            _id: '7',
+            owner: {
+              _id: 'thoseid',
+              email: 'caomn@gmail.com'
+            },
+            name: 'Tien rong macao',
+            description: 'Tien qua dep',
+            pics: [{
+              name: 'buc anh dep',
+              _id: 'idanh'
+              
+            }],
+            docs: [{
+              name: 'tai lieu hay',
+              _id: 'doc_id'
+            }],
+            verified: true
+          },
+          {
+            _id: '8',
+            owner: {
+              _id: 'thoseid',
+              email: 'caomn@gmail.com'
+            },
+            name: 'Tien rong macao',
+            description: 'Tien qua dep',
+            pics: [{
+              name: 'buc anh dep',
+              _id: 'idanh'
+              
+            }],
+            docs: [{
+              name: 'tai lieu hay',
+              _id: 'doc_id'
+            }],
+            verified: true
+          },
+        ];
+      }
       setAsset(dataAsset);
+      if (filter.skip) setPageCount(Math.ceil(dataAsset.length / filter.skip));
       setLoading(false);
-      router.push(pathname + '?' + queryString);
     })
   }, [debouncedFilter]);
 
@@ -175,7 +429,7 @@ export default function Page() {
       </div>
 
       {loading && <Skeleton className="w-[100px] h-[20px] rounded-full" />}
-      {!loading && <DataTable columns={columns} data={asset} />}
+      {!loading && <DataTable columns={columns} data={asset} pageCount={pageCount}/>}
     </div>
   );
 }
