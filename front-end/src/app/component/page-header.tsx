@@ -20,6 +20,7 @@ import { ArrowRight } from 'lucide-react';
 import Link from "next/link";
 import { useAuth } from "@/lib/auth/useAuth";
 import UserMenu from "@/components/_layout/user-menu";
+import { Logo } from "@/components/_layout/logo";
 
 export default function PageHeader() {
   const [navBar, setNavbar] = useState(false);
@@ -73,7 +74,7 @@ export default function PageHeader() {
       <div className="container">
         <div className="flex justify-between gap-4">
           <div>
-            LOGO
+            <Logo />
           </div>
           <div className="flex flex-row">
             <NavigationMenu>

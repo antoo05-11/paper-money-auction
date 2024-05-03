@@ -37,7 +37,29 @@ export default function Page() {
   useEffect(() => {
     setLoading(true);
     listAsset(debouncedFilter).then(res => {
-      setAsset(res.data.data.assets);
+      const dataAsset = [
+        {
+          _id: '1',
+          owner: {
+            _id: 'thoseid',
+            email: 'caomn@gmail.com'
+          },
+          name: 'Tien rong macao',
+          description: 'Tien qua dep',
+          pics: [{
+            name: 'buc anh dep',
+            _id: 'idanh'
+            
+          }],
+          docs: [{
+            name: 'tai lieu hay',
+            _id: 'doc_id'
+          }],
+          verified: true
+        },
+      ];
+      // setAsset(res.data.data.assets);
+      setAsset(dataAsset);
       setLoading(false);
     })
   }, [debouncedFilter]);

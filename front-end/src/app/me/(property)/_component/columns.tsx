@@ -5,15 +5,19 @@ import { ColumnDef } from "@tanstack/react-table"
 
 export const columns: ColumnDef<assetData>[] = [
   {
-    accessorKey: "id",
+    accessorKey: "_id",
     header: "ID",
   },
   {
-    accessorKey: "verified",
-    header: "Status",
+    accessorKey: "name",
+    header: "Name"
   },
   {
     accessorKey: "description",
     header: "Description",
+  },
+  {
+    accessorKey: "verified",
+    header: "Status",
   },
 ]

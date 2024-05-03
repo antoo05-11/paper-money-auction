@@ -118,7 +118,11 @@ export default function ProfileCustomerPage() {
                       </Dialog>
                       }
                     </Label>
-                    <Input id="email" defaultValue="" placeholder={profileData?.email ?? ''} className="rounded-full mb-5 mt-2" />
+                    <Input id="email" defaultValue="" 
+                    placeholder={
+                      profileData?.email ? (profileData?.verified ? profileData?.email?.concat(' (verified)') : profileData?.email) : ''
+                    }
+                    className="rounded-full mb-5 mt-2" />
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="phone">Phone</Label>

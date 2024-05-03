@@ -59,8 +59,8 @@ export type assetData = {
     _id: string,
     email: string
   },
-  name: string;
-  description: string;
+  name: string,
+  description: string,
   pics: fileData[],
   docs: fileData[],
   verified: boolean
