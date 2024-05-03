@@ -11,7 +11,7 @@ export default class TransactionController {
         const { params } = req;
         const { query } = req;
 
-        const filter = {};
+        const filter = { auction: params.auctionId };
         if (query.bidder)
             filter.bidder = { $in: await User.find({ email: query.bidder }) };
         if (query.type) filter.type = query.type;
