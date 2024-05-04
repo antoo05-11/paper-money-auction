@@ -38,10 +38,9 @@ export function DataTable<TData, TValue>({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const page = searchParams?.get("page") ?? "1" // default is page: 1
-  const per_page = searchParams?.get("skip") ?? "2" // default 10 record per page
+  const page = searchParams?.get("page") ?? "1"
+  const per_page = searchParams?.get("skip") ?? "10"
 
-  // create query string
   const createQueryString = React.useCallback(
     (params: Record<string, string | number | null>) => {
       const newSearchParams = new URLSearchParams(searchParams?.toString())
