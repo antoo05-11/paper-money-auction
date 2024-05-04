@@ -18,10 +18,13 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export default function Page() {
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const pathname = usePathname()
-  const searchParam = useSearchParams();
+  const [pageCount, setPageCount] = useState(0);
+  const searchParams = useSearchParams();
   const [asset, setAsset] = useState<assetData[]>([]);
+
+  const page = parseInt(searchParams.get('page') ?? '1');
+  const skip = parseInt(searchParams.get('skip') ?? '10');
+
   const [filter, setFilter] = useState<filterAssetData>(
     {
       sort: undefined,
@@ -30,79 +33,22 @@ export default function Page() {
       owner: undefined,
       auctioneer: undefined,
       verified: undefined,
-      page: 1,
-      skip: 2,
+      page: page,
+      skip: skip,
     }
   );
 
   const debouncedFilter = useDebounce(filter,1000);
 
   useEffect(() => {
-    const sortParam = searchParam.get('name');
-    const nameParam = searchParam.get('description');
-    const desParam = searchParam.get('owner');
-    const ownerParam = searchParam.get('sort');
-    const auctioneerParam = searchParam.get('auctioneer');
-    const verifiedParam = searchParam.get('verified');
-    const pageParam = searchParam.get('page');
-    const skipParam = searchParam.get('skip');
-    const updatedQueryParams: filterAssetData = {
-      sort: sortParam ? sortParam : undefined,
-      name: nameParam ? nameParam : undefined,
-      description: desParam ? desParam : undefined,
-      owner: ownerParam ? ownerParam : undefined,
-      auctioneer: auctioneerParam ? auctioneerParam : undefined,
-      verified: verifiedParam ? Boolean(verifiedParam) : undefined,
-      page: pageParam ? parseInt(pageParam as string) : 1,
-      skip: skipParam ? parseInt(skipParam as string) : 2,
-    };
-    setFilter(updatedQueryParams);
-  }, [searchParam]);
-
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParam.toString())
-      params.set(name, value)
- 
-      return params.toString()
-    },
-    [searchParam]
-  )
-
-  function queryString() {
-    
-  }
-
-  useEffect(() => {
     setLoading(true);
     listAsset(debouncedFilter).then(res => {
-      const dataAsset = [
-        {
-          _id: '1',
-          owner: {
-            _id: 'thoseid',
-            email: 'caomn@gmail.com'
-          },
-          name: 'Tien rong macao',
-          description: 'Tien qua dep',
-          pics: [{
-            name: 'buc anh dep',
-            _id: 'idanh'
-            
-          }],
-          docs: [{
-            name: 'tai lieu hay',
-            _id: 'doc_id'
-          }],
-          verified: true
-        },
-      ];
-      // setAsset(res.data.data.assets);
-      setAsset(dataAsset);
+      setAsset(res.data.data.assets);
+      setPageCount(res.data.data.totalPages);
+    }).finally(() => {
       setLoading(false);
-      router.push(pathname + '?' + queryString);
     })
-  }, [debouncedFilter]);
+  }, [debouncedFilter, searchParams]);
 
   return (
     <div className="container">
@@ -175,7 +121,7 @@ export default function Page() {
       </div>
 
       {loading && <Skeleton className="w-[100px] h-[20px] rounded-full" />}
-      {!loading && <DataTable columns={columns} data={asset} />}
+      {!loading && <DataTable columns={columns} data={asset} pageCount={pageCount}/>}
     </div>
   );
 }
