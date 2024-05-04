@@ -48,18 +48,33 @@ export type paymentData = {
   holder: string;
 };
 
+export type fileData = {
+  name: string,
+  _id: string
+}
+
 export type assetData = {
+  _id: string,
+  owner: {
+    _id: string,
+    email: string
+  },
   name: string;
   description: string;
+  pics: fileData[],
+  docs: fileData[],
+  verified: boolean
 };
 
 export type filterAssetData = {
   sort: string | undefined;
   name: string | undefined;
   description: string | undefined;
-  verified: string | undefined;
-  page: string | undefined;
-  limit: string | undefined;
+  owner?: string | undefined;
+  auctioneer?: string | undefined;
+  verified: boolean | undefined;
+  page: number | undefined;
+  skip: number | undefined;
 };
 
 export type auctioneerData = {

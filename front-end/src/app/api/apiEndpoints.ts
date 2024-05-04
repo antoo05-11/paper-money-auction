@@ -64,7 +64,7 @@ export function createAsset(data: any) {
   const config = {
     headers: { 'content-type': 'multipart/form-data' }
   };
-  return request.post("api/asset", { data: data }, config);
+  return request.post("api/asset", data, config);
 }
 
 export function addAssetPicture(id: String, pics: BinaryData) {
@@ -84,7 +84,7 @@ export function listAsset(data: filterAssetData) {
   else return request.get("api/asset");
 }
 
-export function createStaff(data: auctioneerData) {
+export function createStaff(data: userData) {
   return request.post("api/user/auctioneer", { data: data });
 }
 
