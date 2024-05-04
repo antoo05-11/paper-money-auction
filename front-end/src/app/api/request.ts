@@ -24,7 +24,7 @@ service.interceptors.request.use(
     }
 
     return config;
-  },
+  }
   // (error: any) => {
   //   return Promise.reject(error);
   // }
@@ -32,7 +32,7 @@ service.interceptors.request.use(
 
 // response interceptor
 service.interceptors.response.use(
-  (response: any) => response,
+  (response: any) => response
   // (error: any) => {
   //   if (error.response) {
   //     if (error.response.status == HTTP_STATUS.FORBIDDEN) {
