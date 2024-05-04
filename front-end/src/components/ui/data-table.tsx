@@ -18,7 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "./button"
-import { DataTablePagination } from "@/app/me/asset/_component/data-table-pagination"
+import { DataTablePagination } from "./data-table-pagination"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import React from "react"
 
