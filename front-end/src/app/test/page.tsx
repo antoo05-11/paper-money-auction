@@ -5,7 +5,6 @@ import {Button} from "@/components/ui/button";
 import {socket} from "../socket";
 import React from "react";
 import {Input} from "@/components/ui/input";
-import {Space} from "lucide-react";
 
 export default function Home() {
     const [isConnected, setIsConnected] = useState(false);
