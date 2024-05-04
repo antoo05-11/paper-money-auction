@@ -39,6 +39,9 @@ class SocketService extends Service {
     #sessions = new NodeCache({stdTTL: 6 * 60 * 60, checkperiod: 120}); // Map socketId _ AuctionSession.
     #users = new Map(); // For tracking in_out only. Map socketId _ {sessionId, userId}.
 
+    #sockets = [];
+
+
     constructor() {
         super();
         if (instance) {
@@ -51,14 +54,14 @@ class SocketService extends Service {
         super.init();
 
         this.io = new Server(httpServer, {
-            path: "/socket/", cors: {
+            path: "/", cors: {
                 origin: '*',
             }
         });
 
         this.io.on('connection', (socket) => {
 
-            console.log(socket.id + " connected.");
+            console.log(`User ${socket.id} join session`);
 
             socket.on('start_session', async (auctionToken) => this.#startSession(socket, auctionToken, [userRole.AUCTIONEER]))
 
@@ -93,6 +96,7 @@ class SocketService extends Service {
     };
 
     #startSession = async (socket, auctionToken, roles) => {
+        console.log("someone start session")
         try {
             const socketInfo = this.#authSession(socket, auctionToken, roles);
             if (socketInfo) {
@@ -137,6 +141,8 @@ class SocketService extends Service {
     };
 
     #joinSession = (socket, auctionToken, roles) => {
+        console.log("someone join session")
+
         try {
             const socketId = socket.id;
 
@@ -227,19 +233,19 @@ class SocketService extends Service {
     };
 
     #withdrawOffer = (socket, auctionToken, roles) => {
-            const socketInfo = this.#authSession(socket, auctionToken, roles);
-            const auctioneerRoomId = userRole.AUCTIONEER + socketInfo.sessionId;
-            if (!socketInfo) {
-                socket.emit('withdraw_offer_response', errorCode.AUCTION.INVALID_TOKEN);
-                return;
-            }
-            const session = this.#sessions.get(socketInfo.sessionId);
-            const withdrawOfferResponse = session.withdrawOffer(socketInfo.userId);
-            if (withdrawOfferResponse !== true) socket.emit("make_offer_response", withdrawOfferResponse);
-            else {
-                this.io.to(socketInfo.sessionId).except(auctioneerRoomId).emit("biddings_update", session.getBiddings(socketInfo.role));
-                this.io.to(auctioneerRoomId).emit("biddings_update", session.getBiddings(userRole.AUCTIONEER));
-            }
+        const socketInfo = this.#authSession(socket, auctionToken, roles);
+        const auctioneerRoomId = userRole.AUCTIONEER + socketInfo.sessionId;
+        if (!socketInfo) {
+            socket.emit('withdraw_offer_response', errorCode.AUCTION.INVALID_TOKEN);
+            return;
+        }
+        const session = this.#sessions.get(socketInfo.sessionId);
+        const withdrawOfferResponse = session.withdrawOffer(socketInfo.userId);
+        if (withdrawOfferResponse !== true) socket.emit("make_offer_response", withdrawOfferResponse);
+        else {
+            this.io.to(socketInfo.sessionId).except(auctioneerRoomId).emit("biddings_update", session.getBiddings(socketInfo.role));
+            this.io.to(auctioneerRoomId).emit("biddings_update", session.getBiddings(userRole.AUCTIONEER));
+        }
 
     }
 }
