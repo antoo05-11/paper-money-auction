@@ -19,7 +19,12 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 export default function Page() {
   const [loading, setLoading] = useState(false);
   const [pageCount, setPageCount] = useState(0);
+  const searchParams = useSearchParams();
   const [asset, setAsset] = useState<assetData[]>([]);
+
+  const page = parseInt(searchParams.get('page') ?? '1');
+  const skip = parseInt(searchParams.get('skip') ?? '2');
+
   const [filter, setFilter] = useState<filterAssetData>(
     {
       sort: undefined,
@@ -28,8 +33,8 @@ export default function Page() {
       owner: undefined,
       auctioneer: undefined,
       verified: undefined,
-      page: 1,
-      skip: 2,
+      page: page,
+      skip: skip,
     }
   );
 
@@ -42,6 +47,7 @@ export default function Page() {
       // setAsset(res.data.data.assets);
     }).finally(() => {
       var dataAsset = [];
+      var dataAsset2 = [];
       if (1) {
         dataAsset = [
           {
@@ -197,9 +203,9 @@ export default function Page() {
             verified: true
           },
         ];
-        const dataAsset2 = [
+        dataAsset2 = [
           {
-            _id: '1',
+            _id: '111111',
             owner: {
               _id: 'thoseid',
               email: 'caomn@gmail.com'
@@ -352,11 +358,11 @@ export default function Page() {
           },
         ];
       }
-      setAsset(dataAsset);
+      setAsset(page == 2 ? dataAsset2 : dataAsset);
       if (filter.skip) setPageCount(Math.ceil(dataAsset.length / filter.skip));
       setLoading(false);
     })
-  }, [debouncedFilter]);
+  }, [debouncedFilter, searchParams]);
 
   return (
     <div className="container">
