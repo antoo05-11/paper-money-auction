@@ -62,7 +62,7 @@ export function updatePayment(data: paymentData) {
 //asset
 export function createAsset(data: any) {
   const config = {
-    headers: { 'content-type': 'multipart/form-data' }
+    headers: { "content-type": "multipart/form-data" },
   };
   return request.post("api/asset", data, config);
 }
@@ -93,7 +93,7 @@ export function verifyAsset(id: String, data: any) {
 }
 
 // auction
-export function createAuction(data: auctionData) {
+export function createAuction(data: any) {
   return request.post("api/aution/create", { data: data });
 }
 
@@ -120,12 +120,10 @@ export function joinAuctionSession(auction_id: String) {
 }
 
 export function listAuctionManaging(data: any) {
-  return request.get("api/auction/managing", { params: data })
+  return request.get("api/auction/managing", { params: data });
 }
 
 //bidder
 export function listBidder(auction_id: any) {
   return request.get(`/api/auction/${auction_id}/bidders`);
 }
-
-
