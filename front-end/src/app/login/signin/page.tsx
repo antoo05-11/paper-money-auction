@@ -61,6 +61,20 @@ export default function LoginForm() {
     }
   }
 
+  function handleLogin(res: any, isVerified: boolean) {
+    const { data: { token, user: { id, name, role } } } = res;
+
+    const session = {token, id, name, role, isVerified};
+    login(session);
+    switch (role) {
+      case ROLES.ADMIN:
+        redirect('/admin');
+      case ROLES.AUCTIONEER:
+        redirect('/auctioneer');
+      default:
+        redirect('/me');
+    }
+  }
 
   async function onSubmit(values: formData) {
     setAuthData(values);
@@ -69,9 +83,14 @@ export default function LoginForm() {
       await loginUser(values).then((res: any) => {
         if (res.status == HTTP_STATUS.OK) {
             setLoading("Thành công");
-            setTimeout(() => {
-              setVerify(true);
-            }, 1000);
+            if (res.data.data.token) {
+              handleLogin(res.data, false);
+            }
+            else {
+              setTimeout(() => {
+                setVerify(true);
+              }, 1000);
+            }
         }
       })
     } catch (err) {
@@ -86,17 +105,7 @@ export default function LoginForm() {
     try {
       await login2FA({...authData, authenticCode: value}).then((res: any) => {
         if (res.status == HTTP_STATUS.OK) {
-          const { data: { token, user: { id, name, role } } } = res.data;
-          const session = {token, id, name, role};
-          login(session);
-          switch (role) {
-            case ROLES.ADMIN:
-              redirect('/admin');
-            case ROLES.AUCTIONEER:
-              redirect('/auctioneer');
-            default:
-              redirect('/me');
-          }
+          handleLogin(res.data, true);
         }
       });
     } catch (err) {

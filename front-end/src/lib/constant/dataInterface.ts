@@ -8,6 +8,7 @@ export interface User {
   id: string;
   role: string;
   token: string;
+  isVerified: boolean;
 }
 
 export type userData = {

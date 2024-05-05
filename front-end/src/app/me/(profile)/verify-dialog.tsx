@@ -11,20 +11,22 @@ import { HTTP_STATUS } from "@/lib/constant/constant";
 import { useRouter } from "next/navigation";
 
 
-export default function VerifyAccount({setClose}: {setClose: any}) {
+export default function VerifyAccount({setClose, open}: {setClose: any, open: any}) {
     const [getCode, setStatus] = useState(false);
     const [verifyCode, setCode] = useState('');
     const router = useRouter();
 
     useEffect(() => {
-        requestVerify().then((res) => {
-            if (res.status === HTTP_STATUS.OK) {
-                setStatus(true);
-            } else {
-                toast.error("Không thể tạo mã xác minh email. Vui lòng thử lại.");
-            }
-        });
-      }, []);
+        if (open) {
+            requestVerify().then((res) => {
+                if (res.status === HTTP_STATUS.OK) {
+                    setStatus(true);
+                } else {
+                    toast.error("Không thể tạo mã xác minh email. Vui lòng thử lại.");
+                }
+            });
+        }
+      }, [open]);
 
     const handleGetCode = () => {
         requestVerify().then((res) => {

@@ -114,7 +114,7 @@ export default function ProfileCustomerPage() {
                           <Button className="h-1/4 text-xs" >Xác minh email</Button>
                         </DialogTrigger>
             
-                        <VerifyAccount setClose={setOpenVerify}/>
+                        <VerifyAccount setClose={setOpenVerify} open={openVerify}/>
                       </Dialog>
                       }
                     </Label>
