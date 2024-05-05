@@ -19,6 +19,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 export default function Page() {
   const [loading, setLoading] = useState(false);
   const [pageCount, setPageCount] = useState(0);
+  const [openVerify, setOpenVerify] = useState(false);
   const searchParams = useSearchParams();
   const [asset, setAsset] = useState<assetData[]>([]);
 
@@ -38,7 +39,7 @@ export default function Page() {
     }
   );
 
-  const debouncedFilter = useDebounce(filter,1000);
+  const debouncedFilter = useDebounce(filter);
 
   useEffect(() => {
     setFilter(prevFilter => ({
@@ -62,14 +63,14 @@ export default function Page() {
     <div className="container">
      <div className="flex flex-col mb-5 space-y-10">
         <div className="md:mb-0 self-end">
-          <Dialog>
+          <Dialog open={openVerify} onOpenChange={setOpenVerify}>
             <DialogTrigger asChild>
               <Button variant={"createBtn"}>
                 <Upload />
                 <p className="ml-2">Đăng kí tài sản đấu giá</p>
               </Button>
             </DialogTrigger>
-            <PropertyForm />
+            <PropertyForm setClose={setOpenVerify} open={openVerify} />
           </Dialog>
         </div>
         <div className="grid grid-cols-4 mt-5 md:mt-0 space-x-8 mx-20">
@@ -130,8 +131,7 @@ export default function Page() {
         </div>
       </div>
 
-      {loading && <Skeleton className="w-[100px] h-[20px] rounded-full" />}
-      {!loading && <DataTable columns={columns} data={asset} pageCount={pageCount}/>}
+      <DataTable columns={columns} data={asset} pageCount={pageCount}/>
     </div>
   );
 }

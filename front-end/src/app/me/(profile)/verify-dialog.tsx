@@ -1,3 +1,4 @@
+'use client'
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -32,7 +33,6 @@ export default function VerifyAccount({setClose, open}: {setClose: any, open: an
         requestVerify().then((res) => {
             if (res.status === HTTP_STATUS.OK) {
                 setStatus(true);
-                router.refresh();
             } else {
                 toast.error("Không thể tạo mã xác minh email. Vui lòng thử lại.");
             }
@@ -48,6 +48,9 @@ export default function VerifyAccount({setClose, open}: {setClose: any, open: an
             if (res.status === HTTP_STATUS.OK) {
                 toast.success("Email đã được xác minh thành công");
                 setClose(false);
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500)
             } else {
                 toast.error(res.data.message);
             }
