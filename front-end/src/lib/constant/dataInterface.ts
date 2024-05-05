@@ -1,16 +1,12 @@
-
-export interface SearchParams {
-  [key: string]: string | string[] | undefined
-}
-
-export interface IndexPageProps {
-  searchParams: SearchParams
-}
-
 export type userLoginData = {
   email: string;
   password: string;
 };
+
+export type passwordData = {
+  password?: string;
+  newPassword?: string;
+}
 
 export interface User {
   name: string;
@@ -54,9 +50,9 @@ export type filterUserData = {
 }
 
 export type paymentData = {
-  bank: string;
-  account_number: string;
-  holder: string;
+  bank?: string;
+  account_number?: string;
+  holder?: string;
 };
 
 export type fileData = {

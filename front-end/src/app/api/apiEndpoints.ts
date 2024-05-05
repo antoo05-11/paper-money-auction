@@ -51,13 +51,17 @@ export function updateProfile(data: any) {
   return request.put("api/user/profile", { data: data });
 }
 
+export function updatePassword(data: any) {
+  return request.put("api/user/password", { data: data });
+}
+
 //payment
 export function viewPayment() {
-  return request.get("api/user/payment");
+  return request.get("api/user/payment-method");
 }
 
 export function updatePayment(data: paymentData) {
-  return request.post("api/user/payment", { data: data });
+  return request.put("api/user/payment-method", { data: data });
 }
 
 //asset

@@ -37,9 +37,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { useContext, useEffect, useState } from "react";
-import { getProfile, requestVerify, updateProfile } from "@/app/api/apiEndpoints";
+import { getProfile, requestVerify, updatePassword, updatePayment, updateProfile, viewPayment } from "@/app/api/apiEndpoints";
 import { useAuth } from "@/lib/auth/useAuth";
-import { profileData } from "@/lib/constant/dataInterface";
+import { passwordData, paymentData, profileData } from "@/lib/constant/dataInterface";
 import VerifyAccount from "./verify-dialog";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { HTTP_STATUS } from "@/lib/constant/constant";
@@ -75,19 +75,32 @@ export default function ProfileCustomerPage() {
   const [isLoading, setLoading] = useState(true);
   const [isVerifying, setVerify] = useState(false);
   const [editProfile, setEditingProfile] = useState(false);
+  const [editPayment, setEditingPayment] = useState(false);
 
+  const [passwordData, setPasswordData] = useState<passwordData | null>(null);
   const [profileData, setProfileData] = useState<profileData | null>(null);
+  const [paymentData, setPaymentData] = useState<paymentData | null>(null);
+
+  const [newProfile, setNewProfile] = useState<profileData | null>(null);
+  const [newPayment, setNewPayment] = useState<paymentData | null>(null);
+
   useEffect(() => {
+    setLoading(true);
     getProfile().then((res) => {
       setProfileData(res.data.data.user);
       setNewProfile(profileData);
-      setLoading(false);
     });
+    viewPayment().then((res) => {
+      if (res.data.data.user) {
+        setPaymentData(res.data.data.user ?? null);
+        setNewPayment(res.data.data.user);
+      }
+      setLoading(false);
+    })
   }, []);
 
-  const [newProfile, setNewProfile] = useState<profileData | null>(null);
   const handleChangeProfile = () => {
-    if (editProfile) {
+    if (editProfile && newProfile) {
       updateProfile(newProfile).then(res => {
         if (res.status == HTTP_STATUS.OK) {
           toast.success('Cập nhật thông tin thành công');
@@ -103,6 +116,39 @@ export default function ProfileCustomerPage() {
     }
   }
 
+  const handleChangePassword = () => {
+   if (passwordData) {
+    setLoading(true);
+    updatePassword(passwordData).then(res => {
+      if (res.status == HTTP_STATUS.OK) {
+        toast.success('Cập nhật mật khẩu thành công.');
+        setPasswordData(null);
+        setLoading(false);
+      }
+    }).catch(err => {
+      console.log(err);
+      toast.error(err.response.data.message);
+      setLoading(false);
+    })
+   }
+  }
+
+  const handleChangePayment = () => {
+    if (editPayment && newPayment) {
+      updatePayment(newPayment).then(res => {
+        if (res.status == HTTP_STATUS.OK) {
+          toast.success('Cập nhật thông tin thành công');
+          setPaymentData(newPayment);
+          setEditingPayment(false);
+        }
+      }).catch(err => {
+        console.log(err);
+        toast.error('Vui lòng thử lại.')
+      })
+    } else {
+      setEditingPayment(!editPayment);
+    }
+  }
   return (
     <div className="container">
       <div className="flex justify-between mb-5">
@@ -207,15 +253,23 @@ export default function ProfileCustomerPage() {
                 <CardContent className="space-y-2">
                   <div className="space-y-1">
                     <Label htmlFor="current">Mật khẩu hiện tại</Label>
-                    <Input id="current" type="password" className="rounded-full" />
+                    <Input id="current" type="password" className="rounded-full" value={passwordData?.password}
+                    onChange={(e) => setPasswordData(prevPasswordData => ({
+                      ...prevPasswordData,
+                      password: e.target.value,
+                    }))} />
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="new">Mật khẩu mới</Label>
-                    <Input id="new" type="password" className="rounded-full" />
+                    <Input id="new" type="password" className="rounded-full" value={passwordData?.newPassword}
+                     onChange={(e) => setPasswordData(prevPasswordData => ({
+                      ...prevPasswordData,
+                      newPassword: e.target.value,
+                    }))} />
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button variant={"createBtn"}>Lưu thay đổi</Button>
+                  <Button variant={"createBtn"} disabled={isLoading} onClick={handleChangePassword}>Lưu thay đổi</Button>
                 </CardFooter>
               </Card>
             </TabsContent>
@@ -227,11 +281,23 @@ export default function ProfileCustomerPage() {
                 <CardContent className="space-y-2">
                   <div className="space-y-1">
                     <Label htmlFor="current">Chủ tài khoản</Label>
-                    <Input id="name" className="rounded-full" />
+                    <Input id="holder" placeholder={paymentData?.holder ?? ''}
+                    className={`rounded-full ${!editPayment ? 'placeholder:text-black !opacity-100' : ''}`} 
+                    disabled={!editPayment} 
+                    onChange={(e) => setNewPayment(prevPayment => ({
+                      ...prevPayment,
+                      holder: e.target.value,
+                    }))} />
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="current">Số tài khoản</Label>
-                    <Input id="name" className="rounded-full" />
+                    <Input id="account_number" placeholder={paymentData?.account_number ?? ''}
+                    className={`rounded-full ${!editPayment ? 'placeholder:text-black !opacity-100' : ''}`} 
+                    disabled={!editPayment} 
+                    onChange={(e) => setNewPayment(prevPayment => ({
+                      ...prevPayment,
+                      account_number: e.target.value,
+                    }))} />
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="new" className="mr-3">Ngân hàng</Label>
@@ -242,9 +308,10 @@ export default function ProfileCustomerPage() {
                           role="combobox"
                           aria-expanded={open}
                           className="w-[200px] justify-between"
+                          disabled={!editPayment}
                         >
-                          {value
-                            ? frameworks.find((framework) => framework.value === value)?.label
+                          {newPayment?.bank ?? newPayment?.bank
+                            ? frameworks.find((framework) => framework.label === newPayment?.bank)?.label
                             : "Chọn ngân hàng..."}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
@@ -257,17 +324,20 @@ export default function ProfileCustomerPage() {
                             <CommandList>
                               {frameworks.map((framework) => (
                                 <CommandItem
-                                  key={framework.value}
-                                  value={framework.value}
+                                  key={framework.label}
+                                  value={framework.label}
                                   onSelect={(currentValue) => {
-                                    setValue(currentValue === value ? "" : currentValue);
+                                    setNewPayment(prevPayment => ({
+                                      ...prevPayment,
+                                      bank: (currentValue === newPayment?.bank ? newPayment?.bank : currentValue),
+                                    }));
                                     setOpen(false);
                                   }}
                                 >
                                   <Check
                                     className={cn(
                                       "mr-2 h-4 w-4",
-                                      value === framework.value ? "opacity-100" : "opacity-0"
+                                      newPayment?.bank === framework.label ? "opacity-100" : "opacity-0"
                                     )}
                                   />
                                   {framework.label}
@@ -280,8 +350,12 @@ export default function ProfileCustomerPage() {
                     </Popover>
                   </div>
                 </CardContent>
-                <CardFooter>
-                  <Button variant={"createBtn"}>Lưu thay đổi</Button>
+                <CardFooter className="space-x-2">
+                <Button variant={"createBtn"} onClick={handleChangePayment}>{editPayment ? 'Lưu thay đổi' : 'Sửa thông tin'}</Button>
+                  {editPayment &&
+                  <Button onClick={() => setEditingPayment(false)}>
+                    <X />
+                  </Button>}
                 </CardFooter>
               </Card>
             </TabsContent>
