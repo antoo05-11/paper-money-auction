@@ -1,3 +1,4 @@
+'use client'
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -59,8 +60,9 @@ export default function PropertyForm({setClose, open}: {setClose: any, open: any
                     setUploadDoc(null);
                     setName('');
                     setDescription('');
+                    router.push(window.location.href);
+                    router.refresh();
                     setClose(false);
-                    router.push('/me/asset');
                 } else {
                     console.log(res);
                 }

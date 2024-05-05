@@ -21,6 +21,7 @@ export default function Page() {
   const [pageCount, setPageCount] = useState(0);
   const [openVerify, setOpenVerify] = useState(false);
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [asset, setAsset] = useState<assetData[]>([]);
 
   const page = parseInt(searchParams.get('page') ?? '1');
@@ -50,14 +51,16 @@ export default function Page() {
   }, [searchParams])
 
   useEffect(() => {
-    setLoading(true);
-    listAsset(debouncedFilter).then(res => {
-      setAsset(res.data.data.assets);
-      setPageCount(res.data.data.totalPages);
-    }).finally(() => {
-      setLoading(false);
-    })
-  }, [debouncedFilter]);
+    if (!openVerify) {
+      setLoading(true);
+      listAsset(debouncedFilter).then(res => {
+        setAsset(res.data.data.assets);
+        setPageCount(res.data.data.totalPages);
+      }).finally(() => {
+        setLoading(false);
+      })
+    }
+  }, [debouncedFilter, openVerify]);
 
   return (
     <div className="container">
