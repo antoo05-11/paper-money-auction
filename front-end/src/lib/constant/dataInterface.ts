@@ -1,3 +1,12 @@
+
+export interface SearchParams {
+  [key: string]: string | string[] | undefined
+}
+
+export interface IndexPageProps {
+  searchParams: SearchParams
+}
+
 export type userLoginData = {
   email: string;
   password: string;
@@ -99,6 +108,21 @@ export type auctionData = {
   auction_end?: Date;
   max_number_of_bidder?: number;
 };
+
+export type filterAuctionData = {
+  asset?: string;
+  registration_open?: Date;
+  registration_close?: Date;
+  registration_open_sorted?: string;
+  registration_close_sorted?: string;
+  auction_start?: Date;
+  auction_end?: Date;
+  auction_start_sorted?: string;
+  auction_end_sorted?: string;
+  status?: string;
+  page?: number;
+  page_size?: number;
+}
 
 export type registerAuction = {
   auction: string;

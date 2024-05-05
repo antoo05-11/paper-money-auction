@@ -8,6 +8,7 @@ import {
   userData,
   userLoginData,
   filterUserData,
+  filterAuctionData,
 } from "@/lib/constant/dataInterface";
 import request from "./request";
 
@@ -46,7 +47,7 @@ export function getUserProfileByID(id: String) {
   return request.get(`api/user/profile/${id}`);
 }
 
-export function updateProfile(data: filterUserData) {
+export function updateProfile(data: any) {
   return request.put("api/user/profile", { data: data });
 }
 
@@ -101,7 +102,7 @@ export function addAuctionDocument(id: String, docs: BinaryData) {
   return request.postForm("api/auction/" + id + "/docs", { key: docs });
 }
 
-export function listAuction(data: any) {
+export function listAuction(data?: filterAuctionData) {
   if (data) return request.get("api/auction", { params: data });
   else return request.get("api/auction");
 }

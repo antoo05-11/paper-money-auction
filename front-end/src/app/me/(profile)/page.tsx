@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 
 import { Input } from "@/components/ui/input";
-import { UserPlus } from 'lucide-react';
+import { UserPlus, X } from 'lucide-react';
 import { Check, ChevronsUpDown } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -37,11 +37,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { useContext, useEffect, useState } from "react";
-import { getProfile, requestVerify } from "@/app/api/apiEndpoints";
+import { getProfile, requestVerify, updateProfile } from "@/app/api/apiEndpoints";
 import { useAuth } from "@/lib/auth/useAuth";
 import { profileData } from "@/lib/constant/dataInterface";
 import VerifyAccount from "./verify-dialog";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { HTTP_STATUS } from "@/lib/constant/constant";
+import { toast } from "sonner";
 
 const frameworks = [
   {
@@ -72,14 +74,34 @@ export default function ProfileCustomerPage() {
   const [value, setValue] = useState("");
   const [isLoading, setLoading] = useState(true);
   const [isVerifying, setVerify] = useState(false);
+  const [editProfile, setEditingProfile] = useState(false);
 
   const [profileData, setProfileData] = useState<profileData | null>(null);
   useEffect(() => {
     getProfile().then((res) => {
       setProfileData(res.data.data.user);
+      setNewProfile(profileData);
       setLoading(false);
     });
   }, []);
+
+  const [newProfile, setNewProfile] = useState<profileData | null>(null);
+  const handleChangeProfile = () => {
+    if (editProfile) {
+      updateProfile(newProfile).then(res => {
+        if (res.status == HTTP_STATUS.OK) {
+          toast.success('Cập nhật thông tin thành công');
+          setProfileData(newProfile);
+          setEditingProfile(false);
+        }
+      }).catch(err => {
+        console.log(err);
+        toast.error('Vui lòng thử lại.')
+      })
+    } else {
+      setEditingProfile(!editProfile);
+    }
+  }
 
   return (
     <div className="container">
@@ -99,11 +121,26 @@ export default function ProfileCustomerPage() {
                 <CardContent className="space-y-2">
                   <div className="space-y-1">
                     <Label htmlFor="name">Họ và tên</Label>
-                    <Input id="name" defaultValue="" placeholder={profileData?.name ?? ''} className="rounded-full" />
+                    <Input id="name" 
+                    defaultValue="" 
+                    placeholder={profileData?.name ?? ''} 
+                    className={`rounded-full ${!editProfile ? 'placeholder:text-black !opacity-100' : ''}`} 
+                    disabled={!editProfile}
+                    onChange={(e) => setNewProfile(prevProfile => ({
+                      ...prevProfile,
+                      name: e.target.value,
+                    }))} />
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="ssid">CCCD</Label>
-                    <Input id="ssid" defaultValue="" placeholder={profileData?.ssid ?? ''} className="rounded-full" />
+                    <Input id="ssid"  
+                    placeholder={profileData?.ssid ?? ''} 
+                    className={`rounded-full ${!editProfile ? 'placeholder:text-black !opacity-100' : ''}`} 
+                    disabled={!editProfile} 
+                    onChange={(e) => setNewProfile(prevProfile => ({
+                      ...prevProfile,
+                      ssid: e.target.value,
+                    }))} />
                   </div>
                   <div className="">
                     <Label htmlFor="email" className="justify-between items-end flex" >
@@ -118,23 +155,47 @@ export default function ProfileCustomerPage() {
                       </Dialog>
                       }
                     </Label>
-                    <Input id="email" defaultValue="" 
+                    <Input id="email"
                     placeholder={
                       profileData?.email ? (profileData?.verified ? profileData?.email?.concat(' (verified)') : profileData?.email) : ''
                     }
-                    className="rounded-full mb-5 mt-2" />
+                    className={`rounded-full mb-5 mt-2 ${!editProfile ? 'placeholder:text-black !opacity-100' : ''}`} 
+                    disabled={!editProfile} 
+                    onChange={(e) => setNewProfile(prevProfile => ({
+                      ...prevProfile,
+                      email: e.target.value,
+                    }))} />
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="phone">Phone</Label>
-                    <Input id="phone" defaultValue="" placeholder={profileData?.phone ?? ''} className="rounded-full" />
+                    <Input id="phone"
+                     defaultValue="" 
+                     placeholder={profileData?.phone ?? ''} 
+                     className={`rounded-full ${!editProfile ? 'placeholder:text-black !opacity-100' : ''}`} 
+                     disabled={!editProfile} 
+                     onChange={(e) => setNewProfile(prevProfile => ({
+                      ...prevProfile,
+                      phone: e.target.value,
+                    }))} />
                   </div>
                   <div className="space-y-1">
                     <Label htmlFor="address">Địa chỉ</Label>
-                    <Input id="address" defaultValue="" placeholder={profileData?.address ?? ''} className="rounded-full" />
+                    <Input id="address" 
+                    placeholder={profileData?.address ?? ''} 
+                    className={`rounded-full ${!editProfile ? 'placeholder:text-black !opacity-100' : ''}`} 
+                    disabled={!editProfile}
+                    onChange={(e) => setNewProfile(prevProfile => ({
+                      ...prevProfile,
+                      address: e.target.value,
+                    }))} />
                   </div>
                 </CardContent>
-                <CardFooter>
-                  <Button variant={"createBtn"}>Lưu thay đổi</Button>
+                <CardFooter className="space-x-2">
+                  <Button variant={"createBtn"} onClick={handleChangeProfile}>{editProfile ? 'Lưu thay đổi' : 'Sửa thông tin'}</Button>
+                  {editProfile &&
+                  <Button onClick={() => setEditingProfile(false)}>
+                    <X />
+                  </Button>}
                 </CardFooter>
               </Card>
             </TabsContent>
