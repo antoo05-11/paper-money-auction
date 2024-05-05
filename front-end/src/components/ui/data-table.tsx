@@ -39,7 +39,7 @@ export function DataTable<TData, TValue>({
   const searchParams = useSearchParams();
 
   const page = searchParams?.get("page") ?? "1"
-  const per_page = searchParams?.get("skip") ?? "10"
+  const per_page = searchParams?.get("limit") ?? "10"
 
   const createQueryString = React.useCallback(
     (params: Record<string, string | number | null>) => {
@@ -84,7 +84,7 @@ export function DataTable<TData, TValue>({
     router.push(
       `${pathname}?${createQueryString({
         page: pageIndex + 1,
-        skip: pageSize,
+        limit: pageSize,
       })}`
     )
   }, [pageIndex, pageSize])

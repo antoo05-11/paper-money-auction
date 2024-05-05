@@ -17,7 +17,7 @@ export default function Page() {
   const [listUser, setListUser] = useState<userData[]>([]);
 
   const page = parseInt(searchParams.get('page') ?? '1');
-  const skip = parseInt(searchParams.get('skip') ?? '10');
+  const limit = parseInt(searchParams.get('limit') ?? '10');
 
   const [filter, setFilter] = useState<filterUserData>(
     {
@@ -29,14 +29,21 @@ export default function Page() {
       active: undefined,
       role: "customer",
       page: page,
-      limit: skip,
+      limit: limit,
     }
   );
 
   const debouncedFilter = useDebounce(filter, 1000);
 
   useEffect(() => {
-    console.log(filter)
+    setFilter(prevFilter => ({
+      ...prevFilter,
+      page: page,
+      limit: limit
+    }))
+  }, [searchParams])
+
+  useEffect(() => {
     setLoading(true);
     getAllUser(debouncedFilter).then(res => {
       const modifiedData = res.data.data.listUser.map((user: userData) => ({
@@ -48,7 +55,7 @@ export default function Page() {
     }).finally(() => {
       setLoading(false);
     })
-  }, [debouncedFilter, searchParams]);
+  }, [debouncedFilter]);
 
   return (
     <div className="container">

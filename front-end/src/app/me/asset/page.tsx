@@ -23,7 +23,7 @@ export default function Page() {
   const [asset, setAsset] = useState<assetData[]>([]);
 
   const page = parseInt(searchParams.get('page') ?? '1');
-  const skip = parseInt(searchParams.get('skip') ?? '10');
+  const limit = parseInt(searchParams.get('limit') ?? '10');
 
   const [filter, setFilter] = useState<filterAssetData>(
     {
@@ -34,11 +34,19 @@ export default function Page() {
       auctioneer: undefined,
       verified: undefined,
       page: page,
-      skip: skip,
+      limit: limit,
     }
   );
 
   const debouncedFilter = useDebounce(filter,1000);
+
+  useEffect(() => {
+    setFilter(prevFilter => ({
+      ...prevFilter,
+      page: page,
+      limit: limit
+    }))
+  }, [searchParams])
 
   useEffect(() => {
     setLoading(true);
@@ -48,11 +56,11 @@ export default function Page() {
     }).finally(() => {
       setLoading(false);
     })
-  }, [debouncedFilter, searchParams]);
+  }, [debouncedFilter]);
 
   return (
     <div className="container">
-     <div className="flex flex-col mb-5">
+     <div className="flex flex-col mb-5 space-y-10">
         <div className="md:mb-0 self-end">
           <Dialog>
             <DialogTrigger asChild>
@@ -63,20 +71,22 @@ export default function Page() {
             </DialogTrigger>
             <PropertyForm />
           </Dialog>
-        </div>        
-        <div className="grid grid-cols-4 mt-5 md:mt-0 space-x-8">
+        </div>
+        <div className="grid grid-cols-4 mt-5 md:mt-0 space-x-8 mx-20">
+          <div>
+            <Input
+              className="leading-none text-gray-800 dark:text-white bg-transparent focus:outline-none shadow w-2/3"
+              placeholder="Name"
+              id="name"
+              type="text"
+              onChange={(e) => setFilter(prevFilter => ({
+                ...prevFilter,
+                name: e.target.value,
+              }))}
+            />
+          </div>
           <Input
-            className="rounded-full leading-none text-gray-800 dark:text-white bg-transparent focus:outline-none shadow text-xs w-2/3"
-            placeholder="Name"
-            id="name"
-            type="text"
-            onChange={(e) => setFilter(prevFilter => ({
-              ...prevFilter,
-              name: e.target.value,
-            }))}
-          />
-          <Input
-            className="rounded-full text-gray-800 dark:text-white bg-transparent focus:outline-none shadow text-xs w-3/4"
+            className="text-gray-800 dark:text-white bg-transparent focus:outline-none shadow text-xs w-3/4"
             placeholder="Description"
             id="description"
             type="text"
@@ -86,7 +96,7 @@ export default function Page() {
             }))}
           />
           <Input
-            className="rounded-full text-gray-800 dark:text-white bg-transparent focus:outline-none shadow text-xs w-3/4"
+            className="text-gray-800 dark:text-white bg-transparent focus:outline-none shadow text-xs w-3/4"
             placeholder="Owner@gmail.com"
             id="Owner"
             type="text"
@@ -96,7 +106,7 @@ export default function Page() {
             }))}
           />
           <Input
-            className="rounded-full text-gray-800 dark:text-white bg-transparent focus:outline-none shadow text-xs w-3/4"
+            className="text-gray-800 dark:text-white bg-transparent focus:outline-none shadow text-xs w-3/4"
             placeholder="Auctioneer@gmail.com"
             id="Auctioneer"
             type="text"

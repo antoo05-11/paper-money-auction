@@ -75,7 +75,7 @@ export type filterAssetData = {
   auctioneer?: string | undefined;
   verified: boolean | undefined;
   page: number | undefined;
-  skip: number | undefined;
+  limit: number | undefined;
 };
 
 export type auctioneerData = {
