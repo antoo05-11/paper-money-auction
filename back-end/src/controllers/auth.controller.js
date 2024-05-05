@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import { mailService } from "../services/mail.service";
 import { utils } from "../utils/utils";
 import NodeCache from "node-cache";
+import _ from "lodash";
 
 export default class AuthController {
     static AUTH_CODE_LIVE_TIME_S = 5 * 60;
@@ -35,24 +36,43 @@ export default class AuthController {
                 status: 400,
             });
 
-        // Generate 2FA code, save it temporarily and send to user mail box.
-        const CODE_LENGTH = 6;
+        let payload;
 
-        this.#userAuthCodesCache.set(
-            data.email,
-            utils.genNumeralCode(CODE_LENGTH)
-        );
-        await mailService.send2FACode(
-            data.email,
-            this.#userAuthCodesCache.get(data.email)
-        );
+        if (user.verified) {
+            // Generate 2FA code, save it temporarily and send to user mail box.
+            const CODE_LENGTH = 6;
 
-        // Log 2FA code for testing
-        console.log(this.#userAuthCodesCache.get(data.email));
+            this.#userAuthCodesCache.set(
+                data.email,
+                utils.genNumeralCode(CODE_LENGTH)
+            );
+            await mailService.send2FACode(
+                data.email,
+                this.#userAuthCodesCache.get(data.email)
+            );
+
+            // Log 2FA code for testing
+            console.log(this.#userAuthCodesCache.get(data.email));
+
+            payload = {
+                otp: true,
+            };
+        } else {
+            // Generate a JWT token for user.
+            const userPayload = _.pick(user, ["id", "name", "role"]);
+            const token = jwt.sign(userPayload, process.env.SECRET, {
+                expiresIn: "1d",
+            });
+
+            payload = {
+                token: `Bearer ${token}`,
+                user: userPayload,
+            };
+        }
 
         return res.status(200).json({
             ok: true,
-            message: "Open your mail box to get 2FA code.",
+            data: payload,
         });
     };
 
