@@ -9,12 +9,15 @@ import { columns } from "./_component/columns";
 import { filterUserData, userData } from "@/lib/constant/dataInterface";
 import { getAllUser } from "@/app/api/apiEndpoints";
 import { useEffect, useState } from "react";
+import React from "react";
 
 export default function Page() {
   const [loading, setLoading] = useState(false);
   const [pageCount, setPageCount] = useState(0);
   const searchParams = useSearchParams();
   const [listUser, setListUser] = useState<userData[]>([]);
+
+  const columnsMemo = React.useMemo(() => columns, []);
 
   const page = parseInt(searchParams.get('page') ?? '1');
   const limit = parseInt(searchParams.get('limit') ?? '10');
@@ -68,8 +71,7 @@ export default function Page() {
           />
         </div>
       </div>
-      {loading && <Skeleton className="w-[100px] h-[20px] rounded-full" />}
-      {!loading && <DataTable columns={columns} data={listUser} pageCount={pageCount} />}
+      {<DataTable columns={columnsMemo} data={listUser} pageCount={pageCount} />}
     </div>
   );
 }
