@@ -32,14 +32,15 @@ export type profileData = {
 }
 
 export type filterUserData = {
-  name: string | null;
-  ssid: string | null;
-  phone: string | null;
-  email: string | null;
-  active: boolean | null;
-  role: string | null;
-  page: string | undefined;
-  limit: string | undefined;
+  sort: string | undefined;
+  name: string | undefined;
+  ssid: string | undefined;
+  phone: string | undefined;
+  email: string | undefined;
+  active: boolean | undefined;
+  role: string | undefined;
+  page: number | undefined;
+  limit: number | undefined;
 }
 
 export type paymentData = {

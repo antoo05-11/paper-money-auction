@@ -3,18 +3,15 @@
 import { Card, CardContent } from "@/components/ui/card";
 import dynamic from "next/dynamic";
 import Overview from "../_component/Overview";
-// import PostStatistic from "../_component/PostStatistic";
-// import StaffStatistic from "../_component/StaffStatistic";
-// import UserStatistic from "../_component/UserSatistic";
-// const StaffStatistic = dynamic(() => import("../_component/StaffStatistic"), {
-//   ssr: false,
-// });
-// const UserStatistic = dynamic(() => import("../_component/UserSatistic"), {
-//   ssr: false,
-// });
-// const PostStatistic = dynamic(() => import("../_component/PostStatistic"), {
-//   ssr: false,
-// });
+const StaffStatistic = dynamic(() => import("../_component/AuctionStatistic"), {
+  ssr: false,
+});
+const UserStatistic = dynamic(() => import("../_component/AssetStatistic"), {
+  ssr: false,
+});
+const PostStatistic = dynamic(() => import("../_component/PostStatistic"), {
+  ssr: false,
+});
 import StaffTable from "../staff/_component/StaffTable";
 
 export default function AdminPage() {
@@ -24,10 +21,13 @@ export default function AdminPage() {
         <Overview />
       </div>
 
-      <div className="w-full flex mt-3">
-        <div className="w-4/12 mr-4">{/* <StaffStatistic /> */}</div>
-        <div className="w-4/12">{/* <UserStatistic /> */}</div>
-        <div className="w-4/12 ml-4">{/* <PostStatistic /> */}</div>
+      <div className="w-full flex mt-3 gap-4">
+        <div className="basis-1/2">
+          <StaffStatistic />
+        </div>
+        <div className="basis-1/2">
+          <UserStatistic />
+        </div>
       </div>
 
       <div className="mt-3">

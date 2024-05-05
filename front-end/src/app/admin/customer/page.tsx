@@ -1,8 +1,55 @@
-import CustomerTable from "./_component/CustomerTable";
-import { Button } from "@/components/ui/button";
+"use client"
+
 import { Input } from "@/components/ui/input";
+import { useSearchParams } from "next/navigation";
+import { useDebounce } from "@/lib/hook/useDebounce";
+import { DataTable } from "@/components/ui/data-table";
+import { Skeleton } from "@/components/ui/skeleton";
+import { columns } from "./_component/columns";
+import { filterUserData, userData } from "@/lib/constant/dataInterface";
+import { getAllUser } from "@/app/api/apiEndpoints";
+import { useEffect, useState } from "react";
 
 export default function Page() {
+  const [loading, setLoading] = useState(false);
+  const [pageCount, setPageCount] = useState(0);
+  const searchParams = useSearchParams();
+  const [listUser, setListUser] = useState<userData[]>([]);
+
+  const page = parseInt(searchParams.get('page') ?? '1');
+  const skip = parseInt(searchParams.get('skip') ?? '10');
+
+  const [filter, setFilter] = useState<filterUserData>(
+    {
+      sort: undefined,
+      name: undefined,
+      ssid: undefined,
+      phone: undefined,
+      email: undefined,
+      active: undefined,
+      role: "customer",
+      page: page,
+      limit: skip,
+    }
+  );
+
+  const debouncedFilter = useDebounce(filter, 1000);
+
+  useEffect(() => {
+    console.log(filter)
+    setLoading(true);
+    getAllUser(debouncedFilter).then(res => {
+      const modifiedData = res.data.data.listUser.map((user: userData) => ({
+        ...user,
+        verified: user.active ? "Hoạt động" : "Đình chỉ"
+      }));
+      setListUser(modifiedData);
+      setPageCount(res.data.data.totalPages);
+    }).finally(() => {
+      setLoading(false);
+    })
+  }, [debouncedFilter, searchParams]);
+
   return (
     <div className="container">
       <div className="flex justify-between mb-5">
@@ -14,7 +61,8 @@ export default function Page() {
           />
         </div>
       </div>
-      <CustomerTable />
+      {loading && <Skeleton className="w-[100px] h-[20px] rounded-full" />}
+      {!loading && <DataTable columns={columns} data={listUser} pageCount={pageCount} />}
     </div>
   );
 }

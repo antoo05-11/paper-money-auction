@@ -1,34 +1,33 @@
 import {
   BadgeDollarSign,
-  Bell,
   BookUser,
-  Compass,
   FileClock,
+  FileCode2Icon,
   LandPlot,
   Layout,
-  List,
-  ScrollText,
+  SquareGanttChartIcon,
+  UsersRound,
 } from "lucide-react";
 
 export const adminRoutes = [
   {
     icon: Layout,
-    label: "Dashboard",
+    label: "Trang chủ",
     href: "/admin",
   },
   {
-    icon: List,
-    label: "Customer",
+    icon: SquareGanttChartIcon,
+    label: "Người dùng",
     href: "/admin/customer",
   },
   {
-    icon: List,
-    label: "Staff",
+    icon: UsersRound,
+    label: "Nhân viên",
     href: "/admin/staff",
   },
   {
-    icon: List,
-    label: "Asset",
+    icon: FileCode2Icon,
+    label: "Tài sản",
     href: "/admin/asset",
   },
 ];
