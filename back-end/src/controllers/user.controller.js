@@ -216,7 +216,7 @@ export default class UserController {
 
         let totalUser = await User.countDocuments(filter);
         let page = parseInt(query.page) || 1;
-        let limit = parseInt(query.limit) || 10;
+        let limit = parseInt(query.limit) || totalUser;
         let skip = (page - 1) * limit;
         let totalPages = Math.ceil(totalUser / limit);
 
