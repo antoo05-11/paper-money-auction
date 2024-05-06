@@ -9,9 +9,18 @@ const assetSchema = new mongoose.Schema(
         // Information
         name: String,
         description: String,
-        pics: [String],
-        // Verification
-        docs: [String],
+        pics: [{
+            name: {
+                type: String,
+                required: true
+            }
+        }],
+        docs: [{
+            name: {
+                type: String,
+                required: true
+            }
+        }],
         verified: {
             type: Boolean,
             default: false,

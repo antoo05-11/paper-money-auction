@@ -68,7 +68,11 @@ export default {
             code: "NOT_IN_REGISTRATION_TIME",
             message: "This is not registration time.",
         },
-        NOT_TIME_YET: {
+        NOT_IN_JOINING_TIME: {
+            code: "NOT_IN_JOINING_TIME",
+            message: "This is not joining time. Request is allowed from 5 minutes before start to end time of auction.",
+        }
+        , NOT_TIME_YET: {
             code: "NOT_TIME_YET",
             message: "Your auction cannot be opened now.",
         },
@@ -96,6 +100,10 @@ export default {
             NOT_BIG_ENOUGH: {
                 code: "BIDDING_ERROR",
                 message: "Your bidding price is not big enough.",
+            },
+            NEVER_MADE_OFFER: {
+                code: "NEVER_MADE_OFFER",
+                message: "Withdrawing offer is not allowed because you have never made offer before.",
             },
         },
     },

@@ -54,17 +54,21 @@ export class AuctionSession {
     makeOffer = (userId, offer) => {
         const user = this.#users.get(userId);
 
-        // Get latest offer.
+        // Get latest offer (not penalty condition).
         let currentMinOffer = this.#auction.starting_price;
         if (this.#biddings.length > 0) {
-            currentMinOffer = this.#biddings[this.#biddings.length - 1].offer + this.#auction.bidding_increment;
             if (Date.now() - this.#biddings[this.#biddings.length - 1].createdAt < AuctionSession.TIME_INTERVAL_BETWEEN_2_BIDDINGS)
                 return errorCode.AUCTION.BIDDING.TOO_QUICK;
+        }
+        for (let i = this.#biddings.length - 1; i >= 0; i++) {
+            if (!this.#biddings[i].user.isPenalty()) {
+                currentMinOffer = this.#biddings[this.#biddings.length - 1].offer + this.#auction.bidding_increment;
+                break;
+            }
         }
 
         if (utils.isNumberInRange(offer, currentMinOffer, Number.MAX_SAFE_INTEGER)) {
             this.#biddings.push({user: user, offer: offer, createdAt: Date.now()});
-            const biddingIndex = this.#biddings.length - 1;
             Bidding.create({
                 auction: this.#auction._id,
                 bidder: userId,
@@ -76,6 +80,28 @@ export class AuctionSession {
             });
             return true;
         } else return errorCode.AUCTION.BIDDING.NOT_BIG_ENOUGH;
+    }
+
+    withdrawOffer = (userId) => {
+        const user = this.#users.get(userId);
+        let madeOfferBefore = false;
+        for (const bidding of this.#biddings) {
+            if (bidding.user.getUserId() === userId) {
+                madeOfferBefore = true;
+                break;
+            }
+        }
+        if (!madeOfferBefore) return errorCode.AUCTION.BIDDING.NEVER_MADE_OFFER;
+        else {
+            user.setPenalty(true);
+            Participation.findOneAndUpdate({bidder: userId, auction: this.#auction._id.toString()},
+                {penalty: true}).then((participation) => {
+                if (participation) {
+                    console.log("Status: Set penalty successfully.");
+                } else console.log("Database server error: Cannot set penalty.")
+            });
+            return true;
+        }
     }
 
     addUser = (userId) => {
@@ -108,7 +134,11 @@ export class AuctionSession {
     getBiddings = (role) => {
         const biddings = [];
         for (const bidding of this.#biddings) {
-            biddings.push({user: bidding.user.getJSON(role), price: bidding.offer, createdAt: bidding.create});
+            biddings.push({
+                user: bidding.user.getJSON(role),
+                price: bidding.offer,
+                createdAt: bidding.create
+            });
         }
         return biddings;
     }
