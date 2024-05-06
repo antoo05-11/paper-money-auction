@@ -307,7 +307,7 @@ export default function ProfileCustomerPage() {
                           variant="outline"
                           role="combobox"
                           aria-expanded={open}
-                          className="w-[200px] justify-between"
+                          className={`w-[200px] justify-between ${!editPayment ? 'placeholder:text-black !opacity-100' : '!opacity-50'}`}
                           disabled={!editPayment}
                         >
                           {newPayment?.bank ?? newPayment?.bank

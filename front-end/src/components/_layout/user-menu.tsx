@@ -67,14 +67,6 @@ export default function UserMenu() {
                                     <span>Me</span>
                                 </Link>
                             </DropdownMenuItem>
-                            {!isAdmin &&
-                                <DropdownMenuItem>
-                                    <Link href={isAuctioneer ? "/auctioneer/profile" : "/me/profile"} className="flex flex-row">
-                                        <User className="mr-2 h-4 w-4" />
-                                        <span>Profile</span>
-                                    </Link>
-                                </DropdownMenuItem>
-                            }
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="">
