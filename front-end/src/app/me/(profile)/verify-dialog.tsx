@@ -1,3 +1,4 @@
+'use client'
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -11,26 +12,27 @@ import { HTTP_STATUS } from "@/lib/constant/constant";
 import { useRouter } from "next/navigation";
 
 
-export default function VerifyAccount({setClose}: {setClose: any}) {
+export default function VerifyAccount({setClose, open}: {setClose: any, open: any}) {
     const [getCode, setStatus] = useState(false);
     const [verifyCode, setCode] = useState('');
     const router = useRouter();
 
     useEffect(() => {
-        requestVerify().then((res) => {
-            if (res.status === HTTP_STATUS.OK) {
-                setStatus(true);
-            } else {
-                toast.error("Không thể tạo mã xác minh email. Vui lòng thử lại.");
-            }
-        });
-      }, []);
+        if (open) {
+            requestVerify().then((res) => {
+                if (res.status === HTTP_STATUS.OK) {
+                    setStatus(true);
+                } else {
+                    toast.error("Không thể tạo mã xác minh email. Vui lòng thử lại.");
+                }
+            });
+        }
+      }, [open]);
 
     const handleGetCode = () => {
         requestVerify().then((res) => {
             if (res.status === HTTP_STATUS.OK) {
                 setStatus(true);
-                router.refresh();
             } else {
                 toast.error("Không thể tạo mã xác minh email. Vui lòng thử lại.");
             }
@@ -46,6 +48,9 @@ export default function VerifyAccount({setClose}: {setClose: any}) {
             if (res.status === HTTP_STATUS.OK) {
                 toast.success("Email đã được xác minh thành công");
                 setClose(false);
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500)
             } else {
                 toast.error(res.data.message);
             }

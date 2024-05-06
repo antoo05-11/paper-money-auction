@@ -1,3 +1,4 @@
+'use client'
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -6,14 +7,16 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { createAsset } from "@/app/api/apiEndpoints";
 import { HTTP_STATUS } from "@/lib/constant/constant";
+import { useRouter } from "next/navigation";
 
 
-export default function PropertyForm() {
+export default function PropertyForm({setClose, open}: {setClose: any, open: any}) {
     const [uploadPic, setUploadPic] = useState(null);
     const [uploadDoc, setUploadDoc] = useState(null);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [uploadStatus, setStatus]= useState('idle');
+    const router = useRouter();
 
     const handleDocChange = (event: any) => {
         const file = event.target.files[0];
@@ -57,6 +60,9 @@ export default function PropertyForm() {
                     setUploadDoc(null);
                     setName('');
                     setDescription('');
+                    router.push(window.location.href);
+                    router.refresh();
+                    setClose(false);
                 } else {
                     console.log(res);
                 }
@@ -104,7 +110,7 @@ export default function PropertyForm() {
                 </div>
             </div>
             <DialogFooter>
-                <Button type="submit" variant={"createBtn"} onClick={handleUpload}>Đăng kí</Button>
+                <Button type="submit" variant={"createBtn"} onClick={handleUpload} disabled={uploadStatus == 'loading' ? true : false}>Đăng kí</Button>
             </DialogFooter>
         </DialogContent>
     );

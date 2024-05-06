@@ -25,9 +25,10 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { loginUser, login2FA } from "@/app/api/apiEndpoints";
 import { HTTP_STATUS, ROLES } from "@/lib/constant/constant";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "@/lib/auth/useAuth";
+import axios, { AxiosError } from "axios";
 const formSchema = z.object({
   email: z.string().min(2, {
     message: "Email must be at least 2 characters.",
@@ -46,9 +47,8 @@ export default function LoginForm() {
   });
 
   const { user, login } = useAuth();
-  const router = useRouter();
-
   const [verifyState, setVerify] = useState(false);
+  const [loadingMessage, setLoading] = useState("Đăng nhập");
   const [otpValue, setOTP] = useState('');
   const [authData, setAuthData] = useState({ email: '', password: '' });
 
@@ -61,33 +61,60 @@ export default function LoginForm() {
     }
   }
 
+  function handleLogin(res: any, isVerified: boolean) {
+    const { data: { token, user: { id, name, role } } } = res;
+
+    const session = {token, id, name, role, isVerified};
+    login(session);
+    switch (role) {
+      case ROLES.ADMIN:
+        redirect('/admin');
+      case ROLES.AUCTIONEER:
+        redirect('/auctioneer');
+      default:
+        redirect('/me');
+    }
+  }
 
   async function onSubmit(values: formData) {
     setAuthData(values);
-    await loginUser(values).then((res: any) => {
-      if (res.status == HTTP_STATUS.OK) {
-          setVerify(true);
+    setLoading("Loading");
+    try {
+      await loginUser(values).then((res: any) => {
+        if (res.status == HTTP_STATUS.OK) {
+            setLoading("Thành công");
+            if (res.data.data.token) {
+              handleLogin(res.data, false);
+            }
+            else {
+              setTimeout(() => {
+                setVerify(true);
+              }, 1000);
+            }
+        }
+      })
+    } catch (err) {
+      const error = err as Error | AxiosError
+      if (axios.isAxiosError(error)) {
+        toast.error(error?.response?.data.message);
+        setLoading("Đăng nhập");
       }
-    })
+    }
   }
   async function submit2FACode(value: string) {
-    await login2FA({...authData, authenticCode: value}).then((res: any) => {
-      if (res.status == HTTP_STATUS.OK) {
-        const { data: { token, user: { id, name, role } } } = res.data;
-        const session = {token, id, name, role};
-        login(session);
-        switch (role) {
-          case ROLES.ADMIN:
-            router.push('/admin');
-            break;
-          case ROLES.AUCTIONEER:
-            router.push('/auctioneer');
-            break;
-          default:
-            router.push('/me');
+    try {
+      await login2FA({...authData, authenticCode: value}).then((res: any) => {
+        if (res.status == HTTP_STATUS.OK) {
+          handleLogin(res.data, true);
         }
+      });
+    } catch (err) {
+      const error = err as Error | AxiosError
+      if (axios.isAxiosError(error)) {
+        toast.error(error?.response?.data.message);
+        setOTP('');
       }
-    });
+    }
 
   }
   if (!user) {
@@ -138,8 +165,10 @@ export default function LoginForm() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" className="w-full">
-                    Đăng nhập
+                  <Button type="submit" 
+                  className={`w-full ${loadingMessage == 'Thành công' ? 'bg-lime-600' : ''}`} 
+                  disabled={loadingMessage != 'Đăng nhập'}>
+                    {loadingMessage}
                   </Button>
                 </form>
               </Form>
@@ -188,6 +217,6 @@ export default function LoginForm() {
       </section>
     );
   } else {
-    router.push('/');
+    redirect('/');
   }
 }

@@ -9,7 +9,7 @@ export const useSessionUser = () => {
     const {setSessionCookie, getSessionCookie, removeSessionCookie} = useCookie();
     const addUser = (userData: User) => {
         setSessionCookie(userData);
-        setUser((userData));        
+        setUser((userData)); 
     }
     const removeUser = () => {
         setUser(null);

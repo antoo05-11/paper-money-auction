@@ -35,6 +35,9 @@ export const AuthProvider = ({ children }: Props) => {
         }
       }
     }
+    if (user && !getSessionCookie()) {
+      setUser(null);
+    } 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

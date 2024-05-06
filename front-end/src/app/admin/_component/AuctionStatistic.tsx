@@ -12,18 +12,18 @@ const defaultOptions = {
         width: 380,
         height: 205,
         parentHeightOffset: 0,
-        toolbar: { show: false }
+        toolbar: { show: true }
     },
     dataLabels: { enabled: false },
     states: {
         hover: {
-            filter: { type: 'none' }
+            filter: { type: 'true' }
         },
         active: {
             filter: { type: 'none' }
         }
     },
-    colors: ['#3763fb', '#E26EE5', '#FFB830'],
+    colors: ['#29bec9', '#fec634', '#FFB830'],
     legend: { show: false },
     xaxis: {
         categories: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
@@ -45,30 +45,30 @@ const extendOptions = {
     ...defaultOptions,
 };
 
-export default function UserStatistic() {
+export default function AuctionStatistic() {
     const [extend, isExtend] = useState(false);
     const chartHeight = extend ? 440 : 205;
-    const charWidth = 350;
+    const charWidth = "100%";
     const options = extend ? extendOptions : defaultOptions;
     const data = [
         {
-            name: 'series1',
+            name: 'Đang diễn ra',
             data: [31, 40, 28, 51, 42, 109, 100]
+        },
+        {
+            name: 'Chưa diễn ra',
+            data: [43, 11, 83, 27, 57, 120, 34]
         },
     ]
     return (
         <Card className="shadow">
             <CardHeader>
-                <CardTitle>Người dùng</CardTitle>
+                <CardTitle>Cuộc đấu giá</CardTitle>
             </CardHeader>
             <CardContent>
                 {(typeof window !== 'undefined') &&
                     <Chart type="area" options={defaultOptions} series={data} height={chartHeight} width={charWidth} />
                 }
-
-                {/* <Button onClick={() => { isExtend(!extend); console.log(extend) }} >
-                    Chi tiết
-                </Button> */}
             </CardContent>
         </Card>
     )

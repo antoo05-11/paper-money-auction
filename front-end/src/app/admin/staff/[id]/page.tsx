@@ -25,11 +25,31 @@ import { Label } from "@/components/ui/label"
 import AuctionSessionTable from "@/app/auctioneer/_component/AuctionSessionTable";
 import { useEffect, useState } from "react";
 import { getUserProfileByID } from "@/app/api/apiEndpoints";
-import { userData } from "@/lib/constant/dataInterface";
+import { userData, auctionData } from "@/lib/constant/dataInterface";
+import { listAuctionManaging } from "@/app/api/apiEndpoints";
+import { DataTable } from "@/components/ui/data-table";
+import { columns } from "@/app/auctioneer/(auctionSesion)/_component/columns";
 
 export default function StaffDetail({ params, searchParams }: any) {
   const id = params.id;
   const [user, setUser] = useState<userData>();
+  const [pageCount, setPageCount] = useState(0);
+  const [listItem, setListItem] = useState<auctionData[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await listAuctionManaging({
+          auctioneer_id: user?._id
+        });
+        setPageCount(response.data.totalPages);
+        setListItem(response.data.auctions);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    }
+    fetchData();
+  }, [user?._id]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,7 +69,6 @@ export default function StaffDetail({ params, searchParams }: any) {
       <Card className="">
         <CardHeader>
           <CardTitle>Thông tin nhân viên</CardTitle>
-          {/* <CardDescription></CardDescription> */}
         </CardHeader>
         <CardContent>
           {user && <div className="grid w-full items-center gap-4">
@@ -87,9 +106,16 @@ export default function StaffDetail({ params, searchParams }: any) {
             </div>
           </div>
           }
-          <div className="mt-3">
-            <AuctionSessionTable staffID={user?._id} />
-          </div>
+
+        </CardContent>
+      </Card>
+
+      <Card className="mt-5">
+        <CardHeader>
+          <CardTitle>Phiên đấu giá phụ trách</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <DataTable columns={columns} data={listItem} pageCount={pageCount} />
         </CardContent>
       </Card>
     </div>

@@ -3,11 +3,17 @@ export type userLoginData = {
   password: string;
 };
 
+export type passwordData = {
+  password?: string;
+  newPassword?: string;
+}
+
 export interface User {
   name: string;
   id: string;
   role: string;
   token: string;
+  isVerified: boolean;
 }
 
 export type userData = {
@@ -32,20 +38,21 @@ export type profileData = {
 }
 
 export type filterUserData = {
-  name: string | null;
-  ssid: string | null;
-  phone: string | null;
-  email: string | null;
-  active: boolean | null;
-  role: string | null;
-  page: string | undefined;
-  limit: string | undefined;
+  sort: string | undefined;
+  name: string | undefined;
+  ssid: string | undefined;
+  phone: string | undefined;
+  email: string | undefined;
+  active: boolean | undefined;
+  role: string | undefined;
+  page: number | undefined;
+  limit: number | undefined;
 }
 
 export type paymentData = {
-  bank: string;
-  account_number: string;
-  holder: string;
+  bank?: string;
+  account_number?: string;
+  holder?: string;
 };
 
 export type fileData = {
@@ -59,8 +66,8 @@ export type assetData = {
     _id: string,
     email: string
   },
-  name: string;
-  description: string;
+  name: string,
+  description: string,
   pics: fileData[],
   docs: fileData[],
   verified: boolean
@@ -74,7 +81,7 @@ export type filterAssetData = {
   auctioneer?: string | undefined;
   verified: boolean | undefined;
   page: number | undefined;
-  skip: number | undefined;
+  limit: number | undefined;
 };
 
 export type auctioneerData = {
@@ -97,6 +104,21 @@ export type auctionData = {
   auction_end?: Date;
   max_number_of_bidder?: number;
 };
+
+export type filterAuctionData = {
+  asset?: string;
+  registration_open?: Date;
+  registration_close?: Date;
+  registration_open_sorted?: string;
+  registration_close_sorted?: string;
+  auction_start?: Date;
+  auction_end?: Date;
+  auction_start_sorted?: string;
+  auction_end_sorted?: string;
+  status?: string;
+  page?: number;
+  page_size?: number;
+}
 
 export type registerAuction = {
   auction: string;
