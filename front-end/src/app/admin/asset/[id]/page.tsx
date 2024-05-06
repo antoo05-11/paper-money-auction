@@ -80,10 +80,11 @@ export default function Page({ params, searchParams }: any) {
   useEffect(() => {
     const getListAuctioneer = async () => {
       const response = await getAllUser({
-        name: null,
-        ssid: null,
-        phone: null,
-        email: null,
+        sort: undefined,
+        name: undefined,
+        ssid: undefined,
+        phone: undefined,
+        email: undefined,
         active: true,
         role: "auctioneer",
         page: undefined,

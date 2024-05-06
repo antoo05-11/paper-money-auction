@@ -12,6 +12,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
 import { useRouter, usePathname } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+
 
 const ActionCell: React.FC<{ row: any }> = ({ row }) => {
     const asset = row.original;
@@ -22,17 +24,16 @@ const ActionCell: React.FC<{ row: any }> = ({ row }) => {
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 p-0">
-                    <span className="sr-only">Open menu</span>
                     <MoreHorizontal className="h-4 w-4" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Hoạt động</DropdownMenuLabel>
+                <DropdownMenuLabel>Chi tiết</DropdownMenuLabel>
                 <DropdownMenuItem
                     onClick={(e) => {
                         route.push(path_name + "/" + asset._id);
                     }}>
-                    Xem chi tiết
+                    Xem thông tin
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
             </DropdownMenuContent>
@@ -41,6 +42,11 @@ const ActionCell: React.FC<{ row: any }> = ({ row }) => {
 };
 
 export const columns: ColumnDef<userData>[] = [
+    {
+        id: "stt",
+        header: () => <div className="flex justify-center items-center"> STT </div>,
+        cell: ({ row }) => <div className="flex justify-center items-center"><span> {row.index + 1}</span></div >,
+    },
     {
         accessorKey: "_id",
         header: "ID",
@@ -59,7 +65,22 @@ export const columns: ColumnDef<userData>[] = [
     },
     {
         accessorKey: "active",
-        header: "Trạng thái",
+        header: () => (
+            <div className="flex justify-center items-center">
+                Trạng thái
+            </div>
+        ),
+        cell: ({ row }) => {
+            const status = row.getValue("active") as String;
+            const variant = status === "Đình chỉ" ? "default" : "common";
+            return (
+                <div className="flex justify-center items-center">
+                    <Badge variant={variant}>
+                        {status}
+                    </Badge>
+                </div>
+            );
+        },
     },
     {
         id: "actions",
