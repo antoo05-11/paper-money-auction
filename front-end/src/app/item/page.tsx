@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { useRouter, usePathname } from "next/navigation";
 import { listAuction } from "../api/apiEndpoints";
 import { useEffect } from "react";
-import Image from "next/image"
+import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Pagination,
@@ -23,7 +23,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"
+} from "@/components/ui/pagination";
 
 export default function ListItem() {
   const [listItem, setListItem] = useState<any>(null);
@@ -37,11 +37,11 @@ export default function ListItem() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const listFirst = await listAuction();
+        const listFirst = await listAuction(null);
         const data_asset = listFirst.data.auctions;
-        console.log(data_asset)
+        console.log(data_asset);
         setListItem(data_asset);
-        setTotalPage(listFirst.data.totalPages)
+        setTotalPage(listFirst.data.totalPages);
       } catch (error) {
         console.error(error);
       } finally {
@@ -52,16 +52,21 @@ export default function ListItem() {
   }, []);
   return (
     <>
-      {isLoading &&
+      {isLoading && (
         <div className="container">
           <Skeleton className="h-screen bg-transparent" />
         </div>
-      }
-      {
-        !isLoading && <div className="pt-20 pb-10">
+      )}
+      {!isLoading && (
+        <div className="pt-20 pb-10">
           <div className="flex w-full items-center space-x-2 justify-center mt-5">
-            <Input placeholder="Tìm theo tên sản phẩm..." className="max-w-2xl rounded-full" />
-            <Button type="submit" variant={"createBtn"} className="shadow-none">Tìm kiếm</Button>
+            <Input
+              placeholder="Tìm theo tên sản phẩm..."
+              className="max-w-2xl rounded-full"
+            />
+            <Button type="submit" variant={"createBtn"} className="shadow-none">
+              Tìm kiếm
+            </Button>
           </div>
 
           {listItem?.map((e: any) => {
@@ -70,8 +75,7 @@ export default function ListItem() {
 
           <Pagination>
             <PaginationContent>
-              <PaginationItem>
-              </PaginationItem>
+              <PaginationItem></PaginationItem>
               {[...Array(totalPage)].map((_, index) => (
                 <PaginationItem key={index}>
                   <Button className="rounded" variant={"outline"}>
@@ -79,12 +83,11 @@ export default function ListItem() {
                   </Button>
                 </PaginationItem>
               ))}
-              <PaginationItem>
-              </PaginationItem>
+              <PaginationItem></PaginationItem>
             </PaginationContent>
           </Pagination>
         </div>
-      }
+      )}
     </>
   );
 }
@@ -100,7 +103,10 @@ function CardItem({ infor_auction }: any) {
         <div className="flex flex-col gap-2">
           <h1 className="font-bold text-3xl">{infor_auction?.asset?.name}</h1>
           <p>Mô tả sản phẩm: Tiền rất đẹp</p>
-          <p>Thời gian mở đấu giá: {new Date(infor_auction.auction_start).toLocaleString()}</p>
+          <p>
+            Thời gian mở đấu giá:{" "}
+            {new Date(infor_auction.auction_start).toLocaleString()}
+          </p>
           <Button
             className="w-1/2 mt-3"
             variant={"editBtn"}
@@ -113,9 +119,14 @@ function CardItem({ infor_auction }: any) {
         </div>
       </div>
       <div className="w-3/12">
-        <Image src={"/demoimage.jpg"} alt="Image" width={200} height={300} className="w-full h-full rounded-r-lg" />
+        <Image
+          src={"/demoimage.jpg"}
+          alt="Image"
+          width={200}
+          height={300}
+          className="w-full h-full rounded-r-lg"
+        />
       </div>
     </div>
   );
 }
-

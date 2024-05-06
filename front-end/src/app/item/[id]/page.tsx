@@ -1,6 +1,7 @@
 "use client";
-import Cookies from "js-cookie";
 import { Button } from "@/components/ui/button";
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/lib/auth/useAuth";
 import {
   Card,
@@ -45,15 +46,17 @@ import { joinAuctionSession } from "@/app/api/apiEndpoints";
 import { socket } from "@/app/socket";
 import { Label } from "@/components/ui/label";
 export default function CustomerDetail({ params, searchParams }: any) {
+  const { toast } = useToast();
   const id = params.id;
   const use_auth = useAuth();
   const [isConnected, setIsConnected] = useState(false);
   const [infor_auction, set_infor_auction] = useState();
   const [startSession, setStartSession] = useState(false);
   const [onSession, setOnSession] = useState(false);
-  const [registered, setRegister] = useState<String>();
-  const [autionToken, setAutionToken] = useState<String>();
-  const [alias, setAlias] = useState<String>();
+  const [registered, setRegister] = useState<string>();
+  const [autionToken, setAutionToken] = useState<string>();
+  const [alias, setAlias] = useState<string>();
+  const user_id: string | undefined = use_auth.user?.id;
   useEffect(() => {
     const fetchData = async () => {
       const data_get = await viewAuctionInfo(id);
@@ -148,7 +151,13 @@ export default function CustomerDetail({ params, searchParams }: any) {
     <div className="flex flex-col justify-center items-center">
       <Button
         onClick={() => {
-          console.log(registered);
+          toast({
+            title: "Scheduled: Catch up ",
+            description: "Friday, February 10, 2023 at 5:57 PM",
+            action: (
+              <ToastAction altText="Goto schedule to undo">Undo</ToastAction>
+            ),
+          });
         }}
       >
         Test
@@ -209,7 +218,9 @@ export default function CustomerDetail({ params, searchParams }: any) {
                       {registered === "NOT_REGISTERED_YET" && (
                         <AlertDialog>
                           <AlertDialogTrigger>
-                            <Button>Đăng kí tham gia đấu giá</Button>
+                            <Button className="col-span-1 w-full">
+                              Đăng kí tham gia đấu giá
+                            </Button>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
@@ -221,33 +232,26 @@ export default function CustomerDetail({ params, searchParams }: any) {
                                 đấu giá viên
                               </AlertDialogDescription>
                             </AlertDialogHeader>
-                            <div className="grid grid-cols-4 items-center">
-                              <Label htmlFor="alias" className="col-span-1">
-                                Bí danh
-                              </Label>
-                              <Input
-                                className="col-span-3"
-                                id="alias"
-                                onChangeCapture={(e) => {
-                                  setAlias(e.currentTarget.value);
-                                }}
-                              ></Input>
-                            </div>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
                               <AlertDialogAction
                                 onClick={async (e) => {
-                                  // setRegister("");
-                                  const user_id = use_auth.user?.id;
-                                  register_auction(id, {
-                                    auction: "string",
-                                    bidder: "user_id",
-                                    alias: "string",
-                                    verified: false,
-                                    _id: "string",
-                                    createdAt: new Date(Date.now()),
-                                    updatedAt: new Date(Date.now()),
-                                  });
+                                  const result = await register_auction(
+                                    id
+                                  ).catch(console.error);
+                                  if (result?.status == 200) {
+                                    setRegister("NOT_VERIFIED");
+                                  }
+                                  // toast({
+                                  //   title: "Scheduled: Catch up ",
+                                  //   description:
+                                  //     "Friday, February 10, 2023 at 5:57 PM",
+                                  //   action: (
+                                  //     <ToastAction altText="Goto schedule to undo">
+                                  //       Undo
+                                  //     </ToastAction>
+                                  //   ),
+                                  // });
                                 }}
                               >
                                 Đồng ý

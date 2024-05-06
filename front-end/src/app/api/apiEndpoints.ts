@@ -111,8 +111,8 @@ export function viewAuctionInfo(id: String) {
 export function viewAuctionAct(id: String) {
   return request.get(`api/auction/${id}/act`);
 }
-export function register_auction(id: String, data: registerAuction) {
-  return request.post(`api/auction/${id}/register`, { data: data });
+export function register_auction(id: String) {
+  return request.post(`api/auction/${id}/register`);
 }
 
 export function joinAuctionSession(auction_id: String) {
