@@ -1,5 +1,8 @@
 // Import the Client Component into a parent Layout (Server Component)
+import TopBar from "@/components/_layout/topbar";
 import BlogNavLink from "./page";
+import PageHeader from "../component/page-header";
+import PageFooter from "../component/page-footer";
 // import getFeaturedPosts from './get-featured-posts'
 
 export default async function Layout({
@@ -9,14 +12,10 @@ export default async function Layout({
 }) {
   // const featuredPosts = await getFeaturedPosts()
   return (
-    <div>
-      {/* {featuredPosts.map((post) => (
-        <div key={post.id}>
-          <BlogNavLink slug={post.slug}>{post.title}</BlogNavLink>
-        </div>
-      ))}
-      // <div>{children}</div> */}
+    <div className="bg-[url(/demo.png)] bg-cover">
+      <PageHeader />
       {children}
+      <PageFooter />
     </div>
   );
 }

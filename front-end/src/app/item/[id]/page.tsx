@@ -124,7 +124,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
                     <div>
                       {!registered && (
                         <AlertDialog>
-                          <AlertDialogTrigger>
+                          <AlertDialogTrigger asChild>
                             <Button>Đăng kí tham gia đấu giá</Button>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
@@ -206,4 +206,4 @@ export default function CustomerDetail({ params, searchParams }: any) {
   );
 }
 
-function CountTime(endTime: any) {}
+function CountTime(endTime: any) { }

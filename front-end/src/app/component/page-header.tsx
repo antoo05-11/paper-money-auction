@@ -21,18 +21,29 @@ import Link from "next/link";
 import { useAuth } from "@/lib/auth/useAuth";
 import UserMenu from "@/components/_layout/user-menu";
 import { Logo } from "@/components/_layout/logo";
+import { usePathname } from "next/navigation";
 
 export default function PageHeader() {
   const [navBar, setNavbar] = useState(false);
   const auth = useAuth();
 
+  const pathName = usePathname();
+
   const changeBackground = () => {
-    if (window.scrollY >= 100) {
-      setNavbar(true);
-    } else {
-      setNavbar(false);
+    if (!pathName.includes("item")) {
+      if (window.scrollY >= 100) {
+        setNavbar(true);
+      } else {
+        setNavbar(false);
+      }
     }
   };
+
+  useEffect(() => {
+    if (pathName.includes("item")) {
+      setNavbar(true)
+    }
+  }, [pathName]);
 
   useEffect(() => {
     window.addEventListener("scroll", changeBackground);
@@ -92,17 +103,17 @@ export default function PageHeader() {
                   <NavigationMenuContent>
                     <ul className="gap-3 p-5 md:w-[300px] lg:w-[300px] lg:grid-cols-[.75fr_1fr]">
                       <ListItem
-                        href="/docs/installation"
+                        href="/item"
                         title="Cuộc đáu giá sắp diễn ra"
                         className="hover:text-highlightColor"
                       ></ListItem>
                       <ListItem
-                        href="/docs/primitives/typography"
+                        href="/item"
                         title="Cuộc đấu giá đang diễn ra"
                         className="hover:text-highlightColor"
                       ></ListItem>
                       <ListItem
-                        href="/docs/primitives/typography"
+                        href="/item"
                         title="Cuộc đấu giá đã diễn"
                         className="hover:text-highlightColor"
                       ></ListItem>
@@ -121,14 +132,14 @@ export default function PageHeader() {
             </NavigationMenu>
 
             <div className="flex ml-32">
-              {auth?.user ? 
+              {auth?.user ?
                 <UserMenu /> :
                 <Link href={"/login/signin"}>
-                <Button className="bg-highlightColor">
-                  Đăng nhập
-                  <ArrowRight size={18} className="ml-1" />
-                </Button>
-              </Link>
+                  <Button className="bg-highlightColor">
+                    Đăng nhập
+                    <ArrowRight size={18} className="ml-1" />
+                  </Button>
+                </Link>
               }
             </div>
           </div>
