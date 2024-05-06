@@ -12,7 +12,6 @@ const UserStatistic = dynamic(() => import("../_component/AssetStatistic"), {
 const PostStatistic = dynamic(() => import("../_component/PostStatistic"), {
   ssr: false,
 });
-import StaffTable from "../staff/_component/StaffTable";
 import { getAllUser } from "@/app/api/apiEndpoints";
 import { useEffect, useMemo, useState } from "react";
 import { userData } from "@/lib/constant/dataInterface";

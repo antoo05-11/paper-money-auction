@@ -69,4 +69,9 @@ export const auctioneerRoutes = [
     label: "Phiên đấu giá",
     href: "/auctioneer",
   },
+  {
+    icon: Layout,
+    label: "Tài sản",
+    href: "/auctioneer/asset",
+  },
 ];
