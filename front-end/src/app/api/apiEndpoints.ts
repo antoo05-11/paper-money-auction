@@ -8,7 +8,6 @@ import {
   userData,
   userLoginData,
   filterUserData,
-  filterAuctionData,
 } from "@/lib/constant/dataInterface";
 import request from "./request";
 
@@ -47,21 +46,17 @@ export function getUserProfileByID(id: String) {
   return request.get(`api/user/profile/${id}`);
 }
 
-export function updateProfile(data: any) {
+export function updateProfile(data: filterUserData) {
   return request.put("api/user/profile", { data: data });
-}
-
-export function updatePassword(data: any) {
-  return request.put("api/user/password", { data: data });
 }
 
 //payment
 export function viewPayment() {
-  return request.get("api/user/payment-method");
+  return request.get("api/user/payment");
 }
 
 export function updatePayment(data: paymentData) {
-  return request.put("api/user/payment-method", { data: data });
+  return request.post("api/user/payment", { data: data });
 }
 
 //asset
@@ -106,7 +101,7 @@ export function addAuctionDocument(id: String, docs: BinaryData) {
   return request.postForm("api/auction/" + id + "/docs", { key: docs });
 }
 
-export function listAuction(data?: filterAuctionData) {
+export function listAuction(data: any) {
   if (data) return request.get("api/auction", { params: data });
   else return request.get("api/auction");
 }
@@ -116,7 +111,7 @@ export function viewAuctionInfo(id: String) {
 export function viewAuctionAct(id: String) {
   return request.get(`api/auction/${id}/act`);
 }
-export function register_Auction(id: String, data: registerAuction) {
+export function register_auction(id: String, data: registerAuction) {
   return request.post(`api/auction/${id}/register`, { data: data });
 }
 
@@ -131,4 +126,12 @@ export function listAuctionManaging(data: any) {
 //bidder
 export function listBidder(auction_id: any) {
   return request.get(`/api/auction/${auction_id}/bidders`);
+}
+export function verifyBidder(bidder_id: any, auction_id: any) {
+  return request.put(`/api/auction/${auction_id}/verifyBidder/${bidder_id}`);
+}
+
+//customer
+export function checkParticipation(auction_id: any) {
+  return request.get(`/api/auction/${auction_id}/participationstatus`);
 }
