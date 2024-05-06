@@ -292,7 +292,7 @@ export default function ProfileCustomerPage() {
                   <div className="space-y-1">
                     <Label htmlFor="current">Số tài khoản</Label>
                     <Input id="account_number" placeholder={paymentData?.account_number ?? ''}
-                    className={`rounded-full ${!editPayment ? 'placeholder:text-black !opacity-100' : ''}`} 
+                    className={`rounded-full ${!editPayment ? 'placeholder:text-black !opacity-100' : ''}`}
                     disabled={!editPayment} 
                     onChange={(e) => setNewPayment(prevPayment => ({
                       ...prevPayment,

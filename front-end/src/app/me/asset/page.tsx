@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 
 import { Input } from "@/components/ui/input";
-import { Upload, UserPlus } from "lucide-react";
+import { Filter, Upload, UserPlus } from "lucide-react";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import PropertyForm from "./_component/PropertyForm";
 import { columns } from "./_component/columns";
@@ -13,8 +13,9 @@ import { listAsset } from "@/app/api/apiEndpoints";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useDebounce } from "@/lib/hook/useDebounce";
-import { Skeleton } from "@/components/ui/skeleton";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export default function Page() {
   const [loading, setLoading] = useState(false);
@@ -22,7 +23,10 @@ export default function Page() {
   const [openVerify, setOpenVerify] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
+  const pathName = usePathname();
   const [asset, setAsset] = useState<assetData[]>([]);
+  const [filterActive, setActive] = useState(true);
+  const [filterSuspend, setSuspend] = useState(true);
 
   const page = parseInt(searchParams.get('page') ?? '1');
   const limit = parseInt(searchParams.get('limit') ?? '10');
@@ -62,10 +66,102 @@ export default function Page() {
     }
   }, [debouncedFilter, openVerify]);
 
+  useEffect(() => {
+    setFilter(prevFilter => ({
+      ...prevFilter,
+      verified: handleFilterVerified(filterActive, filterSuspend),
+    }))
+  }, [filterActive, filterSuspend]);
+
+  const handleFilterVerified = (isActive: any, isSuspended: any) => {
+    if (isActive && isSuspended) {
+      return undefined;
+    } else if (isActive && !isSuspended) {
+      return true;
+    } else if (!isActive && isSuspended) {
+      return false;
+    }
+  };
+
   return (
     <div className="container">
-     <div className="flex flex-col mb-5 space-y-10">
-        <div className="md:mb-0 self-end">
+     <div className="flex justify-between mb-5">
+        <div className="flex flex-row">
+          <div>
+          <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline">
+                  <Filter />
+                  <span>Bộ lọc</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 ml-40" >
+                <div className="grid gap-4">
+                  <div className="space-y-2">
+                    <h4 className="font-medium leading-none">Bộ lọc</h4>
+                  </div>
+                  <div className="grid gap-2">
+                  <div className=" items-center gap-4">
+                      <Input
+                        id="width"
+                        placeholder="Lọc theo tên"
+                        className="h-8"
+                        defaultValue={""}
+                        onChange={(e) => {
+                          setFilter(prevFilter => ({
+                            ...prevFilter,
+                            name: e.target.value,
+                            page: 1,
+                          }));
+                          router.push(`${pathName}/?page=1&limit=10`);
+                        }}
+                      />
+                    </div>
+                    <div className=" items-center gap-4">
+                      <Input
+                        id="description"
+                        placeholder="Lọc theo mô tả"
+                        className="h-8"
+                        onChange={(e) => {
+                          setFilter(prevFilter => ({
+                            ...prevFilter,
+                            description: e.target.value,
+                          }))
+                          router.push(`${pathName}/?page=1&limit=10`);
+                        }}
+                      />
+                    </div>
+                    <div className="items-center gap-4">
+                      <DropdownMenu >
+                        <DropdownMenuTrigger asChild >
+                          <Button variant="outline" className="rounded-lg w-full justify-start">Trạng thái</Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-56">
+                          <DropdownMenuCheckboxItem
+                            checked={filterActive}
+                            onCheckedChange={setActive}
+                          >
+                            Đã xác thực
+                          </DropdownMenuCheckboxItem>
+
+                          <DropdownMenuCheckboxItem
+                            checked={filterSuspend}
+                            onCheckedChange={setSuspend}
+                          >
+                            Chưa xác thực
+                          </DropdownMenuCheckboxItem>
+
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
+
+        <div>
           <Dialog open={openVerify} onOpenChange={setOpenVerify}>
             <DialogTrigger asChild>
               <Button variant={"createBtn"}>
@@ -75,62 +171,6 @@ export default function Page() {
             </DialogTrigger>
             <PropertyForm setClose={setOpenVerify} open={openVerify} />
           </Dialog>
-        </div>
-        <div className="grid grid-cols-4 mt-5 md:mt-0 space-x-8 mx-20">
-          <div>
-            <Input
-              className="leading-none text-gray-800 dark:text-white bg-transparent focus:outline-none shadow w-2/3"
-              placeholder="Name"
-              id="name"
-              type="text"
-              onChange={(e) => setFilter(prevFilter => ({
-                ...prevFilter,
-                name: e.target.value,
-              }))}
-            />
-          </div>
-          <Input
-            className="text-gray-800 dark:text-white bg-transparent focus:outline-none shadow text-xs w-3/4"
-            placeholder="Description"
-            id="description"
-            type="text"
-            onChange={(e) => setFilter(prevFilter => ({
-              ...prevFilter,
-              description: e.target.value,
-            }))}
-          />
-          <Input
-            className="text-gray-800 dark:text-white bg-transparent focus:outline-none shadow text-xs w-3/4"
-            placeholder="Owner@gmail.com"
-            id="Owner"
-            type="text"
-            onChange={(e) => setFilter(prevFilter => ({
-              ...prevFilter,
-              owner: e.target.value,
-            }))}
-          />
-          <Input
-            className="text-gray-800 dark:text-white bg-transparent focus:outline-none shadow text-xs w-3/4"
-            placeholder="Auctioneer@gmail.com"
-            id="Auctioneer"
-            type="text"
-            onChange={(e) => setFilter(prevFilter => ({
-              ...prevFilter,
-              auctioneer: e.target.value,
-            }))}
-          />
-          <div className="flex items-center space-x-2">
-            <Label htmlFor="verified-status">Not Verified</Label>
-            <Switch 
-              id="verified"
-              checked={filter.verified}
-              onCheckedChange={(e: any) => setFilter(prevFilter => ({
-                ...prevFilter,
-                verified: e.valueOf(),
-              }))}
-            />
-            <Label htmlFor="verified-status">Verified</Label>
-          </div>
         </div>
       </div>
 
