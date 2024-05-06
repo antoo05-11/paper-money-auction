@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/form";
 import { createStaff } from "@/app/api/apiEndpoints";
 import { HTTP_STATUS } from "@/lib/constant/constant";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
     name: z.string(),
@@ -27,7 +28,7 @@ const formSchema = z.object({
     }),
 });
 
-export default function StaffForm() {
+export default function StaffForm({setClose, open}: {setClose: any, open: any}) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -36,6 +37,7 @@ export default function StaffForm() {
         },
     });
 
+    const router = useRouter();
     async function onSubmit(values: z.infer<typeof formSchema>) {
         const userData = {
             ...values,
@@ -46,6 +48,9 @@ export default function StaffForm() {
                 toast.success("Tạo đấu giá viên thành công", {
                     description: new Date().toLocaleString(),
                 });
+                router.push(window.location.href);
+                router.refresh();
+                setClose(false);
             } else {
                 toast.error("Tạo nhân viên thất bại", {
                     description: "Kiểm tra lại thông tin",

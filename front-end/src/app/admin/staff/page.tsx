@@ -44,6 +44,7 @@ export default function Page() {
   const [pageCount, setPageCount] = useState(0);
   const searchParams = useSearchParams();
   const [listUser, setListUser] = useState<userData[]>([]);
+  const [openVerify, setOpenVerify] = useState(false);
   const [filterActive, setActive] = useState(true);
   const [filterSuspend, setSuspend] = useState(true);
   const router = useRouter();
@@ -202,7 +203,7 @@ export default function Page() {
         </div>
 
         <div>
-          <Dialog>
+          <Dialog open={openVerify} onOpenChange={setOpenVerify}>
             <DialogTrigger asChild>
               <Button variant={"createBtn"}>
                 <UserPlus />
@@ -210,7 +211,7 @@ export default function Page() {
               </Button>
             </DialogTrigger>
 
-            <StaffForm />
+            <StaffForm setClose={setOpenVerify} open={openVerify}/>
 
           </Dialog>
         </div>
