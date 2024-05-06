@@ -1,4 +1,4 @@
-import { assetData } from "@/lib/constant/dataInterface"
+import { assetData, userData } from "@/lib/constant/dataInterface"
 import { ColumnDef } from "@tanstack/react-table"
 import {
     DropdownMenu,
@@ -14,6 +14,7 @@ import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
 import { useRouter, usePathname } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 
+
 const ActionCell: React.FC<{ row: any }> = ({ row }) => {
     const asset = row.original;
     const route = useRouter();
@@ -23,17 +24,16 @@ const ActionCell: React.FC<{ row: any }> = ({ row }) => {
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 p-0">
-                    <span className="sr-only">Open menu</span>
                     <MoreHorizontal className="h-4 w-4" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Hoạt động</DropdownMenuLabel>
+                <DropdownMenuLabel>Chi tiết</DropdownMenuLabel>
                 <DropdownMenuItem
                     onClick={(e) => {
                         route.push(path_name + "/" + asset._id);
                     }}>
-                    Xem chi tiết
+                    Xem thông tin
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
             </DropdownMenuContent>
@@ -41,7 +41,7 @@ const ActionCell: React.FC<{ row: any }> = ({ row }) => {
     )
 };
 
-export const columns: ColumnDef<assetData>[] = [
+export const columns: ColumnDef<userData>[] = [
     {
         id: "stt",
         header: () => <div className="flex justify-center items-center"> STT </div>,
@@ -52,35 +52,52 @@ export const columns: ColumnDef<assetData>[] = [
         header: "ID",
     },
     {
-        accessorKey: "name",
-        header: "Tên"
-    },
-    {
-        accessorKey: "description",
-        header: "Description",
-    },
-    {
-        accessorKey: "verified",
-        header: () => (
-            <div className="flex justify-center items-center">
-                Trạng thái
-            </div>
-        ),
+        accessorKey: "registration_open",
+        header: "Giờ mở đăng kí",
         cell: ({ row }) => {
-            const status = row.getValue("verified") as String;
-            const variant = status === "Chưa phê duyệt" ? "default" : "common";
+            const date = row.getValue("registration_open") as Date;
             return (
-                <div className="flex justify-center items-center">
-                    <Badge variant={variant}>
-                        {status}
-                    </Badge>
+                <div>
+                    {new Date(date).toLocaleString()}
                 </div>
             );
         },
     },
     {
-        id: "actions",
-        enableHiding: false,
-        cell: ActionCell,
-    }
+        accessorKey: "registration_close",
+        header: "Giờ đóng đăng kí",
+        cell: ({ row }) => {
+            const date = row.getValue("registration_close") as Date;
+            return (
+                <div>
+                    {new Date(date).toLocaleString()}
+                </div>
+            );
+        },
+    },
+    {
+        accessorKey: "auction_start",
+        header: "Giờ mở đấu giá",
+        cell: ({ row }) => {
+            const date = row.getValue("auction_start") as Date;
+            return (
+                <div>
+                    {new Date(date).toLocaleString()}
+                </div>
+            );
+        },
+    },
+    {
+        accessorKey: "auction_end",
+        header: "Giờ kết thúc đấu giá",
+        cell: ({ row }) => {
+            const date = row.getValue("auction_end") as Date;
+            return (
+                <div>
+                    {new Date(date).toLocaleString()}
+                </div>
+            );
+        },
+    },
+
 ]

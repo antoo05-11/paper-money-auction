@@ -13,8 +13,37 @@ const PostStatistic = dynamic(() => import("../_component/PostStatistic"), {
   ssr: false,
 });
 import StaffTable from "../staff/_component/StaffTable";
+import { getAllUser } from "@/app/api/apiEndpoints";
+import { useEffect, useMemo, useState } from "react";
+import { userData } from "@/lib/constant/dataInterface";
+import { DataTable } from "@/components/ui/data-table";
+import { columns } from "../staff/_component/columns";
 
 export default function AdminPage() {
+  const [listUser, setListUser] = useState<userData[]>([]);
+  const columnsMemo = useMemo(() => columns, []);
+
+  useEffect(() => {
+    getAllUser({
+      sort: undefined,
+      name: undefined,
+      ssid: undefined,
+      phone: undefined,
+      email: undefined,
+      active: undefined,
+      role: "auctioneer",
+      page: 1,
+      limit: 10,
+    }).then(res => {
+      const modifiedData = res.data.data.listUser.map((user: userData) => ({
+        ...user,
+        active: user.active ? "Hoạt động" : "Đình chỉ"
+      }));
+      setListUser(modifiedData);
+    }).finally(() => {
+    })
+  }, []);
+
   return (
     <div className="container ">
       <div className="w-full">
@@ -31,7 +60,7 @@ export default function AdminPage() {
       </div>
 
       <div className="mt-3">
-        <StaffTable />
+        {<DataTable columns={columnsMemo} data={listUser} pageCount={1} />}
       </div>
     </div>
   );

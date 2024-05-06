@@ -1,4 +1,4 @@
-import { assetData } from "@/lib/constant/dataInterface"
+import { assetData, userData } from "@/lib/constant/dataInterface"
 import { ColumnDef } from "@tanstack/react-table"
 import {
     DropdownMenu,
@@ -14,26 +14,29 @@ import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
 import { useRouter, usePathname } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 
+
 const ActionCell: React.FC<{ row: any }> = ({ row }) => {
     const asset = row.original;
     const route = useRouter();
     const path_name = usePathname();
 
+    const isStaffView = path_name.includes("/staff")
+    const newRoute = !isStaffView ? path_name + "/staff/" : path_name + "/"
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 p-0">
-                    <span className="sr-only">Open menu</span>
                     <MoreHorizontal className="h-4 w-4" />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Hoạt động</DropdownMenuLabel>
+                <DropdownMenuLabel>Chi tiết</DropdownMenuLabel>
                 <DropdownMenuItem
                     onClick={(e) => {
-                        route.push(path_name + "/" + asset._id);
+
+                        route.push(newRoute + asset._id);
                     }}>
-                    Xem chi tiết
+                    Xem thông tin
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
             </DropdownMenuContent>
@@ -41,7 +44,7 @@ const ActionCell: React.FC<{ row: any }> = ({ row }) => {
     )
 };
 
-export const columns: ColumnDef<assetData>[] = [
+export const columns: ColumnDef<userData>[] = [
     {
         id: "stt",
         header: () => <div className="flex justify-center items-center"> STT </div>,
@@ -53,22 +56,26 @@ export const columns: ColumnDef<assetData>[] = [
     },
     {
         accessorKey: "name",
-        header: "Tên"
+        header: "Họ và tên"
     },
     {
-        accessorKey: "description",
-        header: "Description",
+        accessorKey: "email",
+        header: "Email",
     },
     {
-        accessorKey: "verified",
+        accessorKey: "phone",
+        header: "Số điện thoại",
+    },
+    {
+        accessorKey: "active",
         header: () => (
             <div className="flex justify-center items-center">
                 Trạng thái
             </div>
         ),
         cell: ({ row }) => {
-            const status = row.getValue("verified") as String;
-            const variant = status === "Chưa phê duyệt" ? "default" : "common";
+            const status = row.getValue("active") as String;
+            const variant = status === "Đình chỉ" ? "default" : "common";
             return (
                 <div className="flex justify-center items-center">
                     <Badge variant={variant}>

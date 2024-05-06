@@ -22,14 +22,17 @@ import {
 
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import MyAuctionTable from "@/app/me/auction/_component/MyAuctionTable";
 import { useEffect, useState } from "react";
-import { getUserProfileByID } from "@/app/api/apiEndpoints";
-import { userData } from "@/lib/constant/dataInterface";
+import { getUserProfileByID, listAsset } from "@/app/api/apiEndpoints";
+import { assetData, userData, filterAssetData } from "@/lib/constant/dataInterface";
+import { DataTable } from "@/components/ui/data-table";
+import { columns } from "@/app/me/asset/_component/columns";
 
 export default function CustomerDetail({ params, searchParams }: any) {
   const id = params.id;
   const [user, setUser] = useState<userData>();
+  const [pageCount, setPageCount] = useState(0);
+  const [listItem, setListItem] = useState<assetData[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,12 +46,36 @@ export default function CustomerDetail({ params, searchParams }: any) {
     fetchData();
   }, [id])
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (user?.email) {
+          const filter: filterAssetData = {
+            owner: user?.email,
+            sort: undefined,
+            name: undefined,
+            description: undefined,
+            verified: undefined,
+            page: undefined,
+            limit: undefined
+          };
+          const response = await listAsset(filter);
+          setPageCount(response.data.data.totalPages);
+          setListItem(response.data.data.assets);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+    fetchData();
+  }, [user?.email]);
+
+
   return (
     <div className="container">
       <Card className="">
         <CardHeader>
           <CardTitle>Thông tin khách hàng</CardTitle>
-          {/* <CardDescription></CardDescription> */}
         </CardHeader>
         <CardContent>
           <div className="grid w-full items-center gap-4">
@@ -90,10 +117,15 @@ export default function CustomerDetail({ params, searchParams }: any) {
               <Input id="address" defaultValue={user?.address || ''} disabled={true} className="rounded-full" />
             </div>
           </div>
+        </CardContent>
+      </Card>
 
-          <div className="mt-3">
-            <MyAuctionTable />
-          </div>
+      <Card className="mt-5">
+        <CardHeader>
+          <CardTitle>Tài sản</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <DataTable columns={columns} data={listItem} pageCount={pageCount} />
         </CardContent>
       </Card>
     </div>
