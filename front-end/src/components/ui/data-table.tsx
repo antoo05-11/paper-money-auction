@@ -4,6 +4,8 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getPaginationRowModel,
+  PaginationState,
   useReactTable,
 } from "@tanstack/react-table"
 
@@ -15,20 +17,89 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Button } from "./button"
+import { DataTablePagination } from "./data-table-pagination"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import React from "react"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  pageCount: number
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  pageCount
 }: DataTableProps<TData, TValue>) {
+
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const page = searchParams?.get("page") ?? "1"
+  const per_page = searchParams?.get("limit") ?? "10"
+
+  const createQueryString = React.useCallback(
+    (params: Record<string, string | number | null>) => {
+      const newSearchParams = new URLSearchParams(searchParams?.toString())
+
+      for (const [key, value] of Object.entries(params)) {
+        if (value === undefined) {
+          newSearchParams.delete(key)
+        } else {
+          newSearchParams.set(key, String(value))
+        }
+      }
+
+      return newSearchParams.toString()
+    },
+    [searchParams]
+  )
+
+  const [{ pageIndex, pageSize }, setPagination] =
+    React.useState<PaginationState>({
+      pageIndex: Number(page) - 1,
+      pageSize: Number(per_page),
+    })
+
+  const pagination = React.useMemo(
+    () => ({
+      pageIndex,
+      pageSize,
+    }),
+    [pageIndex, pageSize]
+  )
+
+  React.useEffect(() => {
+    setPagination({
+      pageIndex: Number(page) - 1,
+      pageSize: Number(per_page),
+    })
+  }, [page, per_page])
+
+   // changed the route as well
+  React.useEffect(() => {
+    router.push(
+      `${pathname}?${createQueryString({
+        page: pageIndex + 1,
+        limit: pageSize,
+      })}`
+    )
+  }, [pageIndex, pageSize])
+
   const table = useReactTable({
     data,
     columns,
+    pageCount: pageCount ?? -1,
+    state: {
+      pagination
+    },
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    manualPagination: true,
   })
 
   return (
@@ -75,6 +146,7 @@ export function DataTable<TData, TValue>({
           )}
         </TableBody>
       </Table>
-    </div>
+      <DataTablePagination table={table} />
+  </div>
   )
 }

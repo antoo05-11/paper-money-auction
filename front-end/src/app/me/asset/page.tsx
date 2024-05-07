@@ -1,75 +1,50 @@
-"use client"
+'use client';
+import { Button } from "@/components/ui/button";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input";
-import { useSearchParams } from "next/navigation";
-import { useDebounce } from "@/lib/hook/useDebounce";
-import { DataTable } from "@/components/ui/data-table";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Filter, Upload, UserPlus } from "lucide-react";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import PropertyForm from "./_component/PropertyForm";
 import { columns } from "./_component/columns";
-import { filterUserData, userData } from "@/lib/constant/dataInterface";
-import { getAllUser } from "@/app/api/apiEndpoints";
-import { useEffect, useState } from "react";
-import React from "react";
-import StaffForm from "./_component/StaffForm";
-import { UserPlus } from "lucide-react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import { Filter } from "lucide-react";
-import { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { useRouter, usePathname } from 'next/navigation'
+import { DataTable } from "../../../components/ui/data-table";
+import { useCallback, useEffect, useState } from "react";
+import { assetData, filterAssetData } from "@/lib/constant/dataInterface";
+import { listAsset } from "@/app/api/apiEndpoints";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { useDebounce } from "@/lib/hook/useDebounce";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export default function Page() {
   const [loading, setLoading] = useState(false);
   const [pageCount, setPageCount] = useState(0);
-  const searchParams = useSearchParams();
-  const [listUser, setListUser] = useState<userData[]>([]);
   const [openVerify, setOpenVerify] = useState(false);
-  const [filterActive, setActive] = useState(true);
-  const [filterSuspend, setSuspend] = useState(true);
+  const searchParams = useSearchParams();
   const router = useRouter();
   const pathName = usePathname();
-
-  const columnsMemo = React.useMemo(() => columns, []);
+  const [asset, setAsset] = useState<assetData[]>([]);
+  const [filterActive, setActive] = useState(true);
+  const [filterSuspend, setSuspend] = useState(true);
 
   const page = parseInt(searchParams.get('page') ?? '1');
   const limit = parseInt(searchParams.get('limit') ?? '10');
 
-  const [filter, setFilter] = useState<filterUserData>(
+  const [filter, setFilter] = useState<filterAssetData>(
     {
       sort: undefined,
       name: undefined,
-      ssid: undefined,
-      phone: undefined,
-      email: undefined,
-      active: undefined,
-      role: "auctioneer",
+      description: undefined,
+      owner: undefined,
+      auctioneer: undefined,
+      verified: undefined,
       page: page,
       limit: limit,
     }
   );
 
-  const debouncedFilter = useDebounce(filter, 1000);
+  const debouncedFilter = useDebounce(filter);
 
   useEffect(() => {
     setFilter(prevFilter => ({
@@ -77,30 +52,28 @@ export default function Page() {
       page: page,
       limit: limit
     }))
-  }, [searchParams, limit, page])
+  }, [searchParams])
+
+  useEffect(() => {
+    if (!openVerify) {
+      setLoading(true);
+      listAsset(debouncedFilter).then(res => {
+        setAsset(res.data.data.assets);
+        setPageCount(res.data.data.totalPages);
+      }).finally(() => {
+        setLoading(false);
+      })
+    }
+  }, [debouncedFilter, openVerify]);
 
   useEffect(() => {
     setFilter(prevFilter => ({
       ...prevFilter,
-      active: handleFilterActive(filterActive, filterSuspend),
+      verified: handleFilterVerified(filterActive, filterSuspend),
     }))
   }, [filterActive, filterSuspend]);
 
-  useEffect(() => {
-    setLoading(true);
-    getAllUser(debouncedFilter).then(res => {
-      const modifiedData = res.data.data.listUser.map((user: userData) => ({
-        ...user,
-        active: user.active ? "Hoạt động" : "Đình chỉ"
-      }));
-      setListUser(modifiedData);
-      setPageCount(res.data.data.totalPages);
-    }).finally(() => {
-      setLoading(false);
-    })
-  }, [debouncedFilter]);
-
-  const handleFilterActive = (isActive: any, isSuspended: any) => {
+  const handleFilterVerified = (isActive: any, isSuspended: any) => {
     if (isActive && isSuspended) {
       return undefined;
     } else if (isActive && !isSuspended) {
@@ -112,10 +85,10 @@ export default function Page() {
 
   return (
     <div className="container">
-      <div className="flex justify-between mb-5">
+     <div className="flex justify-between mb-5">
         <div className="flex flex-row">
           <div>
-            <Popover>
+          <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline">
                   <Filter />
@@ -128,7 +101,7 @@ export default function Page() {
                     <h4 className="font-medium leading-none">Bộ lọc</h4>
                   </div>
                   <div className="grid gap-2">
-                    <div className=" items-center gap-4">
+                  <div className=" items-center gap-4">
                       <Input
                         id="width"
                         placeholder="Lọc theo tên"
@@ -146,27 +119,13 @@ export default function Page() {
                     </div>
                     <div className=" items-center gap-4">
                       <Input
-                        id="maxWidth"
-                        placeholder="Lọc theo email"
+                        id="description"
+                        placeholder="Lọc theo mô tả"
                         className="h-8"
                         onChange={(e) => {
                           setFilter(prevFilter => ({
                             ...prevFilter,
-                            email: e.target.value,
-                          }))
-                          router.push(`${pathName}/?page=1&limit=10`);
-                        }}
-                      />
-                    </div>
-                    <div className=" items-center gap-4">
-                      <Input
-                        id="height"
-                        placeholder="Lọc theo số điện thoại"
-                        className="h-8"
-                        onChange={(e) => {
-                          setFilter(prevFilter => ({
-                            ...prevFilter,
-                            phone: e.target.value,
+                            description: e.target.value,
                           }))
                           router.push(`${pathName}/?page=1&limit=10`);
                         }}
@@ -182,14 +141,14 @@ export default function Page() {
                             checked={filterActive}
                             onCheckedChange={setActive}
                           >
-                            Hoạt động
+                            Đã xác thực
                           </DropdownMenuCheckboxItem>
 
                           <DropdownMenuCheckboxItem
                             checked={filterSuspend}
                             onCheckedChange={setSuspend}
                           >
-                            Đình chỉ
+                            Chưa xác thực
                           </DropdownMenuCheckboxItem>
 
                         </DropdownMenuContent>
@@ -206,19 +165,16 @@ export default function Page() {
           <Dialog open={openVerify} onOpenChange={setOpenVerify}>
             <DialogTrigger asChild>
               <Button variant={"createBtn"}>
-                <UserPlus />
-                <p className="ml-2">Tạo nhân viên</p>
+                <Upload />
+                <p className="ml-2">Đăng kí tài sản đấu giá</p>
               </Button>
             </DialogTrigger>
-
-            <StaffForm setClose={setOpenVerify} open={openVerify}/>
-
+            <PropertyForm setClose={setOpenVerify} open={openVerify} />
           </Dialog>
         </div>
       </div>
-      <div>
-        {<DataTable columns={columnsMemo} data={listUser} pageCount={pageCount} />}
-      </div>
+
+      <DataTable columns={columns} data={asset} pageCount={pageCount}/>
     </div>
   );
 }

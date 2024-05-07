@@ -1,4 +1,17 @@
 "use client";
+import Link from "next/link";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -27,6 +40,8 @@ import { auctionData, filterAssetData } from "@/lib/constant/dataInterface";
 import { list } from "postcss";
 import { usePathname, useRouter } from "next/navigation";
 import { createAuction } from "@/app/api/apiEndpoints";
+import { toast } from "sonner";
+
 export default function Page() {
   const [list_asset, setListAsset] = useState<any>(null);
   const [param, setParam] = useState<filterAssetData>();
@@ -78,7 +93,7 @@ export default function Page() {
                       {data?.verified ? "Chưa tạo phiên đấu giá" : "Đã tạo"}
                     </TableCell>
                     <TableCell className="text-right">
-                      <CreateAuction></CreateAuction>
+                      <CreateAuction asset_infor={data}></CreateAuction>
                     </TableCell>
                   </TableRow>
                 );
@@ -91,15 +106,38 @@ export default function Page() {
   );
 }
 
-function CreateAuction() {
-  const [auction, setAuction] = useState<auctionData>();
+function CreateAuction(asset_infor: any) {
+  const route = useRouter();
+  const FormSchema = z.object({
+    asset: z.string().default(asset_infor?.asset_infor?._id),
+    starting_price: z.string(),
+    bidding_increment: z.string(),
+    deposit: z.string(),
+    registration_open: z.string(),
+    registration_close: z.string(),
+    auction_start: z.string(),
+    auction_end: z.string(),
+    max_number_of_bidder: z.string(),
+  });
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+  });
+  function onSubmit(data: z.infer<typeof FormSchema>) {
+    const create_auction = async () => {
+      const res = await createAuction(data);
+      if (res.status == 200) {
+        console.log(123);
+      }
+    };
+    const result = create_auction().catch(console.error);
+  }
   return (
     <div>
       <Dialog>
         <DialogTrigger asChild>
           <Button variant="outline">Tạo phiên đấu giá</Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[700px]">
+        <DialogContent className="sm:max-w-[700px] overflow-y-scroll max-h-screen">
           <DialogHeader>
             <DialogTitle>Tạo phiên đấu giá</DialogTitle>
             <DialogDescription>
@@ -107,73 +145,169 @@ function CreateAuction() {
               để tạo phiên đấu giá
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="starting_price" className="text-right">
-                Giá khời điểm
-              </Label>
-              <Input id="starting_price" className="col-span-3" type="number" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="bidding_increment" className="text-right">
-                Bước giá
-              </Label>
-              <Input
-                id="bidding_increment"
-                className="col-span-3"
-                type="number"
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-1">
+              <FormField
+                control={form.control}
+                name="starting_price"
+                render={({ field }) => (
+                  <FormItem className="grid grid-cols-6 items-center gap-4">
+                    <FormLabel className="col-span-3">Giá khởi điểm</FormLabel>
+                    <FormControl>
+                      <Input
+                        defaultValue="Pedro Duarte"
+                        className="col-span-3"
+                        type="number"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="grid grid-cols-8 items-center gap-4">
-              <Label
-                htmlFor="bidding_increment"
-                className="text-right col-span-2"
-              >
-                Thời gian đăng kí
-              </Label>
-              <Input
-                id="bidding_increment"
-                className="col-span-3"
-                type="number"
+              <FormField
+                control={form.control}
+                name="bidding_increment"
+                render={({ field }) => (
+                  <FormItem className="grid grid-cols-6 items-center gap-4">
+                    <FormLabel className="col-span-3">
+                      Bước giá tối thiểu
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        defaultValue="Pedro Duarte"
+                        className="col-span-3"
+                        type="number"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              <Input
-                id="bidding_increment"
-                className="col-span-3"
-                type="number"
+              <FormField
+                control={form.control}
+                name="deposit"
+                render={({ field }) => (
+                  <FormItem className="grid grid-cols-6 items-center gap-4">
+                    <FormLabel className="col-span-3">
+                      Bước giá tối thiểu
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        defaultValue="Pedro Duarte"
+                        className="col-span-3"
+                        type="number"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="grid grid-cols-8 items-center gap-4">
-              <Label
-                htmlFor="bidding_increment"
-                className="text-right col-span-2"
-              >
-                Thời gian bắt đầu
-              </Label>
-              <Input
-                id="bidding_increment"
-                className="col-span-3"
-                type="number"
+              <FormField
+                control={form.control}
+                name="registration_open"
+                render={({ field }) => (
+                  <FormItem className="grid grid-cols-6 items-center gap-4">
+                    <FormLabel className="col-span-3">
+                      Thời gian mở đăng ký
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        className="col-span-3"
+                        type="datetime-local"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              <Input
-                id="bidding_increment"
-                className="col-span-3"
-                type="number"
+              <FormField
+                control={form.control}
+                name="registration_close"
+                render={({ field }) => (
+                  <FormItem className="grid grid-cols-6 items-center gap-4">
+                    <FormLabel className="col-span-3">
+                      Thời gian đóng đăng ký
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        className="col-span-3"
+                        type="datetime-local"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="bidding_increment" className="text-right">
-                Số lượng tối đa người tham gia
-              </Label>
-              <Input
-                id="bidding_increment"
-                className="col-span-3"
-                type="number"
+              <FormField
+                control={form.control}
+                name="auction_start"
+                render={({ field }) => (
+                  <FormItem className="grid grid-cols-6 items-center gap-4">
+                    <FormLabel className="col-span-3">
+                      Thời gian bắt đầu phiên đấu giá
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        className="col-span-3"
+                        type="datetime-local"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-          </div>
-          <DialogFooter>
+              <FormField
+                control={form.control}
+                name="auction_end"
+                render={({ field }) => (
+                  <FormItem className="grid grid-cols-6 items-center gap-4">
+                    <FormLabel className="col-span-3">
+                      Thời gian kết thúc phiên đấu giá
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        className="col-span-3"
+                        type="datetime-local"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="max_number_of_bidder"
+                render={({ field }) => (
+                  <FormItem className="grid grid-cols-6 items-center gap-4">
+                    <FormLabel className="col-span-3">
+                      Số lượng người dùng tham gia đấu giá
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        defaultValue="Pedro Duarte"
+                        className="col-span-3"
+                        type="number"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit">Phê duyệt</Button>
+            </form>
+          </Form>
+
+          {/* <DialogFooter>
             <Button type="submit">Tạo</Button>
-          </DialogFooter>
+          </DialogFooter> */}
         </DialogContent>
       </Dialog>
     </div>

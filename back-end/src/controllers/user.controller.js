@@ -6,7 +6,7 @@ import errorCode from "../constants/error.code";
 import _ from "lodash";
 
 export default class UserController {
-    constructor() { }
+    constructor() {}
 
     createCustomer = async (req, res) => {
         const { body } = req;
@@ -51,6 +51,7 @@ export default class UserController {
             bcrypt.genSaltSync(12),
             null
         );
+        data.verified = true;
 
         const staff = await User.create(data);
 
@@ -133,7 +134,6 @@ export default class UserController {
         });
     };
 
-
     updatePassword = async (req, res) => {
         const { user } = req;
         const { data } = req.body;
@@ -202,7 +202,7 @@ export default class UserController {
         const toSortFields = query.sort || null;
 
         const filter = {
-            role: query.role
+            role: query.role,
         };
         const regexFields = ["name", "ssid", "email", "phone"];
         const queryFields = ["active"];
@@ -216,7 +216,7 @@ export default class UserController {
 
         let totalUser = await User.countDocuments(filter);
         let page = parseInt(query.page) || 1;
-        let limit = parseInt(query.limit) || 10;
+        let limit = parseInt(query.limit) || totalUser;
         let skip = (page - 1) * limit;
         let totalPages = Math.ceil(totalUser / limit);
 
@@ -238,9 +238,13 @@ export default class UserController {
     suspendUser = async (req, res) => {
         const { params } = req;
 
-        const user = await User.findByIdAndUpdate(params.id, { active: false }, {
-            new: true,
-        }).select({
+        const user = await User.findByIdAndUpdate(
+            params.id,
+            { active: false },
+            {
+                new: true,
+            }
+        ).select({
             _id: 0,
             name: 1,
             ssid: 1,
@@ -264,5 +268,5 @@ export default class UserController {
                 user: user,
             },
         });
-    }
+    };
 }

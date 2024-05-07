@@ -1,33 +1,33 @@
 import {
   BadgeDollarSign,
-  Bell,
-  Compass,
+  BookUser,
   FileClock,
+  FileCode2Icon,
   LandPlot,
   Layout,
-  List,
-  ScrollText,
+  SquareGanttChartIcon,
+  UsersRound,
 } from "lucide-react";
 
 export const adminRoutes = [
   {
     icon: Layout,
-    label: "Dashboard",
+    label: "Trang chủ",
     href: "/admin",
   },
   {
-    icon: List,
-    label: "Customer",
+    icon: SquareGanttChartIcon,
+    label: "Người dùng",
     href: "/admin/customer",
   },
   {
-    icon: List,
-    label: "Staff",
+    icon: UsersRound,
+    label: "Nhân viên",
     href: "/admin/staff",
   },
   {
-    icon: List,
-    label: "Asset",
+    icon: FileCode2Icon,
+    label: "Tài sản",
     href: "/admin/asset",
   },
 ];
@@ -42,9 +42,14 @@ export const guestRoutes = [
 
 export const userRoutes = [
   {
+    icon: BookUser,
+    label: "Thông tin cá nhân",
+    href: "/me",
+  },
+  {
     icon: LandPlot,
     label: "Đăng ký tài sản đấu giá",
-    href: "/me",
+    href: "/me/asset",
   },
   {
     icon: FileClock,
@@ -63,5 +68,10 @@ export const auctioneerRoutes = [
     icon: Layout,
     label: "Phiên đấu giá",
     href: "/auctioneer",
+  },
+  {
+    icon: Layout,
+    label: "Tài sản",
+    href: "/auctioneer/asset",
   },
 ];

@@ -67,12 +67,12 @@ export default function CustomerDetail({ params }: any) {
         "Bearer ",
         ""
       );
-      console.log(token);
-      socket.on("connect", async () => {
-        console.log("Connected to server");
+      console.log(data_use);
+      // socket.on("connect", async () => {
+      //   console.log("Connected to server");
 
-        await socket.emit("start_session", token);
-      });
+      //   // await socket.emit("start_session", token);
+      // });
       setAutionToken(token);
     };
     if (onSession) {
@@ -85,6 +85,7 @@ export default function CustomerDetail({ params }: any) {
         onClick={() => {
           // const hihi = new Date(infor_auction?.auction_end);
           console.log(autionToken);
+          console.log(socket.connected);
         }}
       >
         Test

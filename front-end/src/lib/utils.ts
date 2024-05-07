@@ -8,6 +8,10 @@ export function cn(...inputs: ClassValue[]) {
 
 export function serverRole(): any {
   const cookies = getCookies();
-  const user = JSON?.parse(cookies.get("user") ?? "");
-  return user?.role;
+  const userInCookies = cookies.get("user");
+  if (userInCookies) {
+    const user = JSON?.parse(userInCookies);    
+    return user.role;
+  }
+  return null;
 }

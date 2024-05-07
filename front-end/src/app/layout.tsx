@@ -3,9 +3,6 @@ import "./globals.css";
 import PageHeader from "./component/page-header";
 import PageFooter from "./component/page-footer";
 import { Toaster } from "@/components/ui/sonner";
-import { useEffect, useState } from "react";
-import { useAuth } from "@/lib/auth/useAuth";
-import { AuthContext } from "@/lib/auth/AuthContext";
 import { CookiesProviders } from "@/lib/auth/cookiesProvider";
 
 const lexend = Lexend({ subsets: ["latin"] });

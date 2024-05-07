@@ -37,7 +37,9 @@ import { useState } from "react";
 import { viewAuctionInfo } from "@/app/api/apiEndpoints";
 import { useEffect } from "react";
 import { joinAuctionSession } from "@/app/api/apiEndpoints";
-export default function CustomerDetail({ params, searchParams }: any) {
+import Image from "next/image"
+
+export default function Page({ params, searchParams }: any) {
   const id = params.id;
   const [infor_auction, set_infor_auction] = useState();
   const [startSession, setStartSession] = useState(false);
@@ -68,22 +70,25 @@ export default function CustomerDetail({ params, searchParams }: any) {
     }
   }, [onSession]);
   return (
-    <div className="flex flex-col justify-center items-center">
-      <div className="w-[80%] top-0 bot-0">
-        <Card className="top-0 bot-0">
+    <div className="container pt-24 mb-3.5">
+      <div>
+        <Card>
           <CardHeader>
             <CardTitle>Phiên đấu giá</CardTitle>
             <CardDescription></CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-7 gap-4">
-            <Card className="bg-cyan-400 col-span-4">Hinh anh</Card>
-            <div className=" col-span-3 grid grid-rows-6 gap-4">
+            <div className="flex justify-center col-span-3">
+              <Image src={"/demoimage.jpg"} alt="Image" width={200} height={300} className="w-full rounded-lg" />
+            </div>
+
+            <div className="col-span-4 grid grid-rows-6 gap-4">
               <Card className=" bg-cyan-400 row-span-2 grid grid-cols-3 text-center">
                 <div className="row-span-1">Giờ</div>
                 <div>Phút</div>
                 <div>Giây</div>
               </Card>
-              <Card className=" bg-cyan-400 row-span-4">
+              <Card className=" bg-cyan-400 row-span-4 p-6">
                 <CardTitle>Dat gia</CardTitle>
                 <CardContent>
                   <p>Gia cao nhat hien tai</p>
@@ -124,7 +129,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
                     <div>
                       {!registered && (
                         <AlertDialog>
-                          <AlertDialogTrigger>
+                          <AlertDialogTrigger asChild>
                             <Button>Đăng kí tham gia đấu giá</Button>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
@@ -163,14 +168,14 @@ export default function CustomerDetail({ params, searchParams }: any) {
           </CardContent>
           <CardFooter className="flex flex-col"></CardFooter>
         </Card>
-        <Tabs>
+        <Tabs defaultValue="describe">
           <TabsList>
             <TabsTrigger value="history">Lịch sử đặt giá</TabsTrigger>
             <TabsTrigger value="inform">Thông tin đấu giá</TabsTrigger>
             <TabsTrigger value="describe">Mô tả tài sản</TabsTrigger>
             <TabsTrigger value="document">Tài liệu liên quan</TabsTrigger>
           </TabsList>
-          <TabsContent value="history">
+          <TabsContent value="history" className="bg-white">
             <Table className="justify-center items-center">
               <TableHeader>
                 <TableRow>
@@ -197,13 +202,13 @@ export default function CustomerDetail({ params, searchParams }: any) {
               </TableBody>
             </Table>
           </TabsContent>
-          <TabsContent value="inform">Change your password here.</TabsContent>
-          <TabsContent value="describe">Change your password here.</TabsContent>
-          <TabsContent value="document">Change your password here.</TabsContent>
+          <TabsContent value="inform" className="bg-white">Change your password here.</TabsContent>
+          <TabsContent value="describe" className="bg-white">Change your password here.</TabsContent>
+          <TabsContent value="document" className="bg-white">Change your password here.</TabsContent>
         </Tabs>
       </div>
     </div>
   );
 }
 
-function CountTime(endTime: any) {}
+function CountTime(endTime: any) { }
