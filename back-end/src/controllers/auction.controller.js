@@ -740,7 +740,7 @@ export default class AuctionController {
 
 
         const token = jwt.sign(
-            {auctionId: auctionId, userID: user._id, role: role},
+            {auctionId: auctionId, userId: user._id, role: role},
             process.env.JWT_AUCTION_KEY,
             {
                 expiresIn: '1h',
