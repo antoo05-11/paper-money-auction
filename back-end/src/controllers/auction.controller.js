@@ -740,7 +740,7 @@ export default class AuctionController {
 
 
         const token = jwt.sign(
-            {auctionId: auctionId, userId: user._id, role: role},
+            {sessionId: auctionId, userId: user._id, role: role},
             process.env.JWT_AUCTION_KEY,
             {
                 expiresIn: '1h',
@@ -749,7 +749,7 @@ export default class AuctionController {
         return res.status(200).json({
             ok: true,
             data: {
-                token: `Bearer ${token}`,
+                token: `${token}`,
                 participation: {
                     alias: alias,
                 }
