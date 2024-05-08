@@ -49,7 +49,7 @@ export default function ListItem() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const listFirst = await listAuction();
+        const listFirst = await listAuction(null);
         const data_asset = listFirst.data.auctions;
         console.log(data_asset)
         setListItem(data_asset);
