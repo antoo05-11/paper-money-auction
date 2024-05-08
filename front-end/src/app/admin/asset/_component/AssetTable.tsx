@@ -62,7 +62,7 @@ export default function AssetTable() {
                                         {data.verified ? "Đã được duyệt" : "Chưa được duyệt"}
                                     </TableCell>
                                     <TableCell className="text-center">
-                                        <Button variant={"editBtn"}
+                                        <Button
                                             onClick={(e) => {
                                                 route.push(path_name + "/" + data?._id);
                                             }}>

@@ -12,7 +12,7 @@ export default async function Layout({
 }) {
   // const featuredPosts = await getFeaturedPosts()
   return (
-    <div className="bg-[url(/demo.png)] bg-cover">
+    <div className="bg-[url(/demo.png)] dark:bg-[url(/Shape.png)] bg-cover">
       <PageHeader />
       {children}
       <PageFooter />

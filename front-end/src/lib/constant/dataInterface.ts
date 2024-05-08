@@ -6,7 +6,7 @@ export type userLoginData = {
 export type passwordData = {
   password?: string;
   newPassword?: string;
-}
+};
 
 export interface User {
   name: string;
@@ -35,7 +35,7 @@ export type profileData = {
   email?: string | null;
   verified?: boolean;
   address?: string | null;
-}
+};
 
 export type filterUserData = {
   sort: string | undefined;
@@ -47,7 +47,7 @@ export type filterUserData = {
   role: string | undefined;
   page: number | undefined;
   limit: number | undefined;
-}
+};
 
 export type paymentData = {
   bank?: string;
@@ -56,21 +56,21 @@ export type paymentData = {
 };
 
 export type fileData = {
-  name: string,
-  _id: string
-}
+  name: string;
+  _id: string;
+};
 
 export type assetData = {
-  _id: string,
+  _id: string;
   owner: {
-    _id: string,
-    email: string
-  },
-  name: string,
-  description: string,
-  pics: fileData[],
-  docs: fileData[],
-  verified: boolean
+    _id: string;
+    email: string;
+  };
+  name: string;
+  description: string;
+  pics: fileData[];
+  docs: fileData[];
+  verified: boolean;
 };
 
 export type filterAssetData = {
@@ -118,7 +118,7 @@ export type filterAuctionData = {
   status?: string;
   page?: number;
   page_size?: number;
-}
+};
 
 export type registerAuction = {
   auction: string;
@@ -126,6 +126,6 @@ export type registerAuction = {
   alias: string;
   verified: boolean;
   _id: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 };
