@@ -40,7 +40,7 @@ export default function Page() {
         <div>
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant={"createBtn"}>
+              <Button>
                 <UserPlus />
                 <p className="ml-2">Tạo phiên đấu giá</p>
               </Button>

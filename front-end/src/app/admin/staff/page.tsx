@@ -205,13 +205,13 @@ export default function Page() {
         <div>
           <Dialog open={openVerify} onOpenChange={setOpenVerify}>
             <DialogTrigger asChild>
-              <Button variant={"createBtn"}>
+              <Button>
                 <UserPlus />
                 <p className="ml-2">Tạo nhân viên</p>
               </Button>
             </DialogTrigger>
 
-            <StaffForm setClose={setOpenVerify} open={openVerify}/>
+            <StaffForm setClose={setOpenVerify} open={openVerify} />
 
           </Dialog>
         </div>

@@ -22,6 +22,7 @@ import { useAuth } from "@/lib/auth/useAuth";
 import UserMenu from "@/components/_layout/user-menu";
 import { Logo } from "@/components/_layout/logo";
 import { usePathname } from "next/navigation";
+import { ModeToggle } from "@/components/_layout/mode-toggle";
 
 export default function PageHeader() {
   const [navBar, setNavbar] = useState(false);
@@ -79,7 +80,7 @@ export default function PageHeader() {
   ListItem.displayName = "ListItem";
   return (
     <header
-      className={`min-h-[70px] fixed w-screen z-50 flex items-center transition-all duration-300 ${navBar ? "bg-white shadow-md" : "bg-transparent"
+      className={`min-h-[70px] fixed w-screen z-50 flex items-center transition-all duration-300 ${navBar ? "bg-card shadow" : "bg-transparent"
         }`}
     >
       <div className="container">
@@ -92,14 +93,14 @@ export default function PageHeader() {
               <NavigationMenuList>
                 <NavigationMenuItem>
                   <Link href="/" legacyBehavior passHref>
-                    <NavigationMenuLink className={`${navigationMenuTriggerStyle()} ${navBar ? 'text-black' : 'text-white'}`}>
+                    <NavigationMenuLink className={`${navigationMenuTriggerStyle()} ${navBar ? 'text-black dark:text-white' : 'text-white'}`}>
                       Trang chủ
                     </NavigationMenuLink>
                   </Link>
                 </NavigationMenuItem>
 
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className={`${navigationMenuTriggerStyle()} ${navBar ? 'text-black' : 'text-white'}`}>Cuộc đấu giá</NavigationMenuTrigger>
+                  <NavigationMenuTrigger className={`${navigationMenuTriggerStyle()} ${navBar ? 'text-black dark:text-white' : 'text-white'}`}>Cuộc đấu giá</NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <ul className="gap-3 p-5 md:w-[300px] lg:w-[300px] lg:grid-cols-[.75fr_1fr]">
                       <ListItem
@@ -123,7 +124,7 @@ export default function PageHeader() {
 
                 <NavigationMenuItem>
                   <Link href="/" legacyBehavior passHref>
-                    <NavigationMenuLink className={`${navigationMenuTriggerStyle()} ${navBar ? 'text-black' : 'text-white'}`}>
+                    <NavigationMenuLink className={`${navigationMenuTriggerStyle()} ${navBar ? 'text-black dark:text-white' : 'text-white'}`}>
                       Liên hệ
                     </NavigationMenuLink>
                   </Link>
@@ -132,11 +133,12 @@ export default function PageHeader() {
             </NavigationMenu>
 
             <div className="flex ml-32">
-              <div className="flex items-center">
+              <div className="flex items-center gap-3">
+                <ModeToggle />
                 {auth?.user ?
                   <UserMenu /> :
                   <Link href={"/login/signin"}>
-                    <Button className="bg-highlightColor">
+                    <Button className="shadow-lg">
                       Đăng nhập
                       <ArrowRight size={18} className="ml-1" />
                     </Button>

@@ -73,7 +73,7 @@ export default function ListItem() {
         !isLoading &&
         <div className="pt-20 pb-10 container grid grid-cols-8 gap-4">
           <div className="col-span-3 p-8">
-            <div className="bg-white p-8 border shadow rounded-lg flex flex-col gap-4">
+            <div className="bg-card p-8 border shadow rounded-lg flex flex-col gap-4">
               <h1 className="font-bold text-2xl">Tìm kiếm</h1>
               <Input placeholder="Tìm theo tên sản phẩm..." className="max-w-2xl rounded-full" />
               <div className="flex flex-row gap-3">
@@ -125,7 +125,7 @@ export default function ListItem() {
                   </PopoverContent>
                 </Popover>
               </div>
-              <Button type="submit" variant={"editBtn"} className="shadow-none w-1/2">Tìm kiếm</Button>
+              <Button type="submit" className="shadow-none w-1/2">Tìm kiếm</Button>
             </div>
 
           </div>
@@ -164,15 +164,14 @@ function CardItem({ infor_auction }: any) {
   const route = useRouter();
   const path_name = usePathname();
   return (
-    <div className="flex flex-row justify-between max-w-4xl bg-white container mb-8 mt-8 p-0 shadow rounded-lg border">
+    <div className="flex flex-row justify-between max-w-4xl bg-card container mb-8 mt-8 p-0 shadow rounded-lg border">
       <div className="p-8 flex flex-col justify-between">
         <div className="flex flex-col gap-2">
           <h1 className="font-bold text-3xl">{infor_auction?.asset?.name}</h1>
-          <p>Mô tả sản phẩm: Tiền rất đẹp</p>
-          <p>Thời gian mở đấu giá: {new Date(infor_auction.auction_start).toLocaleString()}</p>
+          <p className="text-slate-500 dark:text-slate-400">Mô tả sản phẩm: Tiền rất đẹp</p>
+          <p className="text-slate-500 dark:text-slate-400">Thời gian mở đấu giá: {new Date(infor_auction.auction_start).toLocaleString()}</p>
           <Button
             className="w-1/2 mt-3"
-            variant={"editBtn"}
             onClick={() => {
               route.push(`${path_name}/${infor_auction._id}`);
             }}

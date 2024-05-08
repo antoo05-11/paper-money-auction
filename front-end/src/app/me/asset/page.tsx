@@ -85,10 +85,10 @@ export default function Page() {
 
   return (
     <div className="container">
-     <div className="flex justify-between mb-5">
+      <div className="flex justify-between mb-5">
         <div className="flex flex-row">
           <div>
-          <Popover>
+            <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline">
                   <Filter />
@@ -101,7 +101,7 @@ export default function Page() {
                     <h4 className="font-medium leading-none">Bộ lọc</h4>
                   </div>
                   <div className="grid gap-2">
-                  <div className=" items-center gap-4">
+                    <div className=" items-center gap-4">
                       <Input
                         id="width"
                         placeholder="Lọc theo tên"
@@ -164,7 +164,7 @@ export default function Page() {
         <div>
           <Dialog open={openVerify} onOpenChange={setOpenVerify}>
             <DialogTrigger asChild>
-              <Button variant={"createBtn"}>
+              <Button>
                 <Upload />
                 <p className="ml-2">Đăng kí tài sản đấu giá</p>
               </Button>
@@ -174,7 +174,7 @@ export default function Page() {
         </div>
       </div>
 
-      <DataTable columns={columns} data={asset} pageCount={pageCount}/>
+      <DataTable columns={columns} data={asset} pageCount={pageCount} />
     </div>
   );
 }

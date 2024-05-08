@@ -185,13 +185,12 @@ export default function ProfileCustomerPage() {
                       id="name"
                       defaultValue=""
                       placeholder={profileData?.name ?? ""}
-                      className={`rounded-full ${
-                        !editProfile
-                          ? theme != "dark"
-                            ? "placeholder:text-black !opacity-100"
-                            : "!opacity-100"
-                          : ""
-                      }`}
+                      className={`rounded-full ${!editProfile
+                        ? theme != "dark"
+                          ? "placeholder:text-black !opacity-100"
+                          : "!opacity-100"
+                        : ""
+                        }`}
                       disabled={!editProfile}
                       onChange={(e) =>
                         setNewProfile((prevProfile) => ({
@@ -206,13 +205,12 @@ export default function ProfileCustomerPage() {
                     <Input
                       id="ssid"
                       placeholder={profileData?.ssid ?? ""}
-                      className={`rounded-full ${
-                        !editProfile
-                          ? theme != "dark"
-                            ? "placeholder:text-black !opacity-100"
-                            : "!opacity-100"
-                          : ""
-                      }`}
+                      className={`rounded-full ${!editProfile
+                        ? theme != "dark"
+                          ? "placeholder:text-black !opacity-100"
+                          : "!opacity-100"
+                        : ""
+                        }`}
                       disabled={!editProfile}
                       onChange={(e) =>
                         setNewProfile((prevProfile) => ({
@@ -252,13 +250,12 @@ export default function ProfileCustomerPage() {
                             : profileData?.email
                           : ""
                       }
-                      className={`rounded-full mb-5 mt-2 ${
-                        !editProfile
-                          ? theme != "dark"
-                            ? "placeholder:text-black !opacity-100"
-                            : "!opacity-100"
-                          : ""
-                      }`}
+                      className={`rounded-full mb-5 mt-2 ${!editProfile
+                        ? theme != "dark"
+                          ? "placeholder:text-black !opacity-100"
+                          : "!opacity-100"
+                        : ""
+                        }`}
                       disabled={!editProfile}
                       onChange={(e) =>
                         setNewProfile((prevProfile) => ({
@@ -274,13 +271,12 @@ export default function ProfileCustomerPage() {
                       id="phone"
                       defaultValue=""
                       placeholder={profileData?.phone ?? ""}
-                      className={`rounded-full ${
-                        !editProfile
-                          ? theme != "dark"
-                            ? "placeholder:text-black !opacity-100"
-                            : "!opacity-100"
-                          : ""
-                      }`}
+                      className={`rounded-full ${!editProfile
+                        ? theme != "dark"
+                          ? "placeholder:text-black !opacity-100"
+                          : "!opacity-100"
+                        : ""
+                        }`}
                       disabled={!editProfile}
                       onChange={(e) =>
                         setNewProfile((prevProfile) => ({
@@ -295,13 +291,12 @@ export default function ProfileCustomerPage() {
                     <Input
                       id="address"
                       placeholder={profileData?.address ?? ""}
-                      className={`rounded-full ${
-                        !editProfile
-                          ? theme != "dark"
-                            ? "placeholder:text-black !opacity-100"
-                            : "!opacity-100"
-                          : ""
-                      }`}
+                      className={`rounded-full ${!editProfile
+                        ? theme != "dark"
+                          ? "placeholder:text-black !opacity-100"
+                          : "!opacity-100"
+                        : ""
+                        }`}
                       disabled={!editProfile}
                       onChange={(e) =>
                         setNewProfile((prevProfile) => ({
@@ -313,7 +308,7 @@ export default function ProfileCustomerPage() {
                   </div>
                 </CardContent>
                 <CardFooter className="space-x-2">
-                  <Button variant={"createBtn"} onClick={handleChangeProfile}>
+                  <Button onClick={handleChangeProfile}>
                     {editProfile ? "Lưu thay đổi" : "Sửa thông tin"}
                   </Button>
                   {editProfile && (
@@ -363,7 +358,6 @@ export default function ProfileCustomerPage() {
                 </CardContent>
                 <CardFooter>
                   <Button
-                    variant={"createBtn"}
                     disabled={isLoading}
                     onClick={handleChangePassword}
                   >
@@ -383,13 +377,12 @@ export default function ProfileCustomerPage() {
                     <Input
                       id="holder"
                       placeholder={paymentData?.holder ?? ""}
-                      className={`rounded-full ${
-                        !editPayment
-                          ? theme != "dark"
-                            ? "placeholder:text-black !opacity-100"
-                            : "!opacity-100"
-                          : ""
-                      }`}
+                      className={`rounded-full ${!editPayment
+                        ? theme != "dark"
+                          ? "placeholder:text-black !opacity-100"
+                          : "!opacity-100"
+                        : ""
+                        }`}
                       disabled={!editPayment}
                       onChange={(e) =>
                         setNewPayment((prevPayment) => ({
@@ -404,13 +397,12 @@ export default function ProfileCustomerPage() {
                     <Input
                       id="account_number"
                       placeholder={paymentData?.account_number ?? ""}
-                      className={`rounded-full ${
-                        !editPayment
-                          ? theme != "dark"
-                            ? "placeholder:text-black !opacity-100"
-                            : "!opacity-100"
-                          : ""
-                      }`}
+                      className={`rounded-full ${!editPayment
+                        ? theme != "dark"
+                          ? "placeholder:text-black !opacity-100"
+                          : "!opacity-100"
+                        : ""
+                        }`}
                       disabled={!editPayment}
                       onChange={(e) =>
                         setNewPayment((prevPayment) => ({
@@ -430,18 +422,17 @@ export default function ProfileCustomerPage() {
                           variant="outline"
                           role="combobox"
                           aria-expanded={open}
-                          className={`w-[200px] justify-between ${
-                            !editPayment
-                              ? "placeholder:text-black !opacity-100"
-                              : "!opacity-50"
-                          }`}
+                          className={`w-[200px] justify-between ${!editPayment
+                            ? "placeholder:text-black !opacity-100"
+                            : "!opacity-50"
+                            }`}
                           disabled={!editPayment}
                         >
                           {newPayment?.bank ?? newPayment?.bank
                             ? frameworks.find(
-                                (framework) =>
-                                  framework.label === newPayment?.bank
-                              )?.label
+                              (framework) =>
+                                framework.label === newPayment?.bank
+                            )?.label
                             : "Chọn ngân hàng..."}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
@@ -488,7 +479,7 @@ export default function ProfileCustomerPage() {
                   </div>
                 </CardContent>
                 <CardFooter className="space-x-2">
-                  <Button variant={"createBtn"} onClick={handleChangePayment}>
+                  <Button onClick={handleChangePayment}>
                     {editPayment ? "Lưu thay đổi" : "Sửa thông tin"}
                   </Button>
                   {editPayment && (
