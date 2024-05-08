@@ -22,7 +22,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
+// import CountTime from "../_component/countTime";
 import {
   Table,
   TableBody,
@@ -33,12 +33,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Car } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { viewAuctionInfo } from "@/app/api/apiEndpoints";
 import { useEffect } from "react";
 import { joinAuctionSession } from "@/app/api/apiEndpoints";
 import { socket } from "@/app/socket";
 import ListBidder from "../../_component/ListBidder";
+import HistoryBiddingTable from "../_component/HistoryBiddingTable";
+import BidderAttedTable from "../_component/BidderAttendTable";
 export default function CustomerDetail({ params }: any) {
   const [isConnected, setIsConnected] = useState(false);
   const id = params.id;
@@ -48,12 +50,14 @@ export default function CustomerDetail({ params }: any) {
   const [list_bidder, update_list_bidder] = useState();
   const [autionToken, setAutionToken] = useState<string>();
   const [time, setTime] = useState(Date.now());
+  const [list_bidder_attend, update_list_bidder_attend] = useState<any>([]);
+  const [bidding_history, update_bidding_history] = useState<any>([]);
   useEffect(() => {
     const fetchData = async () => {
       const listFisrt = await viewAuctionInfo(id);
       // const json = await listFisrt.json()
       const data_use = await listFisrt.data;
-      console.log(data_use);
+      // console.log(data_use);
       set_infor_auction(data_use);
     };
     const result = fetchData()
@@ -69,20 +73,14 @@ export default function CustomerDetail({ params }: any) {
         ""
       );
       setAutionToken(token);
-      console.log(token);
+      // console.log(token);
     };
     function onConnect() {
       setIsConnected(true);
-      // setTransport(socket.io.engine.transport.name);
-
-      // socket.io.engine.on("upgrade", (transport) => {
-      //   setTransport(transport.name);
-      // });
     }
 
     function onDisconnect() {
       setIsConnected(false);
-      // setTransport("N/A");
     }
     const result = getAuctionToken(id).catch(console.error);
     if (onSession) {
@@ -99,6 +97,7 @@ export default function CustomerDetail({ params }: any) {
       });
       socket.on("attendees_update", (response) => {
         console.log("attendees_update: " + response);
+        update_list_bidder_attend(JSON.parse(response));
       });
       socket.on("make_offer_response", (message) => {
         console.log("make_offer_response");
@@ -107,18 +106,17 @@ export default function CustomerDetail({ params }: any) {
       socket.on("biddings_update", (message) => {
         console.log("biddings_update");
         console.log(message);
+        update_bidding_history(message);
       });
       socket.on("start_session_response", (message) => {
         console.log("start_session_response");
         console.log(message);
       });
-      socket.on("join_session_response", (message) => {
-        console.log("join_session_response");
-        console.log(message);
-      });
 
       console.log("start session");
       socket.emit("start_session", autionToken);
+      console.log("join session");
+      socket.emit("join_session", autionToken);
       return () => {
         socket.off("connect", onConnect);
         socket.off("disconnect", onDisconnect);
@@ -138,8 +136,10 @@ export default function CustomerDetail({ params }: any) {
       <Button
         onClick={() => {
           // const hihi = new Date(infor_auction?.auction_end);
-          console.log(autionToken);
-          console.log(socket.connected);
+          console.log(bidding_history);
+
+          // console.log(autionToken);
+          // console.log(socket.connected);
         }}
       >
         {isConnected && <div>Connected</div>}
@@ -154,18 +154,16 @@ export default function CustomerDetail({ params }: any) {
           <CardContent className="grid grid-cols-7 gap-4">
             <Card className="bg-cyan-400 col-span-4">Hinh anh</Card>
             <div className=" col-span-3 grid grid-rows-6 gap-4">
-              <Card className=" bg-cyan-400 row-span-2 grid grid-cols-3 text-center">
-                <div className="row-span-1">Giờ</div>
-                <div>Phút</div>
-                <div>Giây</div>
-              </Card>
+              {CountTime(new Date(infor_auction?.auction_start))}
               <Card className=" bg-cyan-400 row-span-4">
                 <CardTitle>Đặt giá</CardTitle>
                 <CardContent>
                   <p>Giá cao nhất hiện tại</p>
                   <p>Người trả giá cao nhất</p>
                   <p>Giá khởi điểm: {infor_auction?.starting_price} vnd</p>
-                  <p>Bước giá: {infor_auction?.bidding_increment} vnd</p>
+                  <p>
+                    Bước giá tối thiểu: {infor_auction?.bidding_increment} vnd
+                  </p>
                   {startSession && (
                     <div className="w-full">
                       {!onSession && (
@@ -239,34 +237,14 @@ export default function CustomerDetail({ params }: any) {
             <TabsTrigger value="document">Tài liệu liên quan</TabsTrigger>
           </TabsList>
           <TabsContent value="history">
-            <Table className="justify-center items-center">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[100px]">STT</TableHead>
-                  <TableHead>Tên phiên đấu giá</TableHead>
-                  <TableHead>Mã phiên đấu giá</TableHead>
-                  <TableHead>Thời gian bắt đầu đấu giá</TableHead>
-                  <TableHead>Vai trò</TableHead>
-                  <TableHead>Trạng thái</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell className="font-medium">1</TableCell>
-                  <TableCell className="font-medium">INV001</TableCell>
-                  <TableCell>Paid</TableCell>
-                  <TableCell>Credit Card</TableCell>
-                  <TableCell>$250.00</TableCell>
-                  <TableCell>$250.00</TableCell>
-                  <TableCell>
-                    <Button>Chi tiết</Button>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+            <HistoryBiddingTable
+              list_bid={bidding_history}
+            ></HistoryBiddingTable>
           </TabsContent>
           <TabsContent value="inform">
-            <ListBidder auction_id={infor_auction?._id}></ListBidder>
+            <BidderAttedTable
+              list_bidder={list_bidder_attend}
+            ></BidderAttedTable>
           </TabsContent>
           <TabsContent value="describe">Change your password here.</TabsContent>
           <TabsContent value="document">Change your password here.</TabsContent>
@@ -276,4 +254,39 @@ export default function CustomerDetail({ params }: any) {
   );
 }
 
-function CountTime(endTime: any) {}
+function CountTime(endTime: Date) {
+  const countRef = useRef<any>(null);
+  const startTime = new Date(Date.now());
+  const [time, setTime] = useState<any>();
+  const [start, setStart] = useState<boolean>();
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     if (start) setStart(true);
+  //   }),
+  //     1000;
+  // }, []);
+  // useEffect(() => {
+  //   if (start) {
+  //     countRef.current = setInterval(() => {
+  //       setTime(time - 1);
+  //     }, 1000);
+  //   }
+  // }, [start]);
+  return (
+    <Card className=" bg-cyan-400 row-span-2 grid grid-cols-4 text-center">
+      <div className="row-span-1">Day</div>
+      <div className="row-span-1">Giờ</div>
+      <div>Phút</div>
+      {/* <div>Giây</div> */}
+      <button
+        onClick={() => {
+          // console.log((end.getTime() - start.getTime()) / 3600);
+          // console.log("start" + start.getTime());
+          // console.log("end" + end.getDay());
+        }}
+      >
+        Test
+      </button>
+    </Card>
+  );
+}
