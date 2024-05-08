@@ -132,15 +132,17 @@ export default function PageHeader() {
             </NavigationMenu>
 
             <div className="flex ml-32">
-              {auth?.user ?
-                <UserMenu /> :
-                <Link href={"/login/signin"}>
-                  <Button className="bg-highlightColor">
-                    Đăng nhập
-                    <ArrowRight size={18} className="ml-1" />
-                  </Button>
-                </Link>
-              }
+              <div className="flex items-center">
+                {auth?.user ?
+                  <UserMenu /> :
+                  <Link href={"/login/signin"}>
+                    <Button className="bg-highlightColor">
+                      Đăng nhập
+                      <ArrowRight size={18} className="ml-1" />
+                    </Button>
+                  </Link>
+                }
+              </div>
             </div>
           </div>
         </div>

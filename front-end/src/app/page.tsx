@@ -96,7 +96,7 @@ export default function HomePage() {
 
       {/* === Item show === */}
       <div
-        className="flex justify-center items-center flex-col pb-10 bg-[url(/home1-bg2.png)] bg-cover"
+        className="flex justify-center items-center flex-col pb-10 bg-[url(/home1-bg2.png)] bg-cover container"
         ref={assetSectionRef}
       >
         <div className="my-6">

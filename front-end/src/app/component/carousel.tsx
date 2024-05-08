@@ -7,7 +7,7 @@ import Image from "next/image"
 
 export default function MyCarousel() {
     return (
-        <Carousel className="w-10/12 ">
+        <Carousel className="w-11/12">
             <CarouselContent className="-ml-1">
                 {Array.from({ length: 10 }).map((_, index) => (
                     <CarouselItem key={index} className="pl-3 md:basis-1/2 lg:basis-1/3">
