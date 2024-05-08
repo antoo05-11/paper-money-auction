@@ -38,10 +38,10 @@ export default function TopBar() {
           ))}
         </BreadcrumbList>
       </Breadcrumb>
-      <div className="pr-4">
+      <div className="pr-4 flex space-x-4">
         <ModeToggle />
+        <UserMenu />
       </div>
-      <UserMenu />
     </div>
   );
 }

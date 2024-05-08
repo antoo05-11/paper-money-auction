@@ -46,7 +46,7 @@ export function getUserProfileByID(id: String) {
   return request.get(`api/user/profile/${id}`);
 }
 
-export function updateProfile(data: filterUserData) {
+export function updateProfile(data: any) {
   return request.put("api/user/profile", { data: data });
 }
 
