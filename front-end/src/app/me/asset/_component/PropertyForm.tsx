@@ -10,12 +10,12 @@ import { HTTP_STATUS } from "@/lib/constant/constant";
 import { useRouter } from "next/navigation";
 
 
-export default function PropertyForm({setClose, open}: {setClose: any, open: any}) {
+export default function PropertyForm({ setClose, open }: { setClose: any, open: any }) {
     const [uploadPic, setUploadPic] = useState(null);
     const [uploadDoc, setUploadDoc] = useState(null);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
-    const [uploadStatus, setStatus]= useState('idle');
+    const [uploadStatus, setStatus] = useState('idle');
     const router = useRouter();
 
     const handleDocChange = (event: any) => {
@@ -27,11 +27,11 @@ export default function PropertyForm({setClose, open}: {setClose: any, open: any
         setUploadPic(file);
     }
     const handleNameChange = (event: any) => {
-        const name = event.target.value;        
+        const name = event.target.value;
         setName(name);
     }
     const handleDesChange = (event: any) => {
-        const des = event.target.value;        
+        const des = event.target.value;
         setDescription(des);
     }
     const handleUpload = async () => {
@@ -69,7 +69,7 @@ export default function PropertyForm({setClose, open}: {setClose: any, open: any
             })
         } catch (error: any) {
             console.log('Upload error:', error);
-            setStatus('error');        
+            setStatus('error');
         } finally {
             setTimeout(() => setStatus('idle'), 5000);
         }
@@ -85,32 +85,32 @@ export default function PropertyForm({setClose, open}: {setClose: any, open: any
                     <Label htmlFor="name" className="text-right">
                         Tên tài sản
                     </Label>
-                    <Input id="name" className="col-span-3 rounded-full" placeholder="Rổng đổ Macao" onChange={handleNameChange}/>
+                    <Input id="name" className="col-span-3 rounded-full" placeholder="Rổng đổ Macao" onChange={handleNameChange} />
                 </div>
 
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="description" className="text-right">
                         Mô tả
                     </Label>
-                    <Input id="name" className="col-span-3 rounded-full" placeholder="Rổng rất đẹp" onChange={handleDesChange}/>
+                    <Input id="name" className="col-span-3 rounded-full" placeholder="Rổng rất đẹp" onChange={handleDesChange} />
                 </div>
 
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="picture" className="text-right">
                         Ảnh
                     </Label>
-                    <Input id="name" className="col-span-3 rounded-full" type="file" multiple onChange={handlePicChange}/>
+                    <Input id="name" className="col-span-3 rounded-full" type="file" multiple onChange={handlePicChange} />
                 </div>
 
                 <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="picture" className="text-right">
                         Tài liệu
                     </Label>
-                    <Input id="name" className="col-span-3 rounded-full" type="file" multiple onChange={handleDocChange}/>
+                    <Input id="name" className="col-span-3 rounded-full" type="file" multiple onChange={handleDocChange} />
                 </div>
             </div>
             <DialogFooter>
-                <Button type="submit" variant={"createBtn"} onClick={handleUpload} disabled={uploadStatus == 'loading' ? true : false}>Đăng kí</Button>
+                <Button type="submit" onClick={handleUpload} disabled={uploadStatus == 'loading' ? true : false}>Đăng kí</Button>
             </DialogFooter>
         </DialogContent>
     );

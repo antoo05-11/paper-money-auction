@@ -57,14 +57,14 @@ export default function LoginForm() {
     if (value.length == 6) {
       setTimeout(() => {
         submit2FACode(value);
-    }, 1500);
+      }, 1500);
     }
   }
 
   function handleLogin(res: any, isVerified: boolean) {
     const { data: { token, user: { id, name, role } } } = res;
 
-    const session = {token, id, name, role, isVerified};
+    const session = { token, id, name, role, isVerified };
     login(session);
     switch (role) {
       case ROLES.ADMIN:
@@ -82,15 +82,15 @@ export default function LoginForm() {
     try {
       await loginUser(values).then((res: any) => {
         if (res.status == HTTP_STATUS.OK) {
-            setLoading("Thành công");
-            if (res.data.data.token) {
-              handleLogin(res.data, false);
-            }
-            else {
-              setTimeout(() => {
-                setVerify(true);
-              }, 1000);
-            }
+          setLoading("Thành công");
+          if (res.data.data.token) {
+            handleLogin(res.data, false);
+          }
+          else {
+            setTimeout(() => {
+              setVerify(true);
+            }, 1000);
+          }
         }
       })
     } catch (err) {
@@ -103,7 +103,7 @@ export default function LoginForm() {
   }
   async function submit2FACode(value: string) {
     try {
-      await login2FA({...authData, authenticCode: value}).then((res: any) => {
+      await login2FA({ ...authData, authenticCode: value }).then((res: any) => {
         if (res.status == HTTP_STATUS.OK) {
           handleLogin(res.data, true);
         }
@@ -128,90 +128,90 @@ export default function LoginForm() {
             Vua Tiền Tệ
           </Link>
           {!verifyState &&
-          <div className="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-            <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-              <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                Đăng nhập
-              </h1>
-              <Form {...form}>
-                <form
-                  className="space-y-4 md:space-y-6"
-                  onSubmit={form.handleSubmit(onSubmit)}
-                >
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Tài khoản</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Tài khoản" {...field} className="rounded-full" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+            <div className="w-full bg-card rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0">
+              <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
+                <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+                  Đăng nhập
+                </h1>
+                <Form {...form}>
+                  <form
+                    className="space-y-4 md:space-y-6"
+                    onSubmit={form.handleSubmit(onSubmit)}
+                  >
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Tài khoản</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Tài khoản" {...field} className="rounded-full" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Password" {...field} className="rounded-full" type="password"/>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" 
-                  className={`w-full ${loadingMessage == 'Thành công' ? 'bg-lime-600' : ''}`} 
-                  disabled={loadingMessage != 'Đăng nhập'}>
-                    {loadingMessage}
-                  </Button>
-                </form>
-              </Form>
-              <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                Chưa có tài khoản?
-                <Link
-                  href={"/login/signup"}
-                  className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-                >
-                  {" "}
-                  Đăng kí
-                </Link>
-              </p>
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Password</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Password" {...field} className="rounded-full" type="password" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit"
+                      className={`w-full ${loadingMessage == 'Thành công' ? 'bg-lime-600' : ''}`}
+                      disabled={loadingMessage != 'Đăng nhập'}>
+                      {loadingMessage}
+                    </Button>
+                  </form>
+                </Form>
+                <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                  Chưa có tài khoản?
+                  <Link
+                    href={"/login/signup"}
+                    className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                  >
+                    {" "}
+                    Đăng kí
+                  </Link>
+                </p>
+              </div>
             </div>
-          </div>
           }
-          {verifyState && 
-          <div className="w-full bg-white rounded-lg shadow dark:border 
+          {verifyState &&
+            <div className="w-full bg-white rounded-lg shadow dark:border 
                           md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700 
                           flex flex-col items-center justify-center
                           min-h-52">
-            <span>
-              Please enter the code we&apos;ve just send to your email.
-            </span>
-            <InputOTP 
-              maxLength={6} 
-              value={otpValue} 
-              onChange={(value) => handleOTPInput(value)}
-              pattern={ REGEXP_ONLY_DIGITS }
-            >
-              <InputOTPGroup>
-                <InputOTPSlot index={0} />
-                <InputOTPSlot index={1} />
-                <InputOTPSlot index={2} />
-              </InputOTPGroup>
-              <InputOTPSeparator />
-              <InputOTPGroup>
-                <InputOTPSlot index={3} />
-                <InputOTPSlot index={4} />
-                <InputOTPSlot index={5} />
-              </InputOTPGroup>
-            </InputOTP>
-          </div>
+              <span>
+                Please enter the code we&apos;ve just send to your email.
+              </span>
+              <InputOTP
+                maxLength={6}
+                value={otpValue}
+                onChange={(value) => handleOTPInput(value)}
+                pattern={REGEXP_ONLY_DIGITS}
+              >
+                <InputOTPGroup>
+                  <InputOTPSlot index={0} />
+                  <InputOTPSlot index={1} />
+                  <InputOTPSlot index={2} />
+                </InputOTPGroup>
+                <InputOTPSeparator />
+                <InputOTPGroup>
+                  <InputOTPSlot index={3} />
+                  <InputOTPSlot index={4} />
+                  <InputOTPSlot index={5} />
+                </InputOTPGroup>
+              </InputOTP>
+            </div>
           }
         </div>
       </section>

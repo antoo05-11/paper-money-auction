@@ -8,7 +8,7 @@ import AuctionSessionTable from "../_component/AuctionSessionTable";
 import AuctionSessionForm from "../_component/AuctionSessionForm";
 import { Card } from "@/components/ui/card";
 import { useEffect, useState } from "react";
-import { listAuction } from "@/app/api/apiEndpoints";
+import { listAuctionManaging } from "@/app/api/apiEndpoints";
 import { useCookie } from "@/lib/auth/useCookie";
 import { useAuth } from "@/lib/auth/useAuth";
 export default function Page() {
@@ -19,8 +19,7 @@ export default function Page() {
 
   useEffect(() => {
     const fetchData = async (filter: any) => {
-
-      const data = await listAuction(filter);
+      const data = await listAuctionManaging(filter);
       const data_use = await data?.data?.auctions;
       update_list_auction(data_use);
     };
@@ -41,7 +40,7 @@ export default function Page() {
         <div>
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant={"createBtn"}>
+              <Button>
                 <UserPlus />
                 <p className="ml-2">Tạo phiên đấu giá</p>
               </Button>

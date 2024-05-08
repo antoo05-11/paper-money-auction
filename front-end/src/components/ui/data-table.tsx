@@ -79,7 +79,7 @@ export function DataTable<TData, TValue>({
     })
   }, [page, per_page])
 
-   // changed the route as well
+  // changed the route as well
   React.useEffect(() => {
     router.push(
       `${pathname}?${createQueryString({
@@ -103,7 +103,7 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md border bg-card">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -114,9 +114,9 @@ export function DataTable<TData, TValue>({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                   </TableHead>
                 )
               })}
@@ -147,6 +147,6 @@ export function DataTable<TData, TValue>({
         </TableBody>
       </Table>
       <DataTablePagination table={table} />
-  </div>
+    </div>
   )
 }

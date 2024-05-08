@@ -157,7 +157,7 @@ export default function Page({ params, searchParams }: any) {
                   {infor_asset && !isVerified &&
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button variant={"createBtn"} className="w-full mt-5">
+                        <Button className="w-full mt-5">
                           Phê duyệt
                         </Button>
                       </DialogTrigger>
@@ -206,7 +206,7 @@ export default function Page({ params, searchParams }: any) {
                                 </FormItem>
                               )}
                             />
-                            <Button type="submit" variant={"createBtn"}>Phê duyệt</Button>
+                            <Button type="submit">Phê duyệt</Button>
                           </form>
                         </Form>
                       </DialogContent>

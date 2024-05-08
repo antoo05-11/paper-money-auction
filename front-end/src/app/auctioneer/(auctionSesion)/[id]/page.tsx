@@ -40,6 +40,7 @@ import { joinAuctionSession } from "@/app/api/apiEndpoints";
 import { socket } from "@/app/socket";
 import ListBidder from "../../_component/ListBidder";
 export default function CustomerDetail({ params }: any) {
+  const [isConnected, setIsConnected] = useState(false);
   const id = params.id;
   const [infor_auction, set_infor_auction] = useState<any>();
   const [startSession, setStartSession] = useState(true);
@@ -67,18 +68,71 @@ export default function CustomerDetail({ params }: any) {
         "Bearer ",
         ""
       );
-      console.log(data_use);
-      // socket.on("connect", async () => {
-      //   console.log("Connected to server");
-
-      //   // await socket.emit("start_session", token);
-      // });
       setAutionToken(token);
+      console.log(token);
     };
+    function onConnect() {
+      setIsConnected(true);
+      // setTransport(socket.io.engine.transport.name);
+
+      // socket.io.engine.on("upgrade", (transport) => {
+      //   setTransport(transport.name);
+      // });
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+      // setTransport("N/A");
+    }
+    const result = getAuctionToken(id).catch(console.error);
     if (onSession) {
-      const result = getAuctionToken(id).catch(console.error);
+      socket.connect();
+
+      socket.on("connect", onConnect);
+      socket.on("disconnect", onDisconnect);
+      socket.on("socket_error", (message) => {
+        console.log("socket_error: ", message);
+      });
+      socket.on("join_session_response", (response) => {
+        console.log("join_session_response");
+        console.log(response);
+      });
+      socket.on("attendees_update", (response) => {
+        console.log("attendees_update: " + response);
+      });
+      socket.on("make_offer_response", (message) => {
+        console.log("make_offer_response");
+        console.log(message);
+      });
+      socket.on("biddings_update", (message) => {
+        console.log("biddings_update");
+        console.log(message);
+      });
+      socket.on("start_session_response", (message) => {
+        console.log("start_session_response");
+        console.log(message);
+      });
+      socket.on("join_session_response", (message) => {
+        console.log("join_session_response");
+        console.log(message);
+      });
+
+      console.log("start session");
+      socket.emit("start_session", autionToken);
+      return () => {
+        socket.off("connect", onConnect);
+        socket.off("disconnect", onDisconnect);
+        socket.off("socket_error");
+        socket.off("join_session_response");
+        socket.off("attendees_update");
+        socket.off("make_offer_response");
+        socket.off("biddings_update");
+        socket.off("start_session_response");
+        socket.off("join_session_response");
+      };
     }
   }, [onSession]);
+
   return (
     <div className="flex flex-col justify-center items-center">
       <Button
@@ -88,7 +142,8 @@ export default function CustomerDetail({ params }: any) {
           console.log(socket.connected);
         }}
       >
-        Test
+        {isConnected && <div>Connected</div>}
+        {!isConnected && <div>Disconnected</div>}
       </Button>
       <div className="w-[80%] top-0 bot-0">
         <Card className="top-0 bot-0">
@@ -105,7 +160,7 @@ export default function CustomerDetail({ params }: any) {
                 <div>Giây</div>
               </Card>
               <Card className=" bg-cyan-400 row-span-4">
-                <CardTitle>Dat gia</CardTitle>
+                <CardTitle>Đặt giá</CardTitle>
                 <CardContent>
                   <p>Giá cao nhất hiện tại</p>
                   <p>Người trả giá cao nhất</p>
