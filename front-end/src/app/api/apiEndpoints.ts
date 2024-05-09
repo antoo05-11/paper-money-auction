@@ -54,6 +54,10 @@ export function updatePassword(data: any) {
   return request.put("api/user/password", { data: data });
 }
 
+export function suspenUser(id: String, data: any) {
+  return request.put(`api/user/suspend/${id}`, { data: data })
+}
+
 //payment
 export function viewPayment() {
   return request.get("api/user/payment-method");

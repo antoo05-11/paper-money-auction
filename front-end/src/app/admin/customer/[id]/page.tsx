@@ -11,19 +11,21 @@ import {
 } from "@/components/ui/card";
 
 import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { HTTP_STATUS } from "@/lib/constant/constant";
+import { toast } from "sonner";
 
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useEffect, useState } from "react";
-import { getUserProfileByID, listAsset } from "@/app/api/apiEndpoints";
+import { getUserProfileByID, listAsset, suspenUser } from "@/app/api/apiEndpoints";
 import { assetData, userData, filterAssetData } from "@/lib/constant/dataInterface";
 import { DataTable } from "@/components/ui/data-table";
 import { columns } from "@/app/me/asset/_component/columns";
@@ -33,6 +35,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
   const [user, setUser] = useState<userData>();
   const [pageCount, setPageCount] = useState(0);
   const [listItem, setListItem] = useState<assetData[]>([]);
+  const [isActive, setActive] = useState();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,6 +73,32 @@ export default function CustomerDetail({ params, searchParams }: any) {
     fetchData();
   }, [user?.email]);
 
+  const handleSuspendUser = (active: any) => {
+    if (active === "true") {
+      console.log("okela")
+      suspenUser(user?._id as String, { "active": true }).then((res) => {
+        if (res.status == HTTP_STATUS.OK) {
+          toast.success("Bỏ đình chỉ người dùng thành công !")
+        }
+      })
+        .catch((err) => {
+          console.log(err);
+          toast.error("Vui lòng thử lại.");
+        });
+    }
+    if (active === "false") {
+      console.log("okela111")
+      suspenUser(user?._id as String, { "active": false }).then((res) => {
+        if (res.status == HTTP_STATUS.OK) {
+          toast.success("Đình chỉ người dùng thành công !")
+        }
+      })
+        .catch((err) => {
+          console.log(err);
+          toast.error("Vui lòng thử lại.");
+        });
+    }
+  }
 
   return (
     <div className="container">
@@ -78,7 +107,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
           <CardTitle>Thông tin khách hàng</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid w-full items-center gap-4">
+          {user && <div className="grid w-full items-center gap-4">
             <div className="grid grid-cols-2 gap-4  ">
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="name">Họ và tên</Label>
@@ -104,7 +133,18 @@ export default function CustomerDetail({ params, searchParams }: any) {
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="phone">Trạng thái</Label>
-                <Input id="phone" defaultValue={user?.active ? 'Hoạt động' : 'Đình chỉ'} disabled className="rounded-full" />
+                {/* <Input id="phone" defaultValue={user?.active ? 'Hoạt động' : 'Đình chỉ'} disabled className="rounded-full" /> */}
+                <Select defaultValue={user?.active?.toString()} onValueChange={(e) => { handleSuspendUser(e) }}>
+                  <SelectTrigger className="w-full rounded-full">
+                    <SelectValue placeholder="" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="true">Hoạt động</SelectItem>
+                      <SelectItem value="false">Đình chỉ</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="email">Xác minh</Label>
@@ -116,7 +156,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
               <Label htmlFor="address">Địa chỉ</Label>
               <Input id="address" defaultValue={user?.address || ''} disabled={true} className="rounded-full" />
             </div>
-          </div>
+          </div>}
         </CardContent>
       </Card>
 
