@@ -8,6 +8,11 @@ const activityLogSchema = new mongoose.Schema({
     objectId: {
         type: mongoose.Schema.Types.ObjectId
     },
+    objectClass: {
+        type: String,
+        enum: ['asset', 'auction','user'],
+        required: true
+    },
     activityCode: {
         type: String,
         required: true

@@ -2,6 +2,7 @@ import AuctionController from "../controllers/auction.controller";
 import userRole from "../constants/user.role";
 import auctionValidation from "../validations/auction.validation";
 import activityCode from "../constants/activity.code";
+import objectClass from "../constants/object.class";
 
 export default [
     {
@@ -16,7 +17,8 @@ export default [
                 schema: auctionValidation.createAuction,
                 files: [{ name: "docs", maxCount: 3 }],
                 initialLog: {
-                    activityCode: activityCode.AUCTION.CREATE
+                    activityCode: activityCode.AUCTION.CREATE,
+                    objectClass: objectClass.AUCTION
                 }
             },
             {
@@ -25,7 +27,8 @@ export default [
                 method: "listAuction",
                 initialLog: {
                     activityCode: activityCode.AUCTION.GET_LIST,
-                    success: true
+                    success: true,
+                    objectClass: objectClass.AUCTION
                 }
             },
             {
@@ -36,7 +39,8 @@ export default [
                 verified: true,
                 initialLog: {
                     activityCode: activityCode.AUCTION.GET_LIST,
-                    success: true
+                    success: true,
+                    objectClass: objectClass.AUCTION
                 }
             },
             {
@@ -46,7 +50,8 @@ export default [
                 roles: [userRole.AUCTIONEER, userRole.ADMIN],
                 initialLog: {
                     activityCode: activityCode.AUCTION.GET_LIST,
-                    success: true
+                    success: true,
+                    objectClass: objectClass.AUCTION
                 }
             },
             {
@@ -56,7 +61,8 @@ export default [
                 roles: [userRole.CUSTOMER],
                 initialLog: {
                     activityCode: activityCode.AUCTION.GET_LIST,
-                    success: true
+                    success: true,
+                    objectClass: objectClass.AUCTION
                 }
             },
             {
@@ -64,7 +70,8 @@ export default [
                 path: "/auction/:id",
                 method: "viewAuction",
                 initialLog: {
-                    activityCode: activityCode.AUCTION.GET_BY_ID
+                    activityCode: activityCode.AUCTION.GET_BY_ID,
+                    objectClass: objectClass.AUCTION
                 }
             },
             {
@@ -73,7 +80,8 @@ export default [
                 method: "viewAuctionActivities",
                 roles: [userRole.CUSTOMER, userRole.AUCTIONEER],
                 initialLog: {
-                    activityCode: activityCode.AUCTION.GET_ACTIVITIES
+                    activityCode: activityCode.AUCTION.GET_ACTIVITIES,
+                    objectClass: objectClass.AUCTION
                 }
             },
             {
@@ -82,7 +90,8 @@ export default [
                 method: "register",
                 roles: [userRole.CUSTOMER],
                 initialLog: {
-                    activityCode: activityCode.AUCTION.REGISTER
+                    activityCode: activityCode.AUCTION.REGISTER,
+                    objectClass: objectClass.AUCTION
                 }
             },
             {
@@ -91,7 +100,8 @@ export default [
                 method: "listBidders",
                 roles: [userRole.AUCTIONEER],
                 initialLog: {
-                    activityCode: activityCode.AUCTION.GET_BIDDERS
+                    activityCode: activityCode.AUCTION.GET_BIDDERS,
+                    objectClass: objectClass.AUCTION
                 }
             },
             {
@@ -100,7 +110,8 @@ export default [
                 method: "verifyBidder",
                 roles: [userRole.AUCTIONEER],
                 initialLog: {
-                    activityCode: activityCode.AUCTION.VERIFY_BIDDER
+                    activityCode: activityCode.AUCTION.VERIFY_BIDDER,
+                    objectClass: objectClass.AUCTION
                 }
             },
             {
@@ -109,7 +120,8 @@ export default [
                 method: "joinSession",
                 roles: [userRole.AUCTIONEER, userRole.CUSTOMER],
                 initialLog: {
-                    activityCode: activityCode.AUCTION.JOIN_SESSION
+                    activityCode: activityCode.AUCTION.JOIN_SESSION,
+                    objectClass: objectClass.AUCTION
                 }
             },
             {
@@ -118,7 +130,8 @@ export default [
                 method: "getParticipationStatus",
                 roles: [userRole.CUSTOMER],
                 initialLog: {
-                    activityCode: activityCode.AUCTION.GET_PARTICIPATION_STATUS
+                    activityCode: activityCode.AUCTION.GET_PARTICIPATION_STATUS,
+                    objectClass: objectClass.AUCTION
                 }
             }
         ],
