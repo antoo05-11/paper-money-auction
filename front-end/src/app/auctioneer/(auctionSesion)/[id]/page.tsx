@@ -57,7 +57,7 @@ export default function CustomerDetail({ params }: any) {
       const listFisrt = await viewAuctionInfo(id);
       // const json = await listFisrt.json()
       const data_use = await listFisrt.data;
-      // console.log(data_use);
+      console.log(data_use);
       set_infor_auction(data_use);
     };
     const result = fetchData()
@@ -133,18 +133,6 @@ export default function CustomerDetail({ params }: any) {
 
   return (
     <div className="flex flex-col justify-center items-center">
-      <Button
-        onClick={() => {
-          // const hihi = new Date(infor_auction?.auction_end);
-          console.log(bidding_history);
-
-          // console.log(autionToken);
-          // console.log(socket.connected);
-        }}
-      >
-        {isConnected && <div>Connected</div>}
-        {!isConnected && <div>Disconnected</div>}
-      </Button>
       <div className="w-[80%] top-0 bot-0">
         <Card className="top-0 bot-0">
           <CardHeader>
@@ -154,7 +142,7 @@ export default function CustomerDetail({ params }: any) {
           <CardContent className="grid grid-cols-7 gap-4">
             <Card className="bg-cyan-400 col-span-4">Hinh anh</Card>
             <div className=" col-span-3 grid grid-rows-6 gap-4">
-              {CountTime(new Date(infor_auction?.auction_start))}
+              {CountTime(Date.now(), infor_auction?.auction_start)}
               <Card className=" bg-cyan-400 row-span-4">
                 <CardTitle>Đặt giá</CardTitle>
                 <CardContent>
@@ -254,35 +242,40 @@ export default function CustomerDetail({ params }: any) {
   );
 }
 
-function CountTime(endTime: Date) {
+function CountTime(startTime: string | number, endTime: string) {
   const countRef = useRef<any>(null);
-  const startTime = new Date(Date.now());
-  const [time, setTime] = useState<any>();
-  const [start, setStart] = useState<boolean>();
+  const [start, setStart] = useState<boolean>(false);
+  const DateEnd = new Date(endTime);
+  const DateStart = new Date(startTime);
+  const [time, setTime] = useState<number>();
   // useEffect(() => {
+  //   console.log(234);
+
   //   setTimeout(() => {
-  //     if (start) setStart(true);
+  //     setStart(true);
   //   }),
   //     1000;
   // }, []);
   // useEffect(() => {
   //   if (start) {
-  //     countRef.current = setInterval(() => {
-  //       setTime(time - 1);
-  //     }, 1000);
+  //     console.log(DateStart.getTime());
+  //     console.log(DateEnd.getTime());
+  //     // countRef.current = setInterval(() => {
+  //     //   setTime(time - 1);
+  //     // }, 1000);
   //   }
   // }, [start]);
   return (
     <Card className=" bg-cyan-400 row-span-2 grid grid-cols-4 text-center">
-      <div className="row-span-1">Day</div>
+      <div className="row-span-1">Day: {time}</div>
       <div className="row-span-1">Giờ</div>
       <div>Phút</div>
-      {/* <div>Giây</div> */}
+      <div>Giây</div>
       <button
         onClick={() => {
-          // console.log((end.getTime() - start.getTime()) / 3600);
-          // console.log("start" + start.getTime());
-          // console.log("end" + end.getDay());
+          setTime(Math.abs(DateStart.getTime() - DateEnd.getTime()));
+          console.log(time);
+          // console.log(DateEnd.getTime());
         }}
       >
         Test

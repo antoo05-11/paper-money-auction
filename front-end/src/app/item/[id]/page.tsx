@@ -47,13 +47,14 @@ import { socket } from "@/app/socket";
 import { Label } from "@/components/ui/label";
 import HistoryBiddingTable from "../_component/HistoryBiddingTable";
 import BidderAttedTable from "../_component/BidderAttendTable";
+import CompareDate from "@/app/component/function";
 export default function CustomerDetail({ params, searchParams }: any) {
   const { toast } = useToast();
   const id = params.id;
   const use_auth = useAuth();
   const [isConnected, setIsConnected] = useState(false);
   const [infor_auction, set_infor_auction] = useState<any>();
-  const [startSession, setStartSession] = useState(true);
+  const [startSession, setStartSession] = useState(false);
   const [onSession, setOnSession] = useState<boolean>();
   const [registered, setRegister] = useState<string>();
   const [autionToken, setAutionToken] = useState<string>();
@@ -66,6 +67,8 @@ export default function CustomerDetail({ params, searchParams }: any) {
       const data_get = await viewAuctionInfo(id);
       const data_use = await data_get.data;
       set_infor_auction(data_use);
+      if (CompareDate(Date.now(), data_use?.auction_start))
+        setStartSession(true);
     };
     const checkStatusParticipation = async () => {
       const checkRegister = await checkParticipation(id);
@@ -91,7 +94,6 @@ export default function CustomerDetail({ params, searchParams }: any) {
 
     function onDisconnect() {
       setIsConnected(false);
-      // setTransport("N/A");
     }
     const result = getAuctionToken(id).catch(console.error);
     if (onSession) {
@@ -132,11 +134,13 @@ export default function CustomerDetail({ params, searchParams }: any) {
       };
     }
   }, [onSession]);
+
   return (
     <div className="flex flex-col justify-center items-center">
       <Button
         onClick={() => {
-          console.log(autionToken);
+          const hihi = new Date(Date.now());
+          console.log(hihi);
           toast({
             title: "Scheduled: Catch up ",
             description: "Friday, February 10, 2023 at 5:57 PM",

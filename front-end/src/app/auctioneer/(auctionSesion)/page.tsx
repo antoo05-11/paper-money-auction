@@ -1,31 +1,23 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { UserPlus } from "lucide-react";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import AuctionSessionTable from "../_component/AuctionSessionTable";
-import AuctionSessionForm from "../_component/AuctionSessionForm";
-import { Card } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { listAuctionManaging } from "@/app/api/apiEndpoints";
-import { useCookie } from "@/lib/auth/useCookie";
-import { useAuth } from "@/lib/auth/useAuth";
+import { DataTable } from "../_component/data_table";
+import { columns_auctions } from "./_component/columns";
 export default function Page() {
   const [list_auction, update_list_auction] = useState();
   const [filter, setFilter] = useState<any>(null);
-
-  const auth = useAuth();
 
   useEffect(() => {
     const fetchData = async (filter: any) => {
       const data = await listAuctionManaging(filter);
       const data_use = await data?.data?.auctions;
+      console.log(data_use);
+
       update_list_auction(data_use);
     };
-    const result = fetchData(filter)
-      // make sure to catch any error
-      .catch(console.error);
+    const result = fetchData(filter).catch(console.error);
   }, []);
   return (
     <div className="container">
@@ -37,24 +29,10 @@ export default function Page() {
             type="text"
           />
         </div>
-        <div>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button>
-                <UserPlus />
-                <p className="ml-2">Tạo phiên đấu giá</p>
-              </Button>
-            </DialogTrigger>
-
-            <AuctionSessionForm />
-          </Dialog>
-        </div>
       </div>
-      <Card className="shadow">
-        <div className="flex flex-col justify-center items-center my-7 container">
-          <AuctionSessionTable staffID={auth.user?.id} />
-        </div>
-      </Card>
+      <div className="flex flex-col justify-center items-center my-7 container">
+        <DataTable columns={columns_auctions} data={list_auction}></DataTable>
+      </div>
     </div>
   );
 }
