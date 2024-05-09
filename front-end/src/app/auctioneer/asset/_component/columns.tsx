@@ -84,7 +84,7 @@ export const columns_assets: ColumnDef<any>[] = [
     },
   },
   {
-    accessorKey: "create_aution",
+    accessorKey: "_id",
     header: " ",
     cell: ({ row }) => {
       return <CreateAuction asset_id={row.getValue("_id")}></CreateAuction>;
@@ -95,7 +95,7 @@ export const columns_assets: ColumnDef<any>[] = [
 const CreateAuction: React.FC<{ asset_id: any }> = ({ asset_id }) => {
   const route = useRouter();
   const FormSchema = z.object({
-    asset: z.string().default(asset_id?.asset_id),
+    asset: z.string().default(asset_id),
     starting_price: z.string(),
     bidding_increment: z.string(),
     deposit: z.string(),
@@ -112,7 +112,7 @@ const CreateAuction: React.FC<{ asset_id: any }> = ({ asset_id }) => {
     const create_auction = async () => {
       const res = await createAuction(data);
       if (res.status == 200) {
-        console.log(123);
+        console.log(res);
       }
     };
     const result = create_auction().catch(console.error);

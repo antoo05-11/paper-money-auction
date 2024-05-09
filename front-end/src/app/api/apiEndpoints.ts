@@ -55,7 +55,7 @@ export function updatePassword(data: any) {
 }
 
 export function suspenUser(id: String, data: any) {
-  return request.put(`api/user/suspend/${id}`, { data: data })
+  return request.put(`api/user/suspend/${id}`, { data: data });
 }
 
 //payment
@@ -102,7 +102,7 @@ export function verifyAsset(id: String, data: any) {
 
 // auction
 export function createAuction(data: any) {
-  return request.post("api/aution/create", { data: data });
+  return request.post("api/auction", { data: data, docs: null });
 }
 
 export function addAuctionDocument(id: String, docs: BinaryData) {
