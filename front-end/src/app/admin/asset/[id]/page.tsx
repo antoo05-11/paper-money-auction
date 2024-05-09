@@ -48,8 +48,11 @@ import { useEffect, useState } from "react";
 import { filterUserData, userData } from "@/lib/constant/dataInterface";
 import Image from "next/image";
 import path from "path";
+import { useRouter } from "next/navigation";
 
-const FILE_SERVER_URL = process.env.FILE_SERVER || "https://muzik-files-server.000webhostapp.com/paper-money-auction-files/asset-docs/"
+const FILE_SERVER_URL =
+  process.env.FILE_SERVER ||
+  "https://muzik-files-server.000webhostapp.com/paper-money-auction-files/asset-docs/";
 
 const FormSchema = z.object({
   verified: z.boolean().default(true),
@@ -62,20 +65,24 @@ export default function Page({ params, searchParams }: any) {
   const id = params.id;
   const [infor_asset, set_infor_asset] = useState<any>();
   const [list_autioneer, set_list_auctioneer] = useState<userData[]>();
+  const router = useRouter();
+  const [openVerify, setOpenVerify] = useState(false);
   // const [verify_asset, set_verify_asset] = useState(false);
   useEffect(() => {
-    try {
-      const fetchData = async () => {
-        const listFisrt = await viewAsset(id);
-        // const json = await listFisrt.json()
-        const data_asset = await listFisrt.data.data;
-        set_infor_asset(data_asset);
-      };
-      fetchData();
-    } catch (error) {
-      console.log("Fail to get asset data", error)
+    if (!openVerify) {
+      try {
+        const fetchData = async () => {
+          const listFisrt = await viewAsset(id);
+          // const json = await listFisrt.json()
+          const data_asset = await listFisrt.data.data;
+          set_infor_asset(data_asset);
+        };
+        fetchData();
+      } catch (error) {
+        console.log("Fail to get asset data", error);
+      }
     }
-  }, [id]);
+  }, [id, openVerify]);
 
   useEffect(() => {
     const getListAuctioneer = async () => {
@@ -105,6 +112,7 @@ export default function Page({ params, searchParams }: any) {
     console.log(data);
     const verify_asset = async () => {
       const res = await verifyAsset(infor_asset?._id, data);
+      setOpenVerify(false);
       console.log(res);
     };
     const result = verify_asset().catch(console.error);
@@ -117,7 +125,9 @@ export default function Page({ params, searchParams }: any) {
 
   let imageUrl = "";
   if (infor_asset && infor_asset.pics && infor_asset.pics[0]) {
-    imageUrl = `${FILE_SERVER_URL}${infor_asset.pics[0]._id}${path.extname(infor_asset.pics[0].name)}`;
+    imageUrl = `${FILE_SERVER_URL}${infor_asset.pics[0]._id}${path.extname(
+      infor_asset.pics[0].name
+    )}`;
   }
 
   return (
@@ -140,26 +150,51 @@ export default function Page({ params, searchParams }: any) {
               />
             </div>
             <div className="basis-2/3">
-
               <Tabs className="w-full" defaultValue="describe">
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="describe">Mô tả tài sản</TabsTrigger>
                   <TabsTrigger value="document">Tài liệu liên quan</TabsTrigger>
                 </TabsList>
                 <TabsContent value="describe">
-                  <p className="font-bold mt-1">Mã tài sản: <span className="font-normal">{infor_asset?._id}</span></p>
-                  <p className="font-bold mt-1">Tên tài sản: <span className="font-normal">{infor_asset?.name}</span></p>
-                  <p className="font-bold mt-1">Chủ sở hữu: <span className="font-normal">{infor_asset?.owner?.email}</span></p>
-                  <p className="font-bold mt-1">Mô tả: <span className="font-normal">{infor_asset?.description}</span></p>
-                  <p className="font-bold mt-1">Trạng thái: <span className="font-normal">{infor_asset?.verified ? 'Đã phê duyệt' : 'Chưa phê duyệt'}</span></p>
-                  <p className="font-bold mt-1">Đấu giá viên phụ trách: <span className="font-normal">{infor_asset?.auctioneer?.email}</span></p>
+                  <p className="font-bold mt-1">
+                    Mã tài sản:{" "}
+                    <span className="font-normal">{infor_asset?._id}</span>
+                  </p>
+                  <p className="font-bold mt-1">
+                    Tên tài sản:{" "}
+                    <span className="font-normal">{infor_asset?.name}</span>
+                  </p>
+                  <p className="font-bold mt-1">
+                    Chủ sở hữu:{" "}
+                    <span className="font-normal">
+                      {infor_asset?.owner?.email}
+                    </span>
+                  </p>
+                  <p className="font-bold mt-1">
+                    Mô tả:{" "}
+                    <span className="font-normal">
+                      {infor_asset?.description}
+                    </span>
+                  </p>
+                  <p className="font-bold mt-1">
+                    Trạng thái:{" "}
+                    <span className="font-normal">
+                      {infor_asset?.verified
+                        ? "Đã phê duyệt"
+                        : "Chưa phê duyệt"}
+                    </span>
+                  </p>
+                  <p className="font-bold mt-1">
+                    Đấu giá viên phụ trách:{" "}
+                    <span className="font-normal">
+                      {infor_asset?.auctioneer?.email}
+                    </span>
+                  </p>
 
-                  {infor_asset && !isVerified &&
-                    <Dialog>
+                  {infor_asset && !isVerified && (
+                    <Dialog open={openVerify} onOpenChange={setOpenVerify}>
                       <DialogTrigger asChild>
-                        <Button className="w-full mt-5">
-                          Phê duyệt
-                        </Button>
+                        <Button className="w-full mt-5">Phê duyệt</Button>
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-[700px]">
                         <DialogHeader>
@@ -193,13 +228,15 @@ export default function Page({ params, searchParams }: any) {
                                       {list_autioneer?.map(
                                         (auctioneer: any) => {
                                           return (
-                                            <SelectItem value={auctioneer?._id} key={auctioneer?._id}>
+                                            <SelectItem
+                                              value={auctioneer?._id}
+                                              key={auctioneer?._id}
+                                            >
                                               {auctioneer?.name}
                                             </SelectItem>
                                           );
                                         }
                                       )}
-
                                     </SelectContent>
                                   </Select>
                                   <FormMessage />
@@ -211,15 +248,25 @@ export default function Page({ params, searchParams }: any) {
                         </Form>
                       </DialogContent>
                     </Dialog>
-                  }
+                  )}
                 </TabsContent>
 
                 <TabsContent value="document">
-                  {infor_asset?.docs.map((doc: { name: string, _id: string }) => (
-                    <div key={doc._id} className="underline">
-                      <a href={`${FILE_SERVER_URL}/${doc._id}${path.extname(doc.name)}`} target="_blank" rel="noopener noreferrer">{doc.name}</a>
-                    </div>
-                  ))}
+                  {infor_asset?.docs.map(
+                    (doc: { name: string; _id: string }) => (
+                      <div key={doc._id} className="underline">
+                        <a
+                          href={`${FILE_SERVER_URL}/${doc._id}${path.extname(
+                            doc.name
+                          )}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {doc.name}
+                        </a>
+                      </div>
+                    )
+                  )}
                 </TabsContent>
               </Tabs>
             </div>
