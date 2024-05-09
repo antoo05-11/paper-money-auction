@@ -49,13 +49,9 @@ const formSchema = z
       message: "Input field must not be empty",
     }),
   })
-  .superRefine(({ retype, password }, ctx) => {
-    if (retype !== password) {
-      ctx.addIssue({
-        code: "custom",
-        message: "The passwords did not match",
-      });
-    }
+  .refine((data) => data.password === data.retype, {
+    message: "Passwords don't match",
+    path: ["retype"],
   });
 
 export default function RegisterForm() {
@@ -71,13 +67,18 @@ export default function RegisterForm() {
       ssid: "",
       phone: "",
       address: "",
-      retype: undefined,
+      retype: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const userData = {
-      ...values,
+      email: values.email,
+      password: values.password,
+      name: values.name,
+      ssid: values.ssid,
+      phone: values.phone,
+      address: values.address,
     };
     setLoading("Loading");
     try {
