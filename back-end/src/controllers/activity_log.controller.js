@@ -111,7 +111,15 @@ export default class ActivityLogController {
             {
                 $project: {
                     count: 1,
-                    activities: 1
+                    activities: {
+                        _id: 1,
+                        subjectId: 1,
+                        objectId: 1,
+                        createdAt: 1,
+                        objectClass: 1,
+                        activityCode: 1,
+                        success: 1
+                    }
                 }
             }
         ]);
@@ -122,13 +130,13 @@ export default class ActivityLogController {
             payload = {
                 page: pageIndex,
                 totalPages: 0,
-                auctions: []
+                activities: []
             };
         } else {
             payload = {
                 page: pageIndex,
                 totalPages: ceil(activities[0].count / pageSize),
-                auctions: activities[0].activities
+                activities: activities[0].activities
             };
         }
         return res.status(200).json(payload);
