@@ -23,7 +23,7 @@ class FtpService extends Service {
             keepalive: 1000
         })
             .then((serverMessage) => {
-                console.log('Server message: ' + serverMessage);
+                console.log('FTP sever message: ' + serverMessage);
             });
     }
 

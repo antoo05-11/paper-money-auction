@@ -18,8 +18,8 @@ import {
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from "@/components/ui/input-otp"
-import { REGEXP_ONLY_DIGITS } from "input-otp"
+} from "@/components/ui/input-otp";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -49,8 +49,8 @@ export default function LoginForm() {
   const { user, login } = useAuth();
   const [verifyState, setVerify] = useState(false);
   const [loadingMessage, setLoading] = useState("Đăng nhập");
-  const [otpValue, setOTP] = useState('');
-  const [authData, setAuthData] = useState({ email: '', password: '' });
+  const [otpValue, setOTP] = useState("");
+  const [authData, setAuthData] = useState({ email: "", password: "" });
 
   const handleOTPInput = (value: string) => {
     setOTP(value);
@@ -59,20 +59,25 @@ export default function LoginForm() {
         submit2FACode(value);
       }, 1500);
     }
-  }
+  };
 
   function handleLogin(res: any, isVerified: boolean) {
-    const { data: { token, user: { id, name, role } } } = res;
+    const {
+      data: {
+        token,
+        user: { id, name, role },
+      },
+    } = res;
 
     const session = { token, id, name, role, isVerified };
     login(session);
     switch (role) {
       case ROLES.ADMIN:
-        redirect('/admin');
+        redirect("/admin");
       case ROLES.AUCTIONEER:
-        redirect('/auctioneer');
+        redirect("/auctioneer");
       default:
-        redirect('/me');
+        redirect("/me");
     }
   }
 
@@ -85,16 +90,15 @@ export default function LoginForm() {
           setLoading("Thành công");
           if (res.data.data.token) {
             handleLogin(res.data, false);
-          }
-          else {
+          } else {
             setTimeout(() => {
               setVerify(true);
             }, 1000);
           }
         }
-      })
+      });
     } catch (err) {
-      const error = err as Error | AxiosError
+      const error = err as Error | AxiosError;
       if (axios.isAxiosError(error)) {
         toast.error(error?.response?.data.message);
         setLoading("Đăng nhập");
@@ -109,13 +113,12 @@ export default function LoginForm() {
         }
       });
     } catch (err) {
-      const error = err as Error | AxiosError
+      const error = err as Error | AxiosError;
       if (axios.isAxiosError(error)) {
         toast.error(error?.response?.data.message);
-        setOTP('');
+        setOTP("");
       }
     }
-
   }
   if (!user) {
     return (
@@ -127,7 +130,7 @@ export default function LoginForm() {
           >
             Vua Tiền Tệ
           </Link>
-          {!verifyState &&
+          {!verifyState && (
             <div className="w-full bg-card rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0">
               <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                 <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
@@ -145,7 +148,11 @@ export default function LoginForm() {
                         <FormItem>
                           <FormLabel>Tài khoản</FormLabel>
                           <FormControl>
-                            <Input placeholder="Tài khoản" {...field} className="rounded-full" />
+                            <Input
+                              placeholder="Tài khoản"
+                              {...field}
+                              className="rounded-full"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -159,15 +166,24 @@ export default function LoginForm() {
                         <FormItem>
                           <FormLabel>Password</FormLabel>
                           <FormControl>
-                            <Input placeholder="Password" {...field} className="rounded-full" type="password" />
+                            <Input
+                              placeholder="Password"
+                              {...field}
+                              className="rounded-full"
+                              type="password"
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <Button type="submit"
-                      className={`w-full ${loadingMessage == 'Thành công' ? 'bg-lime-600' : ''}`}
-                      disabled={loadingMessage != 'Đăng nhập'}>
+                    <Button
+                      type="submit"
+                      className={`w-full ${
+                        loadingMessage == "Thành công" ? "bg-lime-600" : ""
+                      }`}
+                      disabled={loadingMessage != "Đăng nhập"}
+                    >
                       {loadingMessage}
                     </Button>
                   </form>
@@ -184,12 +200,14 @@ export default function LoginForm() {
                 </p>
               </div>
             </div>
-          }
-          {verifyState &&
-            <div className="w-full bg-white rounded-lg shadow dark:border 
+          )}
+          {verifyState && (
+            <div
+              className="w-full bg-white rounded-lg shadow dark:border 
                           md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700 
                           flex flex-col items-center justify-center
-                          min-h-52">
+                          min-h-52"
+            >
               <span>
                 Please enter the code we&apos;ve just send to your email.
               </span>
@@ -212,11 +230,11 @@ export default function LoginForm() {
                 </InputOTPGroup>
               </InputOTP>
             </div>
-          }
+          )}
         </div>
       </section>
     );
   } else {
-    redirect('/');
+    redirect("/");
   }
 }

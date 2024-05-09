@@ -137,9 +137,10 @@ export class AuctionSession {
             biddings.push({
                 user: bidding.user.getJSON(role),
                 price: bidding.offer,
-                createdAt: bidding.create
+                createdAt: bidding.createdAt
             });
         }
+        console.log(biddings)
         return biddings;
     }
 }
