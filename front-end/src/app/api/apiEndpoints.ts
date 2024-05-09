@@ -7,7 +7,7 @@ import {
   registerAuction,
   userData,
   userLoginData,
-  filterUserData,
+  filterUserData, filterLogData,
 } from "@/lib/constant/dataInterface";
 import request from "./request";
 
@@ -142,4 +142,10 @@ export function verifyBidder(bidder_id: any, auction_id: any) {
 //customer
 export function checkParticipation(auction_id: any) {
   return request.get(`/api/auction/${auction_id}/participationstatus`);
+}
+
+//log
+export function listActivityLog(data: filterLogData) {
+  if (data) return request.get("api/log", { params: data });
+  else return request.get("api/log");
 }
