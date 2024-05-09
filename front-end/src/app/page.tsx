@@ -80,7 +80,7 @@ export default function HomePage() {
               <div className="animate-floating1">
                 <Image src="/shape6.png" width={29} height={29} alt="" />
               </div>
-              <div className="animate-floating2">
+              <div className="animate-floating3">
                 <Image src="/shape7.png" width={10} height={10} alt="" />
               </div>
               <div className="animate-floating3">

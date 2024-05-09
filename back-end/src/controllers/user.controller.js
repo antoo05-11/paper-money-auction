@@ -6,7 +6,7 @@ import errorCode from "../constants/error.code";
 import _ from "lodash";
 
 export default class UserController {
-    constructor() {}
+    constructor() { }
 
     createCustomer = async (req, res) => {
         const { body } = req;
@@ -236,24 +236,28 @@ export default class UserController {
         });
     };
     suspendUser = async (req, res) => {
-        const { params } = req;
+        const { params, body } = req;
+        const { id } = params;
+        const { data } = body;
+        const { active } = data;
 
         const user = await User.findByIdAndUpdate(
-            params.id,
-            { active: false },
+            id,
+            { active },
             {
                 new: true,
+                projection: {
+                    _id: 0,
+                    name: 1,
+                    ssid: 1,
+                    email: 1,
+                    phone: 1,
+                    address: 1,
+                    verified: 1,
+                    active: 1,
+                },
             }
-        ).select({
-            _id: 0,
-            name: 1,
-            ssid: 1,
-            email: 1,
-            phone: 1,
-            address: 1,
-            verified: 1,
-            active: 1,
-        });
+        );
 
         if (!user) {
             throw new HttpError({
@@ -265,7 +269,7 @@ export default class UserController {
         res.status(200).json({
             ok: true,
             data: {
-                user: user,
+                user,
             },
         });
     };

@@ -15,7 +15,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={lexend.className}>
         <CookiesProviders>
-          <ThemeProvider attribute="class" defaultTheme="dark">
+          <ThemeProvider attribute="class" defaultTheme="light">
             <Toaster />
             {children}
           </ThemeProvider>
