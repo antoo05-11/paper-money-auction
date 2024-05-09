@@ -120,7 +120,10 @@ const CreateAuction: React.FC<{ asset_id: any }> = ({ asset_id }) => {
       if (res.status == HTTP_STATUS.OK) {
         setOpenDialog(false);
       } else {
-        // toas
+        toast({
+          title: "Tạo phiên đấu giá thất bại",
+          description: "Xem lại các đầu mục cần thiết",
+        });
       }
     };
     const result = create_auction().catch(console.error);
@@ -299,22 +302,13 @@ const CreateAuction: React.FC<{ asset_id: any }> = ({ asset_id }) => {
               <FormItem className="grid grid-cols-6 items-center gap-4">
                 <FormLabel className="col-span-3">Tài liệu liên quan</FormLabel>
                 <FormControl>
-                  <Input required className="col-span-3" type="file" />
+                  <Input className="col-span-3" type="file" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
               <div className="grid grid-cols-6 items-center gap-4 pt-6">
                 <DialogClose className="col-start-5 col-end-5">
-                  <Button
-                    onClick={() => {
-                      toast({
-                        title: "Scheduled: Catch up",
-                        description: "Friday, February 10, 2023 at 5:57 PM",
-                      });
-                    }}
-                  >
-                    Hủy bỏ
-                  </Button>
+                  <Button>Hủy bỏ</Button>
                 </DialogClose>
                 <Button className="col-start-6 col-end-6" type="submit">
                   Phê duyệt

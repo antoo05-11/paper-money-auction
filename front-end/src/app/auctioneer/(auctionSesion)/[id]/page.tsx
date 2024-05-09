@@ -34,31 +34,36 @@ import {
 } from "@/components/ui/table";
 import { Car } from "lucide-react";
 import { useRef, useState } from "react";
-import { viewAuctionInfo } from "@/app/api/apiEndpoints";
+import { listBidder, viewAuctionInfo } from "@/app/api/apiEndpoints";
 import { useEffect } from "react";
 import { joinAuctionSession } from "@/app/api/apiEndpoints";
 import { socket } from "@/app/socket";
 import ListBidder from "../../_component/ListBidder";
 import HistoryBiddingTable from "../_component/HistoryBiddingTable";
 import BidderAttedTable from "../_component/BidderAttendTable";
+import { attendees_bidding, verified_bidder } from "../_component/columns";
+import { DataTable } from "@/components/ui/data-table";
 export default function CustomerDetail({ params }: any) {
   const [isConnected, setIsConnected] = useState(false);
   const id = params.id;
   const [infor_auction, set_infor_auction] = useState<any>();
-  const [startSession, setStartSession] = useState(true);
+  const [startSession, setStartSession] = useState(false);
   const [onSession, setOnSession] = useState(false);
-  const [list_bidder, update_list_bidder] = useState();
+  const [list_bidder, update_list_bidder] = useState<any>();
   const [autionToken, setAutionToken] = useState<string>();
   const [time, setTime] = useState(Date.now());
   const [list_bidder_attend, update_list_bidder_attend] = useState<any>([]);
   const [bidding_history, update_bidding_history] = useState<any>([]);
   useEffect(() => {
     const fetchData = async () => {
-      const listFisrt = await viewAuctionInfo(id);
-      // const json = await listFisrt.json()
-      const data_use = await listFisrt.data;
-      console.log(data_use);
-      set_infor_auction(data_use);
+      const dataAution = await viewAuctionInfo(id)
+        .then((data) => data.data)
+        .then((data) => set_infor_auction(data))
+        .catch(console.error);
+      const dataBidder = await listBidder(id)
+        .then((data) => data.data.data)
+        .then((data) => update_list_bidder(data))
+        .catch(console.error);
     };
     const result = fetchData()
       // make sure to catch any error
@@ -133,6 +138,13 @@ export default function CustomerDetail({ params }: any) {
 
   return (
     <div className="flex flex-col justify-center items-center">
+      <Button
+        onClick={() => {
+          console.log(list_bidder);
+        }}
+      >
+        Test
+      </Button>
       <div className="w-[80%] top-0 bot-0">
         <Card className="top-0 bot-0">
           <CardHeader>
@@ -219,8 +231,10 @@ export default function CustomerDetail({ params }: any) {
         </Card>
         <Tabs>
           <TabsList>
-            <TabsTrigger value="history">Lịch sử đặt giá</TabsTrigger>
-            <TabsTrigger value="inform">Thông tin đấu giá</TabsTrigger>
+            {startSession && (
+              <TabsTrigger value="history">Lịch sử đặt giá</TabsTrigger>
+            )}
+            <TabsTrigger value="inform">Thông tin người đấu giá</TabsTrigger>
             <TabsTrigger value="describe">Mô tả tài sản</TabsTrigger>
             <TabsTrigger value="document">Tài liệu liên quan</TabsTrigger>
           </TabsList>
@@ -230,9 +244,20 @@ export default function CustomerDetail({ params }: any) {
             ></HistoryBiddingTable>
           </TabsContent>
           <TabsContent value="inform">
-            <BidderAttedTable
-              list_bidder={list_bidder_attend}
-            ></BidderAttedTable>
+            {startSession && (
+              <DataTable
+                columns={attendees_bidding}
+                data={list_bidder_attend}
+                pageCount={0}
+              />
+            )}
+            {!startSession && (
+              <DataTable
+                columns={verified_bidder}
+                data={list_bidder}
+                pageCount={1}
+              />
+            )}
           </TabsContent>
           <TabsContent value="describe">Change your password here.</TabsContent>
           <TabsContent value="document">Change your password here.</TabsContent>

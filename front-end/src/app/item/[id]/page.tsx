@@ -116,6 +116,10 @@ export default function CustomerDetail({ params, searchParams }: any) {
         console.log("make_offer_response");
         console.log(message);
       });
+      socket.on("withdraw_offer_response", (message) => {
+        console.log("withdraw_offer_response");
+        console.log(message);
+      });
       socket.on("biddings_update", (message) => {
         console.log("biddings_update");
         console.log(message);

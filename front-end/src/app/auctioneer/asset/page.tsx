@@ -69,7 +69,6 @@ export default function Page() {
   }, [filterVerified]);
   return (
     <div className="flex flex-col justify-center items-center mt-10">
-      <Button>Test</Button>
       <div className="w-[80%]">
         <div className="flex justify-between mb-5">
           <div className="flex flex-row">
