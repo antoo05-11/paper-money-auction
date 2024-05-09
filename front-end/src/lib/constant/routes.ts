@@ -4,7 +4,7 @@ import {
   FileClock,
   FileCode2Icon,
   LandPlot,
-  Layout,
+  Layout, SquareDashedMousePointer,
   SquareGanttChartIcon,
   UsersRound,
 } from "lucide-react";
@@ -29,6 +29,11 @@ export const adminRoutes = [
     icon: FileCode2Icon,
     label: "Tài sản",
     href: "/admin/asset",
+  },
+    {
+    icon: SquareDashedMousePointer,
+    label: "Lịch sử thao tác",
+    href: "/admin/log",
   },
 ];
 

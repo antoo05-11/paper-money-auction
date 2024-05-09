@@ -19,7 +19,7 @@ export default class ActivityLogController {
     getLog = async (req, res) => {
         const {query} = req;
 
-        const pageSize = parseInt(query.page_size || 10);
+        const pageSize = parseInt(query.limit || 10);
         const pageIndex = parseInt(query.page || 1);
 
         const dateFields = ['createdAt', 'success', 'activityCode'];
