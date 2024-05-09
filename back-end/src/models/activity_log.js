@@ -1,58 +1,25 @@
 import mongoose from "mongoose";
 
 const activityLogSchema = new mongoose.Schema({
-    userId: {
+    subjectId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
-    verifyNum: Boolean,
-    verifyMail: Boolean,
-    updateAccount: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+    objectId: {
+        type: mongoose.Schema.Types.ObjectId
     },
-    makeTransaction: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Transaction'
+    activityCode: {
+        type: String,
+        required: true
     },
-    uploadAsset: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Asset'
-    },
-    deleteAsset: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Asset'
-    },
-    uploadPost: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Post'
-    },
-    updatePost: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Post'
-    },
-    deletePost: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Post'
-    },
-    createAuction: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Auction'
-    },
-    updateAuction: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Auction'
-    },
-    deleteAuction: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Auction'
-    },
-    makeOffer: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Offer'
-    },
+    success: {
+        type: Boolean,
+        default: false,
+        required: true
+    }
 }, {
-    versionKey: false
+    versionKey: false,
+    timestamps: true
 });
 
 export const ActivityLog = mongoose.model("ActivityLog", activityLogSchema);

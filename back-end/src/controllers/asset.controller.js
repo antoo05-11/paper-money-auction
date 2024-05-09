@@ -8,6 +8,7 @@ import userRole from "../constants/user.role";
 import {ftpService} from "../services/ftp.service";
 import * as path from "node:path";
 import mongoose from "mongoose";
+import {writeLogStatus} from "./activity_log.controller";
 
 export default class AssetController {
     constructor() {
@@ -54,6 +55,8 @@ export default class AssetController {
             await session.commitTransaction();
             await session.endSession();
 
+            writeLogStatus(req.activityLog, asset._id, true);
+
             return res.status(200).json({
                 ok: true,
                 data: asset,
@@ -79,11 +82,16 @@ export default class AssetController {
         if (
             user.role === userRole.CUSTOMER &&
             asset.owner._id.toString() !== user._id.toString()
-        )
+        ) {
+            writeLogStatus(req.activityLog, asset._id, false);
             throw new HttpError({
                 ...errorCode.AUTH.ROLE_INVALID,
                 status: 403,
             });
+        }
+
+
+        writeLogStatus(req.activityLog, asset._id, true);
 
         res.status(200).json({
             ok: true,
@@ -144,14 +152,16 @@ export default class AssetController {
             .populate({path: "owner", select: "email"})
             .populate({path: "auctioneer", select: "email"});
 
+        writeLogStatus(req.activityLog, null, true);
+
+
         const payload = {
             page,
             totalPages,
             assets,
             assetDocRootUrl: `${process.env.FTP_URL}asset-docs/`
         };
-
-        res.status(200).json({ok: true, data: payload});
+        return res.status(200).json({ok: true, data: payload});
     };
 
     verifyAsset = async (req, res) => {
@@ -173,7 +183,9 @@ export default class AssetController {
         if (!asset)
             throw new HttpError({...errorCode.ASSET.NOT_FOUND, status: 403});
 
-        res.status(200).json({
+        writeLogStatus(req.activityLog, asset._id, true);
+
+        return res.status(200).json({
             ok: true,
             data: asset,
             assetDocRootUrl: `${process.env.FTP_URL}asset-docs/`

@@ -31,7 +31,6 @@ class FtpService extends Service {
         try {
            await this.#ftpClient.reconnect();
         } catch (e) {
-            console.log(e);
         }
         for (const fileKey in files) {
             const file = files[fileKey];
