@@ -102,7 +102,7 @@ export function verifyAsset(id: String, data: any) {
 
 // auction
 export function createAuction(data: any) {
-  return request.post("api/auction", { data: data, docs: null });
+  return request.post("api/auction", data);
 }
 
 export function addAuctionDocument(id: String, docs: BinaryData) {

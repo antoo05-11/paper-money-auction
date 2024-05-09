@@ -24,7 +24,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
+import { toast } from "sonner";
 export default function Page() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -68,99 +68,99 @@ export default function Page() {
     setFilter((prev) => ({ ...prev, verified: filterVerified }));
   }, [filterVerified]);
   return (
-    <div>
-      <div className="flex flex-col justify-center items-center mt-10">
-        <div className="w-[80%]">
-          <div className="flex justify-between mb-5">
-            <div className="flex flex-row">
-              <div>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline">
-                      <Filter />
-                      <span>Bộ lọc</span>
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-80 ml-40">
-                    <div className="grid gap-4">
-                      <div className="space-y-2">
-                        <h4 className="font-medium leading-none">Bộ lọc</h4>
+    <div className="flex flex-col justify-center items-center mt-10">
+      <Button>Test</Button>
+      <div className="w-[80%]">
+        <div className="flex justify-between mb-5">
+          <div className="flex flex-row">
+            <div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline">
+                    <Filter />
+                    <span>Bộ lọc</span>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 ml-40">
+                  <div className="grid gap-4">
+                    <div className="space-y-2">
+                      <h4 className="font-medium leading-none">Bộ lọc</h4>
+                    </div>
+                    <div className="grid gap-2">
+                      <div className=" items-center gap-4">
+                        <Input
+                          id="width"
+                          placeholder="Lọc theo tên"
+                          className="h-8"
+                          defaultValue={""}
+                          onChange={(e) => {
+                            setFilter((prevFilter) => ({
+                              ...prevFilter,
+                              name: e.target.value,
+                            }));
+                            router.push(`${pathName}/?page=1&limit=10`);
+                          }}
+                        />
                       </div>
-                      <div className="grid gap-2">
-                        <div className=" items-center gap-4">
-                          <Input
-                            id="width"
-                            placeholder="Lọc theo tên"
-                            className="h-8"
-                            defaultValue={""}
-                            onChange={(e) => {
-                              setFilter((prevFilter) => ({
-                                ...prevFilter,
-                                name: e.target.value,
-                              }));
-                              router.push(`${pathName}/?page=1&limit=10`);
-                            }}
-                          />
-                        </div>
-                        <div className=" items-center gap-4">
-                          <Input
-                            id="maxWidth"
-                            placeholder="Lọc theo mô tả"
-                            className="h-8"
-                            onChange={(e) => {
-                              setFilter((prevFilter) => ({
-                                ...prevFilter,
-                                description: e.target.value,
-                              }));
-                              router.push(`${pathName}/?page=1&limit=10`);
-                            }}
-                          />
-                        </div>
-                        <div className="items-center gap-4">
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="outline"
-                                className="rounded-lg w-full justify-start"
-                              >
-                                Trạng thái
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-56">
-                              <DropdownMenuCheckboxItem
-                                checked={filterVerified}
-                                onCheckedChange={() => {
-                                  setFiltterVerified(true);
-                                }}
-                              >
-                                Phê duyệt
-                              </DropdownMenuCheckboxItem>
+                      <div className=" items-center gap-4">
+                        <Input
+                          id="maxWidth"
+                          placeholder="Lọc theo mô tả"
+                          className="h-8"
+                          onChange={(e) => {
+                            setFilter((prevFilter) => ({
+                              ...prevFilter,
+                              description: e.target.value,
+                            }));
+                            router.push(`${pathName}/?page=1&limit=10`);
+                          }}
+                        />
+                      </div>
+                      <div className="items-center gap-4">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className="rounded-lg w-full justify-start"
+                            >
+                              Trạng thái
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-56">
+                            <DropdownMenuCheckboxItem
+                              checked={filterVerified}
+                              onCheckedChange={() => {
+                                setFiltterVerified(true);
+                              }}
+                            >
+                              Phê duyệt
+                            </DropdownMenuCheckboxItem>
 
-                              <DropdownMenuCheckboxItem
-                                checked={!filterVerified}
-                                onCheckedChange={() => {
-                                  setFiltterVerified(false);
-                                }}
-                              >
-                                Chưa phê duyệt
-                              </DropdownMenuCheckboxItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </div>
+                            <DropdownMenuCheckboxItem
+                              checked={!filterVerified}
+                              onCheckedChange={() => {
+                                setFiltterVerified(false);
+                              }}
+                            >
+                              Chưa phê duyệt
+                            </DropdownMenuCheckboxItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
+        </div>
+        {list_asset && (
           <DataTable
             columns={columns_assets}
             data={list_asset}
             pageCount={page}
           ></DataTable>
-          {/* <DataTable columns={columns_assets} data={list_asset}></DataTable> */}
-        </div>
+        )}
       </div>
     </div>
   );

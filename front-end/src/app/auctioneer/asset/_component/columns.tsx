@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/form";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -38,11 +39,10 @@ import {
 } from "@/components/ui/dialog";
 import { createAuction } from "@/app/api/apiEndpoints";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
-import React from "react";
-
+import React, { useState } from "react";
+import { HTTP_STATUS } from "@/lib/constant/constant";
+import { useToast } from "@/components/ui/use-toast";
 export const columns_assets: ColumnDef<any>[] = [
   {
     id: "stt",
@@ -93,7 +93,10 @@ export const columns_assets: ColumnDef<any>[] = [
 ];
 
 const CreateAuction: React.FC<{ asset_id: any }> = ({ asset_id }) => {
+  const { toast } = useToast();
   const route = useRouter();
+  const [docs, setDocs] = useState<any>();
+  const [openDialog, setOpenDialog] = useState<boolean>();
   const FormSchema = z.object({
     asset: z.string().default(asset_id),
     starting_price: z.string(),
@@ -109,17 +112,22 @@ const CreateAuction: React.FC<{ asset_id: any }> = ({ asset_id }) => {
     resolver: zodResolver(FormSchema),
   });
   function onSubmit(data: z.infer<typeof FormSchema>) {
+    const formData = new FormData();
+    formData.append("data", JSON.stringify(data));
+    formData.append("docs", JSON.stringify(docs));
     const create_auction = async () => {
-      const res = await createAuction(data);
-      if (res.status == 200) {
-        console.log(res);
+      const res = await createAuction(formData);
+      if (res.status == HTTP_STATUS.OK) {
+        setOpenDialog(false);
+      } else {
+        // toas
       }
     };
     const result = create_auction().catch(console.error);
   }
   return (
     <div>
-      <Dialog>
+      <Dialog onOpenChange={setOpenDialog} open={openDialog}>
         <DialogTrigger asChild>
           <Button variant="outline">Tạo phiên đấu giá</Button>
         </DialogTrigger>
@@ -287,7 +295,31 @@ const CreateAuction: React.FC<{ asset_id: any }> = ({ asset_id }) => {
                   </FormItem>
                 )}
               />
-              <Button type="submit">Phê duyệt</Button>
+
+              <FormItem className="grid grid-cols-6 items-center gap-4">
+                <FormLabel className="col-span-3">Tài liệu liên quan</FormLabel>
+                <FormControl>
+                  <Input required className="col-span-3" type="file" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+              <div className="grid grid-cols-6 items-center gap-4 pt-6">
+                <DialogClose className="col-start-5 col-end-5">
+                  <Button
+                    onClick={() => {
+                      toast({
+                        title: "Scheduled: Catch up",
+                        description: "Friday, February 10, 2023 at 5:57 PM",
+                      });
+                    }}
+                  >
+                    Hủy bỏ
+                  </Button>
+                </DialogClose>
+                <Button className="col-start-6 col-end-6" type="submit">
+                  Phê duyệt
+                </Button>
+              </div>
             </form>
           </Form>
         </DialogContent>

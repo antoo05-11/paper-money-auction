@@ -13,15 +13,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { DropdownMenuCheckboxItemProps } from "@radix-ui/react-dropdown-menu";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import * as React from "react";
+import { CalendarIcon } from "@radix-ui/react-icons";
+import { addDays, format } from "date-fns";
+import { DateRange } from "react-day-picker";
+
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
 import { useSearchParams } from "next/navigation";
 import { useDebounce } from "@/lib/hook/useDebounce";
 import {
@@ -39,13 +37,25 @@ export default function Page() {
   const [list_auction, update_list_auction] = useState<assetData[]>();
   const [filter, setFilter] = useState<filterAuctionData>();
   const debouncedFilter = useDebounce(filter, 1000);
+  const [date_auction, set_date_auction] = useState<DateRange | undefined>({
+    from: undefined,
+    to: undefined,
+  });
+  const [date_register, set_date_register] = useState<DateRange | undefined>({
+    from: undefined,
+    to: undefined,
+  });
   useEffect(() => {
     setFilter((prevFilter: any) => ({
       ...prevFilter,
+      registration_close: date_register?.to?.toISOString(),
+      registration_open: date_register?.from?.toISOString(),
+      auction_end: date_auction?.to?.toISOString(),
+      auction_start: date_auction?.from?.toISOString(),
       page: page,
       page_size: limit,
     }));
-  }, [searchParams, limit, page]);
+  }, [searchParams, limit, page, date_auction, date_register]);
   useEffect(() => {
     const fetchData = async (filter: any) => {
       const data = await listAuctionManaging(filter);
@@ -57,13 +67,6 @@ export default function Page() {
   }, [debouncedFilter]);
   return (
     <div className="container">
-      <Button
-        onClick={() => {
-          console.log(filter);
-        }}
-      >
-        Test
-      </Button>
       <div className="flex justify-between mb-5">
         <div className="flex flex-row">
           <div>
@@ -95,68 +98,83 @@ export default function Page() {
                         }}
                       />
                     </div>
-                    <div className="items-center gap-4">
-                      <Label>Thời gian mở đăng kí</Label>
-                      <Input
-                        id="filter_registration_open"
-                        type="datetime-local"
-                        className="h-8"
-                        defaultValue={filter?.registration_open?.toJSON()}
-                        onChange={(e) => {
-                          setFilter((prevFilter: any) => ({
-                            ...prevFilter,
-                            registration_open: new Date(e.target.value),
-                          }));
-                          router.push(`${pathName}/?page=1&limit=10`);
-                        }}
-                      />
+                    <div className="grid gap-2">
+                      <Label>Thời gian đăng ký</Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            id="date"
+                            variant={"outline"}
+                            className={cn(
+                              "w-[300px] justify-start text-left font-normal",
+                              !date_register && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {date_register?.from ? (
+                              date_register.to ? (
+                                <>
+                                  {format(date_register.from, "LLL dd, y")} -{" "}
+                                  {format(date_register.to, "LLL dd, y")}
+                                </>
+                              ) : (
+                                format(date_register.from, "LLL dd, y")
+                              )
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            initialFocus
+                            mode="range"
+                            defaultMonth={date_register?.from}
+                            selected={date_register}
+                            onSelect={set_date_register}
+                            numberOfMonths={2}
+                          />
+                        </PopoverContent>
+                      </Popover>
                     </div>
-                    <div className="items-center gap-4">
-                      <Label>Thời gian đóng đăng kí</Label>
-                      <Input
-                        id="filter_registration_close"
-                        type="date"
-                        className="h-8"
-                        defaultValue={filter?.registration_close?.toISOString()}
-                        onChange={(e) => {
-                          setFilter((prevFilter: any) => ({
-                            ...prevFilter,
-                            registration_close: new Date(e.target.value),
-                          }));
-                          router.push(`${pathName}/?page=1&limit=10`);
-                        }}
-                      />
-                    </div>
-                    <div className="items-center gap-4">
-                      <Label>Thời gian bắt đầu</Label>
-                      <Input
-                        id="filter_auction_open"
-                        type="datetime-local"
-                        defaultValue={filter?.registration_open?.toLocaleTimeString()}
-                        className="h-8"
-                        onChange={(e) => {
-                          setFilter((prevFilter: any) => ({
-                            ...prevFilter,
-                            auction_open: new Date(e.target.value),
-                          }));
-                          router.push(`${pathName}/?page=1&limit=10`);
-                        }}
-                      />
-                    </div>
-                    <div className="items-center gap-4">
-                      <Label>Thời gian kết thúc</Label>
-                      <Input
-                        id="filter_auction_close"
-                        type="datetime-local"
-                        className="h-8"
-                        onChange={(e) => {
-                          setFilter((prevFilter: any) => ({
-                            ...prevFilter,
-                            auction_close: new Date(e.target.value),
-                          }));
-                          router.push(`${pathName}/?page=1&limit=10`);
-                        }}
-                      />
+                    <div className="grid gap-2">
+                      <Label>Thời gian đấu giá</Label>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            id="date"
+                            variant={"outline"}
+                            className={cn(
+                              "w-[300px] justify-start text-left font-normal",
+                              !date_auction && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {date_auction?.from ? (
+                              date_auction.to ? (
+                                <>
+                                  {format(date_auction.from, "LLL dd, y")} -{" "}
+                                  {format(date_auction.to, "LLL dd, y")}
+                                </>
+                              ) : (
+                                format(date_auction.from, "LLL dd, y")
+                              )
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            initialFocus
+                            mode="range"
+                            defaultMonth={date_auction?.from}
+                            selected={date_auction}
+                            onSelect={set_date_auction}
+                            numberOfMonths={2}
+                          />
+                        </PopoverContent>
+                      </Popover>
                     </div>
                   </div>
                 </div>
