@@ -63,7 +63,6 @@ export default function AuctionDetail({ params }: any) {
   const [onSession, setOnSession] = useState(false);
   const [list_bidder, update_list_bidder] = useState<any>();
   const [autionToken, setAutionToken] = useState<string>();
-  const [time, setTime] = useState(Date.now());
   const [list_bidder_attend, update_list_bidder_attend] = useState<any>([]);
   const [bidding_history, update_bidding_history] = useState<any>([]);
   useEffect(() => {
@@ -111,7 +110,7 @@ export default function AuctionDetail({ params }: any) {
       });
       socket.on("join_session_response", (response) => {
         console.log("join_session_response");
-        setOnSession(response);
+        if (response == true) setOnSession(response);
       });
       socket.on("attendees_update", (response) => {
         console.log("attendees_update: " + response);
@@ -123,7 +122,6 @@ export default function AuctionDetail({ params }: any) {
       });
       socket.on("biddings_update", (message) => {
         console.log("biddings_update");
-        console.log(message);
         update_bidding_history(message.reverse());
       });
       socket.on("start_session_response", (message) => {
@@ -152,24 +150,19 @@ export default function AuctionDetail({ params }: any) {
     console.log("join session");
     socket.emit("join_session", autionToken);
   };
+  let imageUrl = "";
+  if (
+    infor_auction &&
+    infor_auction.asset?.pics &&
+    infor_auction.asset?.pics[0]
+  ) {
+    imageUrl = `${FILE_SERVER_URL}${
+      infor_auction.asset?.pics[0]._id
+    }${path.extname(infor_auction.asset?.pics[0].name)}`;
+  }
+
   return (
     <div className="flex flex-col justify-center items-center">
-      {!CompareDate(infor_auction?.auction_end, Date.now()) && (
-        <Alert>
-          <AlertTitle>Phiên đấu giá đã kết thúc</AlertTitle>
-          <AlertDescription>
-            <p>
-              Nếu bạn là người trúng đấu giá vui lòng kiểm tra email để có thể
-              hoàn tất việc thanh toán cũng như nhận tài sản đấu giá
-            </p>
-            <p>
-              Nếu bạn không trúng đấu giá vui lòng kiểm tra email để có thể nhận
-              lại khoản tiền đặt cọc cho phiên đấu giá
-            </p>
-          </AlertDescription>
-        </Alert>
-      )}
-
       <div className="w-[80%] top-0 bot-0">
         <Card className="top-0 bot-0">
           <CardHeader>
@@ -177,7 +170,15 @@ export default function AuctionDetail({ params }: any) {
             <CardDescription></CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-7 gap-4">
-            <Card className="bg-cyan-400 col-span-4">Hinh anh</Card>
+            <div className="basis-1/3">
+              <Image
+                src={imageUrl}
+                width={300}
+                height={200}
+                alt=""
+                className="w-full rounded "
+              />
+            </div>
             <div className=" col-span-3 grid grid-rows-6 gap-4">
               {infor_auction?.auction_start && !timeSessionAuction && (
                 <Card>

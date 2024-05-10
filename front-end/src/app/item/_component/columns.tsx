@@ -142,30 +142,6 @@ export const attendees_bidding: ColumnDef<any>[] = [
     ),
   },
   {
-    accessorKey: "_id",
-    header: () => <div className="flex justify-center items-center"> ID </div>,
-    cell: ({ row }) => {
-      return (
-        <div className="flex justify-center items-center">
-          {row.getValue("_id")}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "name",
-    header: () => (
-      <div className="flex justify-center items-center"> Họ tên </div>
-    ),
-    cell: ({ row }) => {
-      return (
-        <div className="flex justify-center items-center">
-          {row.getValue("name")}
-        </div>
-      );
-    },
-  },
-  {
     accessorKey: "alias",
     header: () => (
       <div className="flex justify-center items-center">Bí danh</div>
