@@ -264,9 +264,8 @@ export default function RegisterForm() {
                 </div>
                 <Button
                   type="submit"
-                  className={`w-full ${
-                    loadingMessage == "Thành công" ? "bg-lime-600" : ""
-                  }`}
+                  className={`w-full ${loadingMessage == "Thành công" ? "bg-lime-600" : ""
+                    }`}
                   disabled={loadingMessage != "Đăng kí"}
                 >
                   {loadingMessage}

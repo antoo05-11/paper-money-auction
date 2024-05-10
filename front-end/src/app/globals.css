@@ -27,13 +27,13 @@
   }
 
   .dark {
-    --background: 259 32% 1%;
-    --foreground: 259 27% 98%;
+    --background: 221 39% 11%;
+    --foreground: 259 24% 100%;
     --muted: 259 14% 7%;
     --muted-foreground: 259 8% 67%;
     --popover: 259 32% 1%;
     --popover-foreground: 259 27% 98%;
-    --card: 240 6% 10%;
+    --card: 217 33% 17%;
     --card-foreground: 259 27% 98%;
     --border: 259 9% 13%;
     --input: 259 9% 13%;

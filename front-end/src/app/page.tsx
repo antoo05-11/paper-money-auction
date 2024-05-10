@@ -26,7 +26,7 @@ export default function HomePage() {
         <div className="container flex flex-row h-full">
           <div className="basis-1/2 flex-row content-center pl-4 relative">
             <h3 className="font-bold mb-3 text-3xl text-primary">Chào mừng bạn đến với </h3>
-            <h1 className="font-extrabold mb-3 text-6xl animate-typing overflow-hidden whitespace-nowrap leading-normal">VUA TIỀN TỆ</h1>
+            <h1 className="font-extrabold mb-3 text-6xl animate-typing overflow-hidden whitespace-nowrap leading-normal">MONESY</h1>
             <h1 className="font-normal mb-3 text-slate-500 dark:text-slate-400">
               Tự hào là một trong những nền tảng đấu giá trực tuyến hàng đầu tại Việt Nam.
             </h1>
