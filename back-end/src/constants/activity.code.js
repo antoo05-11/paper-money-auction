@@ -1,21 +1,21 @@
 export default {
     AUCTION: {
-        CREATE: 'Create auction',
-        UPDATE: 'Update auction',
-        GET_BY_ID: 'Get auction by ID',
-        GET_LIST: 'Get auction list',
-        REGISTER: 'Register auction',
-        GET_ACTIVITIES: 'Get auction activities',
-        GET_BIDDERS: 'Get auction bidders',
-        VERIFY_BIDDER: 'Verify bidder participation',
-        JOIN_SESSION: 'Join auction session',
-        GET_PARTICIPATION_STATUS: 'Get participation status'
+        CREATE: 'CREATE_AUCTION',
+        UPDATE: 'UPDATE_AUCTION',
+        GET_BY_ID: 'GET_AUCTION_BY_ID',
+        GET_LIST: 'GET_AUCTION_LIST',
+        REGISTER: 'REGISTER_AUCTION',
+        GET_ACTIVITIES: 'GET_AUCTION_ACTIVITY_LIST',
+        GET_BIDDERS: 'GET_AUCTION_BIDDER_LIST',
+        VERIFY_BIDDER: 'VERIFY_BIDDER_PARTICIPATION',
+        JOIN_SESSION: 'JOIN_AUCTION_SESSION',
+        GET_PARTICIPATION_STATUS: 'GET_PARTICIPATION_STATUS'
     },
     ASSET: {
-        CREATE: 'Create asset',
-        UPDATE: 'Update asset',
-        GET_BY_ID: 'Get asset by ID',
-        GET_LIST: 'Get asset list',
-        VERIFY: 'Verify asset'
+        CREATE: 'CREATE_ASSET',
+        UPDATE: 'UPDATE_ASSET',
+        GET_BY_ID: 'GET_ASSET_BY_ID',
+        GET_LIST: 'GET_ASSET_LIST',
+        VERIFY: 'VERIFY_ASSET'
     }
 };
