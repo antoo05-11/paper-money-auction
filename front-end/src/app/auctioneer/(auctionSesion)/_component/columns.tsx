@@ -33,6 +33,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { getUserProfileByID, verifyBidder } from "@/app/api/apiEndpoints";
 import { HTTP_STATUS } from "@/lib/constant/constant";
+import { useToast } from "@/components/ui/use-toast";
 const ActionCell: React.FC<{ row: any }> = ({ row }) => {
   const asset = row.original;
   const route = useRouter();
@@ -48,7 +49,7 @@ const ActionCell: React.FC<{ row: any }> = ({ row }) => {
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Chi tiết</DropdownMenuLabel>
         <DropdownMenuItem
-          onClick={(e) => {
+          onClick={(e: any) => {
             route.push(path_name + "/" + asset._id);
           }}
         >
@@ -246,7 +247,7 @@ export const verified_bidder: ColumnDef<any>[] = [
     cell: ({ row }) => {
       return (
         <VerifyBidder
-          auction_id={row.original?.aution}
+          auction_id={row.original?.auction}
           bidder_id={row.original?.bidder}
         />
       );
@@ -258,6 +259,7 @@ const VerifyBidder: React.FC<{ auction_id: any; bidder_id: any }> = ({
   auction_id,
   bidder_id,
 }) => {
+  const { toast } = useToast();
   const [customer_profile, set_customer_profile] = useState<userData>();
   const [success, setSuccess] = useState<boolean>();
   useEffect(() => {
@@ -374,14 +376,21 @@ const VerifyBidder: React.FC<{ auction_id: any; bidder_id: any }> = ({
           <Button
             onClick={() => {
               const verify = async () => {
+                console.log(auction_id);
+
                 await verifyBidder(bidder_id, auction_id)
                   .then((res) => {
                     if (res.status == HTTP_STATUS.OK) {
-                      setSuccess(true);
+                      toast({
+                        title: "Xác thực thành công",
+                        description: `Người đấu giá có ID: ${bidder_id} tham gia phiên đấu giá `,
+                      });
+                      setSuccess(false);
                     }
                   })
                   .catch(console.error);
               };
+              verify().catch(console.log);
             }}
           >
             Phê duyệt

@@ -38,6 +38,7 @@ import { Car } from "lucide-react";
 import { useRef, useState } from "react";
 import {
   checkParticipation,
+  payDeposit,
   register_auction,
   viewAuctionInfo,
 } from "@/app/api/apiEndpoints";
@@ -54,7 +55,6 @@ import path from "path";
 const FILE_SERVER_URL =
   process.env.FILE_SERVER ||
   "https://muzik-files-server.000webhostapp.com/paper-money-auction-files/asset-docs/";
-
 
 export default function CustomerDetail({ params, searchParams }: any) {
   const { toast } = useToast();
@@ -73,10 +73,14 @@ export default function CustomerDetail({ params, searchParams }: any) {
   const inputOffer = useRef<any>();
 
   let imageUrl = "";
-  if (infor_auction && infor_auction.asset?.pics && infor_auction.asset?.pics[0]) {
-    imageUrl = `${FILE_SERVER_URL}${infor_auction.asset?.pics[0]._id}${path.extname(
-      infor_auction.asset?.pics[0].name
-    )}`;
+  if (
+    infor_auction &&
+    infor_auction.asset?.pics &&
+    infor_auction.asset?.pics[0]
+  ) {
+    imageUrl = `${FILE_SERVER_URL}${
+      infor_auction.asset?.pics[0]._id
+    }${path.extname(infor_auction.asset?.pics[0].name)}`;
   }
 
   useEffect(() => {
@@ -86,11 +90,11 @@ export default function CustomerDetail({ params, searchParams }: any) {
       set_infor_auction(data_use);
       setStartSession(
         CompareDate(Date.now(), data_use?.auction_start) &&
-        !CompareDate(Date.now(), data_use?.auction_end)
+          !CompareDate(Date.now(), data_use?.auction_end)
       );
       setTimeRegister(
         CompareDate(Date.now(), data_use?.registration_open) &&
-        !CompareDate(Date.now(), data_use?.registration_close)
+          !CompareDate(Date.now(), data_use?.registration_close)
       );
     };
     const checkStatusParticipation = async () => {
@@ -192,7 +196,6 @@ export default function CustomerDetail({ params, searchParams }: any) {
                         endTime={infor_auction?.auction_start}
                       />
                       <div className="flex justify-center mb-1">
-
                         <Label>Thời gian đến khi bắt đầu phiên đấu giá</Label>
                       </div>
                     </Card>
@@ -217,7 +220,9 @@ export default function CustomerDetail({ params, searchParams }: any) {
                     endTime={infor_auction?.registration_close}
                   />
                   <div className="flex justify-center mb-1">
-                    <Label className="italic">Thời gian đến khi kết thúc phiên đấu giá</Label>
+                    <Label className="italic">
+                      Thời gian đến khi kết thúc phiên đấu giá
+                    </Label>
                   </div>
                 </Card>
               )}
@@ -235,6 +240,13 @@ export default function CustomerDetail({ params, searchParams }: any) {
                     <span className="font-normal">
                       {" "}
                       {infor_auction?.bidding_increment} vnd
+                    </span>
+                  </p>
+                  <p className="font-bold">
+                    Tiền đặt cọc:{" "}
+                    <span className="font-normal">
+                      {" "}
+                      {infor_auction?.deposit} vnd
                     </span>
                   </p>
                   <p className="font-bold">Bạn đang trả giá: {offer}</p>
@@ -262,11 +274,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
                                 console.log(autionToken);
 
                                 if (onSession) {
-                                  socket.emit(
-                                    "make_offer",
-                                    autionToken,
-                                    offer
-                                  );
+                                  socket.emit("make_offer", autionToken, offer);
                                 }
                               }}
                             >
@@ -320,16 +328,22 @@ export default function CustomerDetail({ params, searchParams }: any) {
                             </AlertDialogTitle>
                             <AlertDialogDescription>
                               Sau khi đăng kí bạn sẽ phải chờ sự phê duyệt từ
-                              đấu giá viên
+                              đấu giá viên và bạn phải đặt cọc số tiền cần thiết
+                              để tham gia
                             </AlertDialogDescription>
                           </AlertDialogHeader>
+                          <Input placeholder="Nhập mã CCV để hoàn tất đặt cọc và đăng ký" />
                           <AlertDialogFooter>
                             <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
                             <AlertDialogAction
                               onClick={async (e) => {
-                                const result = await register_auction(
-                                  id
-                                ).catch(console.error);
+                                const result = await register_auction(id).catch(
+                                  console.error
+                                );
+                                await payDeposit(
+                                  infor_auction?._id,
+                                  infor_auction?.deposit
+                                );
                                 if (result?.status == 200) {
                                   setRegister("NOT_VERIFIED");
                                 }
@@ -398,8 +412,12 @@ export default function CustomerDetail({ params, searchParams }: any) {
             <Card>
               <CardContent className="p-6">
                 <div>
-                  <p className="text-2xl font-bold">Tên tài sản: {infor_auction?.asset?.name}</p>
-                  <p className="text-slate-500 dark:text-slate-400 mt-2">Mô tả tài sản: {infor_auction?.asset?.description}</p>
+                  <p className="text-2xl font-bold">
+                    Tên tài sản: {infor_auction?.asset?.name}
+                  </p>
+                  <p className="text-slate-500 dark:text-slate-400 mt-2">
+                    Mô tả tài sản: {infor_auction?.asset?.description}
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -454,30 +472,22 @@ const CountTime: React.FC<{
     <div className="row-span-2 flex flex-row justify-evenly text-center p-3">
       <div>
         <div className="row-span-1 font-bold">Ngày</div>
-        <div className="text-2xl">
-          {Math.floor(time / 86400)}
-        </div>
+        <div className="text-2xl">{Math.floor(time / 86400)}</div>
       </div>
 
       <div>
         <div className="row-span-1 font-bold">Giờ</div>
-        <div className="text-2xl">
-          {Math.floor(time / 3600) % 24}
-        </div>
+        <div className="text-2xl">{Math.floor(time / 3600) % 24}</div>
       </div>
 
       <div>
         <div className="row-span-1 font-bold">Phút</div>
-        <div className="text-2xl">
-          {Math.floor(time / 60) % 60}
-        </div>
+        <div className="text-2xl">{Math.floor(time / 60) % 60}</div>
       </div>
 
       <div>
         <div className="row-span-1 font-bold">Giây</div>
-        <div className="text-2xl">
-          {time % 60}
-        </div>
+        <div className="text-2xl">{time % 60}</div>
       </div>
     </div>
   );
