@@ -33,7 +33,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Car } from "lucide-react";
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { listBidder, viewAuctionInfo } from "@/app/api/apiEndpoints";
 import { useEffect } from "react";
 import { joinAuctionSession } from "@/app/api/apiEndpoints";
@@ -149,7 +149,10 @@ export default function AuctionDetail({ params }: any) {
           <CardContent className="grid grid-cols-7 gap-4">
             <Card className="bg-cyan-400 col-span-4">Hinh anh</Card>
             <div className=" col-span-3 grid grid-rows-6 gap-4">
-              {CountTime(Date.now(), infor_auction?.auction_start)}
+              <CountTime
+                startTime={infor_auction?.auction_start}
+                endTime={Date.now()}
+              />
               <Card className=" bg-cyan-400 row-span-4">
                 <CardTitle>Đặt giá</CardTitle>
                 <CardContent>
@@ -264,44 +267,38 @@ export default function AuctionDetail({ params }: any) {
   );
 }
 
-function CountTime(startTime: string | number, endTime: string) {
+const CountTime: React.FC<{
+  startTime: string | number;
+  endTime: string | number;
+}> = ({ startTime, endTime }) => {
   const countRef = useRef<any>(null);
-  const [start, setStart] = useState<boolean>(false);
   const DateEnd = new Date(endTime);
   const DateStart = new Date(startTime);
-  const [time, setTime] = useState<number>();
-  // useEffect(() => {
-  //   console.log(234);
-
-  //   setTimeout(() => {
-  //     setStart(true);
-  //   }),
-  //     1000;
-  // }, []);
-  // useEffect(() => {
-  //   if (start) {
-  //     console.log(DateStart.getTime());
-  //     console.log(DateEnd.getTime());
-  //     // countRef.current = setInterval(() => {
-  //     //   setTime(time - 1);
-  //     // }, 1000);
-  //   }
-  // }, [start]);
+  const [time, setTime] = useState<number>(0);
+  useEffect(() => {
+    setTime(
+      Math.floor(Math.abs(DateStart.getTime() - DateEnd.getTime()) / 1000)
+    );
+    countRef.current = setInterval(() => {
+      setTime((time) => time - 1);
+    }, 1000);
+  }, [endTime, startTime]);
   return (
     <Card className=" bg-cyan-400 row-span-2 grid grid-cols-4 text-center">
-      <div className="row-span-1">Day: {time}</div>
-      <div className="row-span-1">Giờ</div>
-      <div>Phút</div>
-      <div>Giây</div>
+      <div className="row-span-1">Day: {Math.floor(time / 86400)}</div>
+      <div className="row-span-1">Giờ: {Math.floor(time / 3600) % 24}</div>
+      <div>Phút: {Math.floor(time / 60) % 60}</div>
+      <div>Giây: {time % 60}</div>
       <button
         onClick={() => {
-          setTime(Math.abs(DateStart.getTime() - DateEnd.getTime()));
-          console.log(time);
-          // console.log(DateEnd.getTime());
+          setTime(
+            Math.floor(Math.abs(DateStart.getTime() - DateEnd.getTime()) / 1000)
+          );
+          console.log(time % 60);
         }}
       >
         Test
       </button>
     </Card>
   );
-}
+};

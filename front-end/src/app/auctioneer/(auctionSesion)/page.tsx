@@ -60,7 +60,6 @@ export default function Page() {
     const fetchData = async (filter: any) => {
       const data = await listAuctionManaging(filter);
       const data_use = await data?.data?.auctions;
-      console.log(data_use);
       update_list_auction(data_use);
     };
     const result = fetchData(debouncedFilter).catch(console.error);
