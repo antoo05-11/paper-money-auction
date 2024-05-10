@@ -83,13 +83,21 @@ export default class ActivityLogController {
                         },
                         {
                             $project: {
-                                _id: 0,
+                                _id: 1,
                                 name: 1
                             }
                         }
                     ],
                     as: 'users'
                 }
+            },
+            {
+                $addFields: {
+                    subject: {
+                        $arrayElemAt: ["$users", 0]
+                    }
+                }
+
             },
             {
                 $match: userMatchQuery
@@ -118,14 +126,14 @@ export default class ActivityLogController {
                         createdAt: 1,
                         objectClass: 1,
                         activityCode: 1,
-                        success: 1
+                        success: 1,
+                        subject: 1
                     }
                 }
             }
         ]);
 
-        let payload = {};
-
+        let payload;
         if (activities.length === 0) {
             payload = {
                 page: pageIndex,
