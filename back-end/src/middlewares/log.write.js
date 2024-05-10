@@ -8,7 +8,7 @@ import userRole from "../constants/user.role";
 export const writeActivityLog = (activityLog) => async (req, res, next) => {
     try {
         if (req.user) activityLog.subjectId = req.user._id;
-        if (req.user.role === userRole.ADMIN) {
+        if (req.user && req.user.role === userRole.ADMIN) {
             next();
             return;
         }

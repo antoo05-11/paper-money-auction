@@ -13,7 +13,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import {Filter} from "lucide-react";
+import {ArrowLeftIcon, ArrowRightIcon, CalendarIcon, Filter} from "lucide-react";
 import {columns} from "./_component/columns";
 import {
     DropdownMenu,
@@ -24,6 +24,11 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {useRouter, usePathname} from 'next/navigation'
+import {Label} from "@/components/ui/label";
+import {cn} from "@/lib/utils";
+import {format} from "date-fns";
+import {Calendar} from "@/components/ui/calendar";
+import {DateRange} from "react-day-picker";
 
 interface CodeMap {
     [key: string]: string;
@@ -59,8 +64,14 @@ export default function Page() {
     const [pageCount, setPageCount] = useState(0);
     const searchParams = useSearchParams();
     const [listLog, setListLog] = useState<logData[]>([]);
+    const [filterSubject, setFilterSubject] = useState("");
+    const [filterActivityCode, setFilterActivityCode] = useState("");
     const [filterSuccess, setFilterSuccess] = useState(true);
     const [filterNotSuccess, setFilterNotSuccess] = useState(true);
+    const [createdAt, setCreatedAt] = useState<DateRange | undefined>({
+        from: undefined,
+        to: undefined,
+    });
     const router = useRouter();
     const pathName = usePathname();
 
@@ -89,11 +100,18 @@ export default function Page() {
     }, [searchParams, limit, page])
 
     useEffect(() => {
+
+        if (createdAt && createdAt.to && createdAt.from && createdAt.from.toString() == createdAt.to.toString()) {
+            createdAt.to.setDate(createdAt.to.getDate() + 1);
+        }
+
         setFilter(prevFilter => ({
             ...prevFilter,
             success: handleFilterVerified(filterSuccess, filterNotSuccess),
+            createdAtFrom: createdAt?.from,
+            createdAtTo: createdAt?.to
         }))
-    }, [filterSuccess, filterNotSuccess]);
+    }, [filterSuccess, filterNotSuccess, createdAt]);
 
     useEffect(() => {
         setLoading(true);
@@ -146,10 +164,27 @@ export default function Page() {
                                         <div className=" items-center gap-4">
                                             <Input
                                                 id="width"
+                                                placeholder="Lọc theo tên thao tác"
+                                                className="h-8"
+                                                defaultValue={filterActivityCode}
+                                                onChange={(e) => {
+                                                    setFilterActivityCode(e.target.value);
+                                                    setFilter(prevFilter => ({
+                                                        ...prevFilter,
+                                                        activityCode: e.target.value,
+                                                    }));
+                                                    router.push(`${pathName}/?page=1&limit=10`);
+                                                }}
+                                            />
+                                        </div>
+                                        <div className=" items-center gap-4">
+                                            <Input
+                                                id="width"
                                                 placeholder="Lọc theo người thực hiện"
                                                 className="h-8"
-                                                defaultValue={""}
+                                                defaultValue={filterSubject}
                                                 onChange={(e) => {
+                                                    setFilterSubject(e.target.value);
                                                     setFilter(prevFilter => ({
                                                         ...prevFilter,
                                                         user: e.target.value,
@@ -185,6 +220,48 @@ export default function Page() {
                                         </div>
                                     </div>
                                 </div>
+                            </PopoverContent>
+                        </Popover>
+
+
+                    </div>
+
+
+                    <div className="flex flex-row gap-2 ml-6 justify-center items-center">
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    id="date"
+                                    variant={"outline"}
+                                    className={cn(
+                                        "w-[300px] justify-start text-left font-normal",
+                                        !createdAt && "text-muted-foreground"
+                                    )}
+                                >
+                                    <CalendarIcon className="mr-2 h-4 w-4"/>
+                                    {createdAt?.from ? (
+                                        createdAt.to ? (
+                                            <>
+                                                {format(createdAt.from, "LLL dd, y")} -{" "}
+                                                {format(createdAt.to, "LLL dd, y")}
+                                            </>
+                                        ) : (
+                                            format(createdAt.from, "LLL dd, y")
+                                        )
+                                    ) : (
+                                        <span>Chọn khoảng thời gian</span>
+                                    )}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                    initialFocus
+                                    mode="range"
+                                    defaultMonth={createdAt?.from}
+                                    selected={createdAt}
+                                    onSelect={setCreatedAt}
+                                    numberOfMonths={2}
+                                />
                             </PopoverContent>
                         </Popover>
                     </div>

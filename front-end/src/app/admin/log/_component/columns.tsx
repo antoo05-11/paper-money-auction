@@ -103,7 +103,11 @@ export const columns: ColumnDef<logData>[] = [
     },
     {
         accessorKey: "createdAt",
-        header: "Thời gian",
+        header: () => (
+            <div className="flex justify-center items-center">
+                Thời gian
+            </div>
+        ),
         cell: TimeCell
     },
     {
