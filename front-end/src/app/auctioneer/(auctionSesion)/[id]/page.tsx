@@ -47,6 +47,13 @@ import {
 import { DataTable } from "@/components/ui/data-table";
 import CompareDate from "@/app/component/function";
 import { Label } from "@radix-ui/react-dropdown-menu";
+import Image from "next/image";
+import path from "path";
+
+const FILE_SERVER_URL =
+  process.env.FILE_SERVER ||
+  "https://muzik-files-server.000webhostapp.com/paper-money-auction-files/asset-docs/";
+
 export default function AuctionDetail({ params }: any) {
   const [isConnected, setIsConnected] = useState(false);
   const id = params.id;
@@ -137,38 +144,59 @@ export default function AuctionDetail({ params }: any) {
     }
   }, [onSession]);
 
+
+  let imageUrl = "";
+  if (infor_auction && infor_auction.asset?.pics && infor_auction.asset?.pics[0]) {
+    imageUrl = `${FILE_SERVER_URL}${infor_auction.asset?.pics[0]._id}${path.extname(
+      infor_auction.asset?.pics[0].name
+    )}`;
+  }
+
   return (
-    <div className="flex flex-col justify-center items-center">
-      <div className="w-[80%] top-0 bot-0">
-        <Card className="top-0 bot-0">
+    <div className="container">
+      <div>
+        <Card>
           <CardHeader>
             <CardTitle>Phiên đấu giá</CardTitle>
             <CardDescription></CardDescription>
           </CardHeader>
-          <CardContent className="grid grid-cols-7 gap-4">
-            <Card className="bg-cyan-400 col-span-4">Hinh anh</Card>
-            <div className=" col-span-3 grid grid-rows-6 gap-4">
+
+          <CardContent className="flex flex-row gap-4">
+            <div className="basis-1/3">
+              <Image
+                src={imageUrl}
+                width={300}
+                height={200}
+                alt=""
+                className="w-full rounded "
+              />
+            </div>
+
+            <div className="basis-2/3">
               {infor_auction?.auction_start && !startSession && (
-                <div>
+                <Card>
                   <CountTime
                     startTime={infor_auction?.auction_start}
                     endTime={Date.now()}
                   />
-                  <Label>Thời gian bắt đầu phiên đấu giá còn</Label>
-                </div>
+                  <div className="flex justify-center mb-1">
+                    <Label>Thời gian bắt đầu phiên đấu giá còn</Label>
+                  </div>
+                </Card>
               )}
               {infor_auction?.auction_end && startSession && (
-                <div>
+                <Card>
                   <CountTime
                     startTime={infor_auction?.auction_end}
                     endTime={Date.now()}
                   />
-                  <Label>Thời gian phiên đấu giá còn</Label>
-                </div>
+                  <div className="flex justify-center mb-1">
+                    <Label>Thời gian phiên đấu giá còn</Label>
+                  </div>
+                </Card>
               )}
-              <Card className=" bg-cyan-400 row-span-4">
-                <CardTitle>Đặt giá</CardTitle>
-                <CardContent>
+              <Card className="mt-3">
+                <CardContent className="p-6">
                   <p>Giá cao nhất hiện tại</p>
                   <p>Người trả giá cao nhất</p>
                   <p>Giá khởi điểm: {infor_auction?.starting_price} vnd</p>
@@ -179,7 +207,7 @@ export default function AuctionDetail({ params }: any) {
                     <div className="w-full">
                       {!onSession && (
                         <AlertDialog>
-                          <AlertDialogTrigger>
+                          <AlertDialogTrigger asChild>
                             <Button className="w-full">
                               Bắt đầu phiên đấu giá
                             </Button>
@@ -240,7 +268,7 @@ export default function AuctionDetail({ params }: any) {
           </CardContent>
           <CardFooter className="flex flex-col"></CardFooter>
         </Card>
-        <Tabs>
+        <Tabs defaultValue="describe">
           <TabsList>
             {startSession && (
               <TabsTrigger value="history">Lịch sử đặt giá</TabsTrigger>
@@ -278,8 +306,41 @@ export default function AuctionDetail({ params }: any) {
               />
             )}
           </TabsContent>
-          <TabsContent value="describe">Change your password here.</TabsContent>
-          <TabsContent value="document">Change your password here.</TabsContent>
+          <TabsContent value="describe">
+            <Card>
+              <CardContent className="p-6">
+                <div>
+                  <p className="text-2xl font-bold">
+                    Tên tài sản: {infor_auction?.asset?.name}
+                  </p>
+                  <p className="text-slate-500 dark:text-slate-400 mt-2">
+                    Mô tả tài sản: {infor_auction?.asset?.description}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="document">
+            <Card>
+              <CardContent className="p-6">
+                {infor_auction?.asset?.docs.map(
+                  (doc: { name: string; _id: string }) => (
+                    <div key={doc._id} className="underline">
+                      <a
+                        href={`${FILE_SERVER_URL}/${doc._id}${path.extname(
+                          doc.name
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {doc.name}
+                      </a>
+                    </div>
+                  )
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
     </div>
@@ -306,11 +367,34 @@ const CountTime: React.FC<{
     }
   }, []);
   return (
-    <Card className=" bg-cyan-400 row-span-2 grid grid-cols-4 text-center">
-      <div className="row-span-1">Day: {Math.floor(time / 86400)}</div>
-      <div className="row-span-1">Giờ: {Math.floor(time / 3600) % 24}</div>
-      <div>Phút: {Math.floor(time / 60) % 60}</div>
-      <div>Giây: {time % 60}</div>
-    </Card>
+    <div className="row-span-2 flex flex-row justify-evenly text-center p-3">
+      <div>
+        <div className="row-span-1 font-bold">Ngày</div>
+        <div className="text-2xl">
+          {Math.floor(time / 86400)}
+        </div>
+      </div>
+
+      <div>
+        <div className="row-span-1 font-bold">Giờ</div>
+        <div className="text-2xl">
+          {Math.floor(time / 3600) % 24}
+        </div>
+      </div>
+
+      <div>
+        <div className="row-span-1 font-bold">Phút</div>
+        <div className="text-2xl">
+          {Math.floor(time / 60) % 60}
+        </div>
+      </div>
+
+      <div>
+        <div className="row-span-1 font-bold">Giây</div>
+        <div className="text-2xl">
+          {time % 60}
+        </div>
+      </div>
+    </div>
   );
 };

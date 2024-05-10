@@ -68,8 +68,8 @@ export default function Page() {
     setFilter((prev) => ({ ...prev, verified: filterVerified }));
   }, [filterVerified]);
   return (
-    <div className="flex flex-col justify-center items-center mt-10">
-      <div className="w-[80%]">
+    <div className="container">
+      <div>
         <div className="flex justify-between mb-5">
           <div className="flex flex-row">
             <div>
