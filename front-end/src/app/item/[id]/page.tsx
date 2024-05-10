@@ -158,7 +158,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
           </CardHeader>
 
           <CardContent className="grid grid-cols-8 gap-4">
-            <Card className="col-span-2">
+            <div className="col-span-2">
               <Image
                 src="/demoimage.jpg"
                 width={300}
@@ -166,38 +166,46 @@ export default function CustomerDetail({ params, searchParams }: any) {
                 alt=""
                 className="w-full rounded "
               />
-            </Card>
-            <div className=" col-span-3 grid grid-rows-6 gap-4">
+            </div>
+
+            <div className=" col-span-3 grid grid-rows-1 gap-4">
               {infor_auction?.auction_start && (
-                <div>
+                <>
                   {!startSession && !timeRegister && (
-                    <div>
+                    <Card>
                       <CountTime
                         startTime={Date.now()}
                         endTime={infor_auction?.auction_start}
                       />
-                      <Label>Thời gian đến khi bắt đầu phiên đấu giá</Label>
-                    </div>
+                      <div className="flex justify-center mb-1">
+
+                        <Label>Thời gian đến khi bắt đầu phiên đấu giá</Label>
+                      </div>
+                    </Card>
                   )}
-                </div>
+                </>
               )}
               {startSession && infor_auction?.auction_end && (
-                <div>
+                <Card>
                   <CountTime
                     startTime={Date.now()}
                     endTime={infor_auction?.auction_end}
                   />
-                  <Label>Thời gian đến khi kết thúc phiên đấu giá</Label>
-                </div>
+                  <div>
+                    <Label>Thời gian đến khi kết thúc phiên đấu giá</Label>
+                  </div>
+                </Card>
               )}
               {timeRegister && infor_auction?.registration_close && (
-                <div>
+                <Card>
                   <CountTime
                     startTime={Date.now()}
                     endTime={infor_auction?.registration_close}
                   />
-                  <Label>Thời gian đăng ký</Label>
-                </div>
+                  <div className="flex justify-center mb-1">
+                    <Label className="italic">Thời gian đến khi kết thúc phiên đấu giá</Label>
+                  </div>
+                </Card>
               )}
               <Card className="row-span-4">
                 <CardContent className="p-6">
@@ -216,127 +224,130 @@ export default function CustomerDetail({ params, searchParams }: any) {
                     </span>
                   </p>
                   <p className="font-bold">Bạn đang trả giá: {offer}</p>
-                  {startSession && (
-                    <div className="mt-4">
-                      {registered == "VERIFIED" && (
-                        <div>
-                          {onSession && (
-                            <div className="grid grid-cols-4">
-                              <Input
-                                type="number"
-                                className="col-span-3"
-                                ref={inputOffer}
-                                onChange={(e) => {
-                                  setOffer(e.target.value);
-                                }}
-                              />
-                              <Button
-                                className="col-span-1"
-                                onClick={() => {
-                                  console.log(autionToken);
+                </CardContent>
+              </Card>
 
-                                  if (onSession) {
-                                    socket.emit(
-                                      "make_offer",
-                                      autionToken,
-                                      offer
-                                    );
-                                  }
-                                }}
-                              >
-                                Trả giá
-                              </Button>
-                            </div>
-                          )}
-                          {!onSession && (
+              <div>
+                {startSession && (
+                  <div className="mt-4">
+                    {registered == "VERIFIED" && (
+                      <div>
+                        {onSession && (
+                          <div className="grid grid-cols-4">
+                            <Input
+                              type="number"
+                              className="col-span-3"
+                              ref={inputOffer}
+                              onChange={(e) => {
+                                setOffer(e.target.value);
+                              }}
+                            />
                             <Button
-                              className="w-full"
-                              onClick={(e) => {
-                                setOnSession(true);
+                              className="col-span-1"
+                              onClick={() => {
+                                console.log(autionToken);
+
+                                if (onSession) {
+                                  socket.emit(
+                                    "make_offer",
+                                    autionToken,
+                                    offer
+                                  );
+                                }
                               }}
                             >
-                              Tham gia phiên đấu giá
+                              Trả giá
                             </Button>
-                          )}
-                        </div>
-                      )}
-                      {registered != "VERIFIED" && (
-                        <Button className="w-full">
-                          Đã quá thời hạn đăng kí tham gia
-                        </Button>
-                      )}
-                    </div>
-                  )}
-                  {!startSession &&
-                    !timeRegister &&
-                    (registered == "VERIFIED" ? (
-                      <Button className="w-full">Đăng ký thành công</Button>
-                    ) : registered == "NOT_REGISTERED_YET" ? (
+                          </div>
+                        )}
+                        {!onSession && (
+                          <Button
+                            className="w-full"
+                            onClick={(e) => {
+                              setOnSession(true);
+                            }}
+                          >
+                            Tham gia phiên đấu giá
+                          </Button>
+                        )}
+                      </div>
+                    )}
+                    {registered != "VERIFIED" && (
                       <Button className="w-full">
                         Đã quá thời hạn đăng kí tham gia
                       </Button>
-                    ) : (
-                      <Button className="w-full">Đang chờ phê duyệt</Button>
-                    ))}
-                  {timeRegister && (
-                    <div>
-                      {registered === "NOT_REGISTERED_YET" && (
-                        <AlertDialog>
-                          <AlertDialogTrigger>
-                            <Button className="col-span-1 w-full">
-                              Đăng kí tham gia đấu giá
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Bạn có chắc chắn muốn tham gia phiên đấu giá này
-                              </AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Sau khi đăng kí bạn sẽ phải chờ sự phê duyệt từ
-                                đấu giá viên
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={async (e) => {
-                                  const result = await register_auction(
-                                    id
-                                  ).catch(console.error);
-                                  if (result?.status == 200) {
-                                    setRegister("NOT_VERIFIED");
-                                  }
-                                }}
-                              >
-                                Đồng ý
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      )}
-                      {registered === "NOT_VERIFIED" && (
-                        <Button disabled className="col-span-1 w-full">
-                          Chờ phê duyệt
-                        </Button>
-                      )}
-                      {registered === "VERIFIED" && (
-                        <Button disabled className="col-span-1 w-full">
-                          Bạn đã đăng ký
-                        </Button>
-                      )}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+                    )}
+                  </div>
+                )}
+                {!startSession &&
+                  !timeRegister &&
+                  (registered == "VERIFIED" ? (
+                    <Button className="w-full">Đăng ký thành công</Button>
+                  ) : registered == "NOT_REGISTERED_YET" ? (
+                    <Button className="w-full">
+                      Đã quá thời hạn đăng kí tham gia
+                    </Button>
+                  ) : (
+                    <Button className="w-full">Đang chờ phê duyệt</Button>
+                  ))}
+                {timeRegister && (
+                  <div>
+                    {registered === "NOT_REGISTERED_YET" && (
+                      <AlertDialog>
+                        <AlertDialogTrigger className="w-full">
+                          <Button className="w-full">
+                            Đăng kí tham gia đấu giá
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Bạn có chắc chắn muốn tham gia phiên đấu giá này
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Sau khi đăng kí bạn sẽ phải chờ sự phê duyệt từ
+                              đấu giá viên
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={async (e) => {
+                                const result = await register_auction(
+                                  id
+                                ).catch(console.error);
+                                if (result?.status == 200) {
+                                  setRegister("NOT_VERIFIED");
+                                }
+                              }}
+                            >
+                              Đồng ý
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
+                    {registered === "NOT_VERIFIED" && (
+                      <Button disabled className="col-span-1 w-full">
+                        Chờ phê duyệt
+                      </Button>
+                    )}
+                    {registered === "VERIFIED" && (
+                      <Button disabled className="col-span-1 w-full">
+                        Bạn đã đăng ký
+                      </Button>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="col-span-3 h-full bottom-0">
-              <Card className="overflow-scroll bottom-0 h-full">
+            <div className="col-span-3">
+              <Card className="bottom-0 h-full">
                 <CardHeader>
                   <CardTitle className="text-base">Lịch sử đặt giá</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className=" ">
                   <DataTable
                     columns={bidding_act}
                     data={bidding_history}
@@ -348,7 +359,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
           </CardContent>
           <CardFooter className="flex flex-col"></CardFooter>
         </Card>
-        <Tabs>
+        <Tabs defaultValue="describe" className="mb-9">
           <TabsList>
             <TabsTrigger value="history">Lịch sử đặt giá</TabsTrigger>
             <TabsTrigger value="inform">Thông tin đấu giá</TabsTrigger>
@@ -369,7 +380,16 @@ export default function CustomerDetail({ params, searchParams }: any) {
               pageCount={1}
             />
           </TabsContent>
-          <TabsContent value="describe">Change your password here.</TabsContent>
+          <TabsContent value="describe">
+            <Card>
+              <CardContent className="p-6">
+                <div>
+                  <p className="text-2xl font-bold">Tên tài sản: {infor_auction?.asset?.name}</p>
+                  <p className="text-slate-500 dark:text-slate-400 mt-2">Mô tả tài sản: {infor_auction?.asset?.description}</p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
           <TabsContent value="document">Change your password here.</TabsContent>
         </Tabs>
       </div>
@@ -397,11 +417,34 @@ const CountTime: React.FC<{
     }
   }, []);
   return (
-    <Card className=" bg-cyan-400 row-span-2 grid grid-cols-4 text-center">
-      <div className="row-span-1">Day: {Math.floor(time / 86400)}</div>
-      <div className="row-span-1">Giờ: {Math.floor(time / 3600) % 24}</div>
-      <div>Phút: {Math.floor(time / 60) % 60}</div>
-      <div>Giây: {time % 60}</div>
-    </Card>
+    <div className="row-span-2 flex flex-row justify-evenly text-center p-3">
+      <div>
+        <div className="row-span-1 font-bold">Ngày</div>
+        <div className="text-2xl">
+          {Math.floor(time / 86400)}
+        </div>
+      </div>
+
+      <div>
+        <div className="row-span-1 font-bold">Giờ</div>
+        <div className="text-2xl">
+          {Math.floor(time / 3600) % 24}
+        </div>
+      </div>
+
+      <div>
+        <div className="row-span-1 font-bold">Phút</div>
+        <div className="text-2xl">
+          {Math.floor(time / 60) % 60}
+        </div>
+      </div>
+
+      <div>
+        <div className="row-span-1 font-bold">Giây</div>
+        <div className="text-2xl">
+          {time % 60}
+        </div>
+      </div>
+    </div>
   );
 };

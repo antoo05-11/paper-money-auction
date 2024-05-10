@@ -394,15 +394,6 @@ const VerifyBidder: React.FC<{ auction_id: any; bidder_id: any }> = ({
 
 export const bidding_act: ColumnDef<any>[] = [
   {
-    accessorKey: "stt",
-    header: () => <div className="flex justify-center items-center"> STT </div>,
-    cell: ({ row }) => (
-      <div className="flex justify-center items-center">
-        <span> {row.index + 1}</span>
-      </div>
-    ),
-  },
-  {
     accessorKey: "alias",
     header: () => (
       <div className="flex justify-center items-center">Bí danh</div>
@@ -412,17 +403,6 @@ export const bidding_act: ColumnDef<any>[] = [
         <div className="flex justify-center items-center">
           {row.original?.user?.alias}
         </div>
-      );
-    },
-  },
-  {
-    accessorKey: "penalty",
-    header: () => <div className="flex justify-center items-center">Phạt</div>,
-    cell: ({ row }) => {
-      return row.original?.user?.penalty ? (
-        <div className="flex justify-center items-center">Có</div>
-      ) : (
-        <div className="flex justify-center items-center">Không</div>
       );
     },
   },
