@@ -179,9 +179,8 @@ export default function LoginForm() {
                     />
                     <Button
                       type="submit"
-                      className={`w-full ${
-                        loadingMessage == "Thành công" ? "bg-lime-600" : ""
-                      }`}
+                      className={`w-full ${loadingMessage == "Thành công" ? "bg-lime-600" : ""
+                        }`}
                       disabled={loadingMessage != "Đăng nhập"}
                     >
                       {loadingMessage}

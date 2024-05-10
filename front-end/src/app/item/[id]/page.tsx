@@ -48,6 +48,8 @@ import { Label } from "@/components/ui/label";
 import HistoryBiddingTable from "../_component/HistoryBiddingTable";
 import BidderAttedTable from "../_component/BidderAttendTable";
 import CompareDate from "@/app/component/function";
+import Image from "next/image";
+
 export default function CustomerDetail({ params, searchParams }: any) {
   const { toast } = useToast();
   const id = params.id;
@@ -140,47 +142,36 @@ export default function CustomerDetail({ params, searchParams }: any) {
   }, [onSession]);
 
   return (
-    <div className="flex flex-col justify-center items-center">
-      <Button
-        onClick={() => {
-          const hihi = new Date(Date.now());
-          console.log(hihi);
-          toast({
-            title: "Scheduled: Catch up ",
-            description: "Friday, February 10, 2023 at 5:57 PM",
-            action: (
-              <ToastAction altText="Goto schedule to undo">Undo</ToastAction>
-            ),
-          });
-        }}
-      >
-        Test
-      </Button>
-      <div className="w-[80%] top-0 bot-0">
-        <Card className="top-0 bot-0">
+    <div className="pt-24 container">
+      <div>
+        <Card>
           <CardHeader>
             <CardTitle>Phiên đấu giá</CardTitle>
             <CardDescription></CardDescription>
           </CardHeader>
-          <CardContent className="grid grid-cols-7 gap-4">
-            <Card className="bg-cyan-400 col-span-4">Hinh anh</Card>
+
+          <CardContent className="grid grid-cols-8 gap-4">
+            <Card className="col-span-2" >
+              <Image src="/demoimage.jpg" width={300} height={200} alt="" className="w-full rounded" />
+            </Card>
             <div className=" col-span-3 grid grid-rows-6 gap-4">
-              <Card className=" bg-cyan-400 row-span-2 grid grid-cols-3 text-center">
+              <Card className=" row-span-2 grid grid-cols-3 text-center">
                 <div className="row-span-1">Giờ</div>
                 <div>Phút</div>
                 <div>Giây</div>
               </Card>
-              <Card className=" bg-cyan-400 row-span-4">
-                <CardTitle>Dat gia</CardTitle>
-                <CardContent>
-                  <p>Giá cao nhất hiện tại: </p>
-                  <p>Giá khởi điểm: {infor_auction?.starting_price} vnd</p>
-                  <p>
-                    Bước giá tối thiểu: {infor_auction?.bidding_increment} vnd
+              <Card className="row-span-4">
+
+
+                <CardContent className="p-6">
+                  <p className="font-bold">Giá cao nhất hiện tại: </p>
+                  <p className="font-bold">Giá khởi điểm: <span className="font-normal">{infor_auction?.starting_price} vnd</span> </p>
+                  <p className="font-bold">
+                    Bước giá tối thiểu: <span className="font-normal"> {infor_auction?.bidding_increment} vnd</span>
                   </p>
-                  <p>Bạn đang trả giá: {offer}</p>
+                  <p className="font-bold">Bạn đang trả giá: {offer}</p>
                   {startSession && (
-                    <div>
+                    <div className="mt-4">
                       {registered == "VERIFIED" && (
                         <div>
                           {onSession && (
@@ -282,6 +273,19 @@ export default function CustomerDetail({ params, searchParams }: any) {
                 </CardContent>
               </Card>
             </div>
+
+            <div className="col-span-3 h-full bottom-0">
+              <Card className="overflow-scroll bottom-0 h-full">
+                <CardHeader>
+                  <CardTitle className="text-base">Lịch sử đặt giá</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <HistoryBiddingTable
+                    list_bid={bidding_history}
+                  ></HistoryBiddingTable>
+                </CardContent>
+              </Card>
+            </div>
           </CardContent>
           <CardFooter className="flex flex-col"></CardFooter>
         </Card>
@@ -310,4 +314,4 @@ export default function CustomerDetail({ params, searchParams }: any) {
   );
 }
 
-function CountTime(endTime: any) {}
+function CountTime(endTime: any) { }
