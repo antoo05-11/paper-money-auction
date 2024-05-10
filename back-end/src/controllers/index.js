@@ -3,6 +3,7 @@ import auth from "../middlewares/auth";
 import errorCatch from "../middlewares/error.catch";
 import validate from "../middlewares/validate";
 import upload from "../middlewares/file.upload";
+import {writeActivityLog} from "../middlewares/log.write";
 
 export default function (router, apis) {
     apis.forEach((element) => {
@@ -15,6 +16,7 @@ export default function (router, apis) {
             const verified = e.verified;
             const schema = e.schema;
             const files = e.files;
+            const initialLog = e.initialLog;
 
             const middlewares = [];
             if (!_.isEmpty(roles)) {
@@ -27,6 +29,10 @@ export default function (router, apis) {
 
             if (!_.isEmpty(schema)) {
                 middlewares.push(validate(schema));
+            }
+
+            if (initialLog) {
+                middlewares.push(writeActivityLog(initialLog));
             }
 
             middlewares.push(errorCatch(controller, method));
