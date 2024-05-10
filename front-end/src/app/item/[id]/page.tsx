@@ -45,8 +45,6 @@ import { useEffect } from "react";
 import { joinAuctionSession } from "@/app/api/apiEndpoints";
 import { socket } from "@/app/socket";
 import { Label } from "@/components/ui/label";
-import HistoryBiddingTable from "../_component/HistoryBiddingTable";
-import BidderAttedTable from "../_component/BidderAttendTable";
 import CompareDate from "@/app/component/function";
 import Image from "next/image";
 import { DataTable } from "@/components/ui/data-table";
@@ -339,9 +337,11 @@ export default function CustomerDetail({ params, searchParams }: any) {
                   <CardTitle className="text-base">Lịch sử đặt giá</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <HistoryBiddingTable
-                    list_bid={bidding_history}
-                  ></HistoryBiddingTable>
+                  <DataTable
+                    columns={bidding_act}
+                    data={bidding_history}
+                    pageCount={1}
+                  />
                 </CardContent>
               </Card>
             </div>
@@ -356,9 +356,6 @@ export default function CustomerDetail({ params, searchParams }: any) {
             <TabsTrigger value="document">Tài liệu liên quan</TabsTrigger>
           </TabsList>
           <TabsContent value="history">
-            <HistoryBiddingTable
-              list_bid={bidding_history}
-            ></HistoryBiddingTable>
             <DataTable
               columns={bidding_act}
               data={bidding_history}
