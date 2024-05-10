@@ -98,7 +98,7 @@ export default function ListItem() {
       )}
       {!isLoading && (
         <div className="pt-20 pb-10 container grid grid-cols-8 gap-4">
-          <div className="col-span-3 p-8">
+          <div className="p-8 fixed">
             <div className="bg-card p-8 border shadow rounded-lg flex flex-col gap-4">
               <h1 className="font-bold text-2xl">Tìm kiếm</h1>
               <Input
@@ -199,12 +199,13 @@ export default function ListItem() {
             </div>
           </div>
 
+          <div className="col-span-3"></div>
           <div className="col-span-5">
             {listItem?.map((e: any) => {
               return <CardItem infor_auction={e} key={e._id} />;
             })}
 
-            <Pagination>
+            {/* <Pagination>
               <PaginationContent>
                 <PaginationItem></PaginationItem>
                 {[...Array(totalPage)].map((_, index) => (
@@ -216,7 +217,7 @@ export default function ListItem() {
                 ))}
                 <PaginationItem></PaginationItem>
               </PaginationContent>
-            </Pagination>
+            </Pagination> */}
           </div>
         </div>
       )}
@@ -243,7 +244,11 @@ function CardItem({ infor_auction }: any) {
         <div className="flex flex-col gap-2">
           <h1 className="font-bold text-3xl">{infor_auction?.asset?.name}</h1>
           <p className="text-slate-500 dark:text-slate-400">
-            Mô tả sản phẩm: Tiền rất đẹp
+            Mô tả sản phẩm: {infor_auction?.asset?.description}
+          </p>
+          <p className="text-slate-500 dark:text-slate-400">
+            Thời gian mở đăng kí:{" "}
+            {new Date(infor_auction.registration_open).toLocaleString()}
           </p>
           <p className="text-slate-500 dark:text-slate-400">
             Thời gian mở đấu giá:{" "}
