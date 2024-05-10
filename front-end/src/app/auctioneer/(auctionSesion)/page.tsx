@@ -182,7 +182,7 @@ export default function Page() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col justify-center items-center my-7 container">
+      <div>
         {list_auction && (
           <DataTable
             columns={columns_auctions}

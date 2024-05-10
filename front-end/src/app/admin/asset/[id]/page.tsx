@@ -129,6 +129,7 @@ export default function Page({ params, searchParams }: any) {
       infor_asset.pics[0].name
     )}`;
   }
+  console.log(imageUrl)
 
   return (
     <div className="container">
