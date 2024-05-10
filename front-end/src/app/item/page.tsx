@@ -33,6 +33,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { CalendarIcon } from "lucide-react";
+import path from "path";
+
+const FILE_SERVER_URL =
+  process.env.FILE_SERVER ||
+  "https://muzik-files-server.000webhostapp.com/paper-money-auction-files/asset-docs/";
 
 export default function ListItem() {
   const [listItem, setListItem] = useState<any>(null);
@@ -159,7 +164,15 @@ export default function ListItem() {
 }
 
 function CardItem({ infor_auction }: any) {
-  console.log(infor_auction);
+  console.log("Hello", infor_auction)
+  let imageUrl = "";
+  if (infor_auction && infor_auction.asset?.pics && infor_auction.asset?.pics[0]) {
+    imageUrl = `${FILE_SERVER_URL}${infor_auction.asset?.pics[0]._id}${path.extname(
+      infor_auction.asset?.pics[0].name
+    )}`;
+  }
+
+  console.log(imageUrl)
 
   const route = useRouter();
   const path_name = usePathname();
@@ -168,7 +181,7 @@ function CardItem({ infor_auction }: any) {
       <div className="p-8 flex flex-col justify-between">
         <div className="flex flex-col gap-2">
           <h1 className="font-bold text-3xl">{infor_auction?.asset?.name}</h1>
-          <p className="text-slate-500 dark:text-slate-400">Mô tả sản phẩm: Tiền rất đẹp</p>
+          <p className="text-slate-500 dark:text-slate-400">Mô tả sản phẩm: {infor_auction?.asset?.description}</p>
           <p className="text-slate-500 dark:text-slate-400">Thời gian mở đấu giá: {new Date(infor_auction.auction_start).toLocaleString()}</p>
           <Button
             className="w-1/2 mt-3"
@@ -181,7 +194,7 @@ function CardItem({ infor_auction }: any) {
         </div>
       </div>
       <div className="w-3/12">
-        <Image src={"/demoimage.jpg"} alt="Image" width={200} height={300} className="w-full h-full rounded-r-lg" />
+        <Image src={imageUrl} alt="Image" width={200} height={300} className="w-full h-full rounded-r-lg" />
       </div>
     </div>
   );

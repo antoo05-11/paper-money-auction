@@ -152,7 +152,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
 
           <CardContent className="grid grid-cols-8 gap-4">
             <Card className="col-span-2" >
-              <Image src="/demoimage.jpg" width={300} height={200} alt="" className="w-full rounded" />
+              <Image src="/demoimage.jpg" width={300} height={200} alt="" className="w-full rounded " />
             </Card>
             <div className=" col-span-3 grid grid-rows-6 gap-4">
               <Card className=" row-span-2 grid grid-cols-3 text-center">
