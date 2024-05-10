@@ -27,6 +27,9 @@ class MailService extends Service {
             sendAuthCodeTemplate: this.#readMailTemplate(
                 "send_auth_code_template.html"
             ),
+            sendVerifyCodeTemplate: this.#readMailTemplate(
+                "send_verify_code_template.html"
+            ),
         };
     }
 
@@ -80,7 +83,10 @@ class MailService extends Service {
             from: this.#config.auth.user,
             to: mailAddress,
             subject: "Verification for Paper Money Auction account!",
-            text: `To verify your account, enter this code on the verification page: ${code}. Thanks!`,
+            html: this.#mailTemplates.sendVerifyCodeTemplate.replace(
+                "{{code}}",
+                code
+            ),
         };
         await this.#sendMessage(mailOption);
     };
