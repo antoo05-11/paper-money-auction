@@ -24,17 +24,29 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import AuctionSessionTable from "@/app/auctioneer/_component/AuctionSessionTable";
 import { useEffect, useState } from "react";
-import { getUserProfileByID } from "@/app/api/apiEndpoints";
+import { getUserProfileByID, suspenUser } from "@/app/api/apiEndpoints";
 import { userData, auctionData } from "@/lib/constant/dataInterface";
 import { listAuctionManaging } from "@/app/api/apiEndpoints";
 import { DataTable } from "@/components/ui/data-table";
 import { columns } from "@/app/auctioneer/(auctionSesion)/_component/columns";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { HTTP_STATUS } from "@/lib/constant/constant";
+import { toast } from "sonner";
 
 export default function StaffDetail({ params, searchParams }: any) {
   const id = params.id;
   const [user, setUser] = useState<userData>();
   const [pageCount, setPageCount] = useState(0);
   const [listItem, setListItem] = useState<auctionData[]>([]);
+  const [isActive, setActive] = useState();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,6 +75,34 @@ export default function StaffDetail({ params, searchParams }: any) {
     }
     fetchData();
   }, [id])
+
+  const handleSuspendUser = (active: any) => {
+    console.log(user?.active)
+    if (active === "true") {
+      console.log("okela")
+      suspenUser(user?._id as String, { "active": true }).then((res) => {
+        if (res.status == HTTP_STATUS.OK) {
+          toast.success("Bỏ đình chỉ người dùng thành công !")
+        }
+      })
+        .catch((err) => {
+          console.log(err);
+          toast.error("Vui lòng thử lại.");
+        });
+    }
+    if (active === "false") {
+      console.log("okela111")
+      suspenUser(user?._id as String, { "active": false }).then((res) => {
+        if (res.status == HTTP_STATUS.OK) {
+          toast.success("Đình chỉ người dùng thành công !")
+        }
+      })
+        .catch((err) => {
+          console.log(err);
+          toast.error("Vui lòng thử lại.");
+        });
+    }
+  }
 
   return (
     <div className="container">
@@ -97,7 +137,18 @@ export default function StaffDetail({ params, searchParams }: any) {
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="phone">Trạng thái</Label>
-                <Input id="phone" defaultValue={user?.active ? 'Hoạt động' : 'Đình chỉ'} disabled className="rounded-full" />
+                {/* <Input id="phone" defaultValue={user?.active ? 'Hoạt động' : 'Đình chỉ'} className="rounded-full" /> */}
+                <Select defaultValue={user?.active?.toString()} onValueChange={(e) => { handleSuspendUser(e) }}>
+                  <SelectTrigger className="w-full rounded-full">
+                    <SelectValue placeholder="" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="true">Hoạt động</SelectItem>
+                      <SelectItem value="false">Đình chỉ</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="email">Xác minh</Label>

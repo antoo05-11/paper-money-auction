@@ -1,6 +1,8 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/lib/auth/useAuth";
 import {
   Card,
   CardContent,
@@ -33,77 +35,172 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Car } from "lucide-react";
-import { useState } from "react";
-import { viewAuctionInfo } from "@/app/api/apiEndpoints";
+import { useRef, useState } from "react";
+import {
+  checkParticipation,
+  register_auction,
+  viewAuctionInfo,
+} from "@/app/api/apiEndpoints";
 import { useEffect } from "react";
 import { joinAuctionSession } from "@/app/api/apiEndpoints";
-import Image from "next/image"
-
-export default function Page({ params, searchParams }: any) {
+import { socket } from "@/app/socket";
+import { Label } from "@/components/ui/label";
+import HistoryBiddingTable from "../_component/HistoryBiddingTable";
+import BidderAttedTable from "../_component/BidderAttendTable";
+export default function CustomerDetail({ params, searchParams }: any) {
+  const { toast } = useToast();
   const id = params.id;
-  const [infor_auction, set_infor_auction] = useState();
-  const [startSession, setStartSession] = useState(false);
-  const [onSession, setOnSession] = useState(false);
-  const [registered, setRegister] = useState(false);
-  const [autionToken, setAutionToken] = useState();
+  const use_auth = useAuth();
+  const [isConnected, setIsConnected] = useState(false);
+  const [infor_auction, set_infor_auction] = useState<any>();
+  const [startSession, setStartSession] = useState(true);
+  const [onSession, setOnSession] = useState<boolean>();
+  const [registered, setRegister] = useState<string>();
+  const [autionToken, setAutionToken] = useState<string>();
+  const [bidding_history, update_bidding_history] = useState<any>([]);
+  const [list_bidder_attend, update_list_bidder_attend] = useState<any>([]);
+  const [offer, setOffer] = useState<any>();
+  const inputOffer = useRef<any>();
   useEffect(() => {
     const fetchData = async () => {
       const data_get = await viewAuctionInfo(id);
-      // const json = await data_get.json()
       const data_use = await data_get.data;
-      // console.log(data_use);
-
       set_infor_auction(data_use);
     };
-    const result = fetchData()
-      // make sure to catch any error
-      .catch(console.error);
+    const checkStatusParticipation = async () => {
+      const checkRegister = await checkParticipation(id);
+      const register_use = await checkRegister?.data?.status;
+      setRegister(register_use);
+    };
+    fetchData().catch(console.error);
+    checkStatusParticipation().catch(console.error);
   }, []);
 
   useEffect(() => {
     const getAuctionToken = async (id: any) => {
-      const token = await joinAuctionSession(id);
-      setAutionToken(token.data);
+      const data_use = await joinAuctionSession(id);
+      const token: string = await data_use.data.data?.token?.replace(
+        "Bearer ",
+        ""
+      );
+      setAutionToken(token);
     };
+    function onConnect() {
+      setIsConnected(true);
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+      // setTransport("N/A");
+    }
+    const result = getAuctionToken(id).catch(console.error);
     if (onSession) {
-      const result = getAuctionToken(id).catch(console.error);
+      socket.connect();
+
+      socket.on("connect", onConnect);
+      socket.on("disconnect", onDisconnect);
+      socket.on("socket_error", (message) => {
+        console.log("socket_error: ", message);
+      });
+      socket.on("join_session_response", (response) => {
+        console.log("join_session_response");
+        console.log(response);
+      });
+      socket.on("attendees_update", (response) => {
+        console.log("attendees_update: " + response);
+        update_list_bidder_attend(JSON.parse(response));
+      });
+      socket.on("make_offer_response", (message) => {
+        console.log("make_offer_response");
+        console.log(message);
+      });
+      socket.on("biddings_update", (message) => {
+        console.log("biddings_update");
+        console.log(message);
+        update_bidding_history(message);
+      });
+
+      socket.emit("join_session", autionToken);
+      return () => {
+        socket.off("connect", onConnect);
+        socket.off("disconnect", onDisconnect);
+        socket.off("socket_error");
+        socket.off("join_session_response");
+        socket.off("attendees_update");
+        socket.off("make_offer_response");
+        socket.off("biddings_update");
+      };
     }
   }, [onSession]);
   return (
-    <div className="container pt-24 mb-3.5">
-      <div>
-        <Card>
+    <div className="flex flex-col justify-center items-center">
+      <Button
+        onClick={() => {
+          console.log(autionToken);
+          toast({
+            title: "Scheduled: Catch up ",
+            description: "Friday, February 10, 2023 at 5:57 PM",
+            action: (
+              <ToastAction altText="Goto schedule to undo">Undo</ToastAction>
+            ),
+          });
+        }}
+      >
+        Test
+      </Button>
+      <div className="w-[80%] top-0 bot-0">
+        <Card className="top-0 bot-0">
           <CardHeader>
             <CardTitle>Phiên đấu giá</CardTitle>
             <CardDescription></CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-7 gap-4">
-            <div className="flex justify-center col-span-3">
-              <Image src={"/demoimage.jpg"} alt="Image" width={200} height={300} className="w-full rounded-lg" />
-            </div>
-
-            <div className="col-span-4 grid grid-rows-6 gap-4">
+            <Card className="bg-cyan-400 col-span-4">Hinh anh</Card>
+            <div className=" col-span-3 grid grid-rows-6 gap-4">
               <Card className=" bg-cyan-400 row-span-2 grid grid-cols-3 text-center">
                 <div className="row-span-1">Giờ</div>
                 <div>Phút</div>
                 <div>Giây</div>
               </Card>
-              <Card className=" bg-cyan-400 row-span-4 p-6">
+              <Card className=" bg-cyan-400 row-span-4">
                 <CardTitle>Dat gia</CardTitle>
                 <CardContent>
-                  <p>Gia cao nhat hien tai</p>
-                  <p>Gia khoi diem</p>
-                  <p>Buoc gia</p>
-                  <p>Gia cao nhat cua ban</p>
-                  <p>Ban dang tra gia</p>
+                  <p>Giá cao nhất hiện tại: </p>
+                  <p>Giá khởi điểm: {infor_auction?.starting_price} vnd</p>
+                  <p>
+                    Bước giá tối thiểu: {infor_auction?.bidding_increment} vnd
+                  </p>
+                  <p>Bạn đang trả giá: {offer}</p>
                   {startSession && (
                     <div>
-                      {registered && (
+                      {registered == "VERIFIED" && (
                         <div>
                           {onSession && (
                             <div className="grid grid-cols-4">
-                              <Input type="number" className="col-span-3" />
-                              <Button className="col-span-1">Trả giá</Button>
+                              <Input
+                                type="number"
+                                className="col-span-3"
+                                ref={inputOffer}
+                                onChange={(e) => {
+                                  setOffer(e.target.value);
+                                }}
+                              />
+                              <Button
+                                className="col-span-1"
+                                onClick={() => {
+                                  console.log(autionToken);
+
+                                  if (onSession) {
+                                    socket.emit(
+                                      "make_offer",
+                                      autionToken,
+                                      offer
+                                    );
+                                  }
+                                }}
+                              >
+                                Trả giá
+                              </Button>
                             </div>
                           )}
                           {!onSession && (
@@ -118,7 +215,7 @@ export default function Page({ params, searchParams }: any) {
                           )}
                         </div>
                       )}
-                      {!registered && (
+                      {registered != "VERIFIED" && (
                         <Button className="w-full">
                           Đã quá thời hạn đăng kí tham gia
                         </Button>
@@ -127,10 +224,12 @@ export default function Page({ params, searchParams }: any) {
                   )}
                   {!startSession && (
                     <div>
-                      {!registered && (
+                      {registered === "NOT_REGISTERED_YET" && (
                         <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button>Đăng kí tham gia đấu giá</Button>
+                          <AlertDialogTrigger>
+                            <Button className="col-span-1 w-full">
+                              Đăng kí tham gia đấu giá
+                            </Button>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
@@ -145,8 +244,13 @@ export default function Page({ params, searchParams }: any) {
                             <AlertDialogFooter>
                               <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={(e) => {
-                                  setRegister(true);
+                                onClick={async (e) => {
+                                  const result = await register_auction(
+                                    id
+                                  ).catch(console.error);
+                                  if (result?.status == 200) {
+                                    setRegister("NOT_VERIFIED");
+                                  }
                                 }}
                               >
                                 Đồng ý
@@ -155,9 +259,14 @@ export default function Page({ params, searchParams }: any) {
                           </AlertDialogContent>
                         </AlertDialog>
                       )}
-                      {registered && (
-                        <Button className="col-span-1 w-full">
-                          Bạn đã đăng kí tham gia
+                      {registered === "NOT_VERIFIED" && (
+                        <Button disabled className="col-span-1 w-full">
+                          Chờ phê duyệt
+                        </Button>
+                      )}
+                      {registered === "VERIFIED" && (
+                        <Button disabled className="col-span-1 w-full">
+                          Bạn đã đăng ký
                         </Button>
                       )}
                     </div>
@@ -168,47 +277,29 @@ export default function Page({ params, searchParams }: any) {
           </CardContent>
           <CardFooter className="flex flex-col"></CardFooter>
         </Card>
-        <Tabs defaultValue="describe">
+        <Tabs>
           <TabsList>
             <TabsTrigger value="history">Lịch sử đặt giá</TabsTrigger>
             <TabsTrigger value="inform">Thông tin đấu giá</TabsTrigger>
             <TabsTrigger value="describe">Mô tả tài sản</TabsTrigger>
             <TabsTrigger value="document">Tài liệu liên quan</TabsTrigger>
           </TabsList>
-          <TabsContent value="history" className="bg-white">
-            <Table className="justify-center items-center">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[100px]">STT</TableHead>
-                  <TableHead>Tên phiên đấu giá</TableHead>
-                  <TableHead>Mã phiên đấu giá</TableHead>
-                  <TableHead>Thời gian bắt đầu đấu giá</TableHead>
-                  <TableHead>Vai trò</TableHead>
-                  <TableHead>Trạng thái</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell className="font-medium">1</TableCell>
-                  <TableCell className="font-medium">INV001</TableCell>
-                  <TableCell>Paid</TableCell>
-                  <TableCell>Credit Card</TableCell>
-                  <TableCell>$250.00</TableCell>
-                  <TableCell>$250.00</TableCell>
-                  <TableCell>
-                    <Button>Chi tiết</Button>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+          <TabsContent value="history">
+            <HistoryBiddingTable
+              list_bid={bidding_history}
+            ></HistoryBiddingTable>
           </TabsContent>
-          <TabsContent value="inform" className="bg-white">Change your password here.</TabsContent>
-          <TabsContent value="describe" className="bg-white">Change your password here.</TabsContent>
-          <TabsContent value="document" className="bg-white">Change your password here.</TabsContent>
+          <TabsContent value="inform">
+            <BidderAttedTable
+              list_bidder={list_bidder_attend}
+            ></BidderAttedTable>
+          </TabsContent>
+          <TabsContent value="describe">Change your password here.</TabsContent>
+          <TabsContent value="document">Change your password here.</TabsContent>
         </Tabs>
       </div>
     </div>
   );
 }
 
-function CountTime(endTime: any) { }
+function CountTime(endTime: any) {}

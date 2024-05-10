@@ -28,7 +28,7 @@ const formSchema = z.object({
     }),
 });
 
-export default function StaffForm({setClose, open}: {setClose: any, open: any}) {
+export default function StaffForm({ setClose, open }: { setClose: any, open: any }) {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -100,7 +100,7 @@ export default function StaffForm({setClose, open}: {setClose: any, open: any}) 
                             )}
                         />
                         <DialogFooter>
-                            <Button type="submit" variant={"createBtn"}>Tạo đấu giá viên</Button>
+                            <Button type="submit" >Tạo đấu giá viên</Button>
                         </DialogFooter>
                     </form>
                 </Form>

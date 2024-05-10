@@ -29,10 +29,10 @@ const config = {
     extend: {
       colors: {
         bgColor: "#FFF",
-        highlightColor: "#7186f5",
-        footerBgColor: "#F08A5D",
-        purpleColor: "#9B51E0",
-        tmpColor1: "#EAFFD0",
+        highlightColor: "#696cb8",
+        footerBgColor: "#696cb8",
+        purpleColor: "#696cb8",
+        tmpColor1: "#696cb8",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

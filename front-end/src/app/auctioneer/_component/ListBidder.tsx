@@ -7,9 +7,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { listBidder } from "@/app/api/apiEndpoints";
+import { listBidder, verifyBidder } from "@/app/api/apiEndpoints";
 import { useRouter } from "next/navigation";
 export default function ListBidder(auction_id: any) {
   const [list_bidder, set_list_bidder] = useState<any>();
@@ -46,7 +57,37 @@ export default function ListBidder(auction_id: any) {
                 {bidder?.verified ? "Đã duyệt" : "Chưa duyệt"}
               </TableCell>
               <TableCell>
-                <Button onClick={() => {}}>Chi tiết</Button>
+                <AlertDialog>
+                  <AlertDialogTrigger disabled={bidder?.verified}>
+                    Phê duyệt
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently
+                        delete your account and remove your data from our
+                        servers.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={async () => {
+                          const result = await verifyBidder(
+                            bidder?._id,
+                            auction_id?.auction_id
+                          );
+                          console.log(result.data);
+                        }}
+                      >
+                        Đồng ý
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </TableCell>
             </TableRow>
           );

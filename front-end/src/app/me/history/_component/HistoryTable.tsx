@@ -44,7 +44,7 @@ export default function HistoryTable() {
                                     <Badge variant="success">Trúng đấu giá</Badge>
                                 </TableCell>
                                 <TableCell className="text-center">
-                                    <Button variant={"editBtn"}>
+                                    <Button >
                                         <BookText />
                                     </Button>
                                 </TableCell>
@@ -61,7 +61,7 @@ export default function HistoryTable() {
                                     <Badge variant="destructive">Không trúng đấu giá</Badge>
                                 </TableCell>
                                 <TableCell className="text-center">
-                                    <Button variant={"editBtn"}>
+                                    <Button >
                                         <BookText />
                                     </Button>
                                 </TableCell>

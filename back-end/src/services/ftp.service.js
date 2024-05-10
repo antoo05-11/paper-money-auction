@@ -23,7 +23,7 @@ class FtpService extends Service {
             keepalive: 1000
         })
             .then((serverMessage) => {
-                console.log('Server message: ' + serverMessage);
+                console.log('FTP sever message: ' + serverMessage);
             });
     }
 
@@ -31,7 +31,6 @@ class FtpService extends Service {
         try {
            await this.#ftpClient.reconnect();
         } catch (e) {
-            console.log(e);
         }
         for (const fileKey in files) {
             const file = files[fileKey];

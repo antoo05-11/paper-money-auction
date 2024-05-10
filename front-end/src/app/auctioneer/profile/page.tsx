@@ -102,7 +102,7 @@ export default function Page() {
                                     </div>
                                 </CardContent>
                                 <CardFooter>
-                                    <Button variant={"createBtn"}>Lưu thay đổi</Button>
+                                    <Button>Lưu thay đổi</Button>
                                 </CardFooter>
                             </Card>
                         </TabsContent>
@@ -122,7 +122,7 @@ export default function Page() {
                                     </div>
                                 </CardContent>
                                 <CardFooter>
-                                    <Button variant={"createBtn"}>Lưu thay đổi</Button>
+                                    <Button>Lưu thay đổi</Button>
                                 </CardFooter>
                             </Card>
                         </TabsContent>

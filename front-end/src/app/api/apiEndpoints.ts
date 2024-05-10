@@ -7,8 +7,7 @@ import {
   registerAuction,
   userData,
   userLoginData,
-  filterUserData,
-  filterAuctionData,
+  filterUserData, filterLogData,
 } from "@/lib/constant/dataInterface";
 import request from "./request";
 
@@ -53,6 +52,10 @@ export function updateProfile(data: any) {
 
 export function updatePassword(data: any) {
   return request.put("api/user/password", { data: data });
+}
+
+export function suspenUser(id: String, data: any) {
+  return request.put(`api/user/suspend/${id}`, { data: data })
 }
 
 //payment
@@ -106,7 +109,7 @@ export function addAuctionDocument(id: String, docs: BinaryData) {
   return request.postForm("api/auction/" + id + "/docs", { key: docs });
 }
 
-export function listAuction(data?: filterAuctionData) {
+export function listAuction(data: any) {
   if (data) return request.get("api/auction", { params: data });
   else return request.get("api/auction");
 }
@@ -116,8 +119,8 @@ export function viewAuctionInfo(id: String) {
 export function viewAuctionAct(id: String) {
   return request.get(`api/auction/${id}/act`);
 }
-export function register_Auction(id: String, data: registerAuction) {
-  return request.post(`api/auction/${id}/register`, { data: data });
+export function register_auction(id: String) {
+  return request.post(`api/auction/${id}/register`);
 }
 
 export function joinAuctionSession(auction_id: String) {
@@ -131,4 +134,18 @@ export function listAuctionManaging(data: any) {
 //bidder
 export function listBidder(auction_id: any) {
   return request.get(`/api/auction/${auction_id}/bidders`);
+}
+export function verifyBidder(bidder_id: any, auction_id: any) {
+  return request.put(`/api/auction/${auction_id}/verifyBidder/${bidder_id}`);
+}
+
+//customer
+export function checkParticipation(auction_id: any) {
+  return request.get(`/api/auction/${auction_id}/participationstatus`);
+}
+
+//log
+export function listActivityLog(data: filterLogData) {
+  if (data) return request.get("api/log", { params: data });
+  else return request.get("api/log");
 }

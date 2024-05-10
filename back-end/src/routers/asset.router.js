@@ -1,12 +1,13 @@
 import userRole from "../constants/user.role";
 import AssetController from "../controllers/asset.controller";
 import assetValidation from "../validations/asset.validation";
+import activityCode from "../constants/activity.code";
+import objectClass from "../constants/object.class";
 
 export default [
     {
         controller: AssetController,
         methods: [
-            // Create Asset
             {
                 httpMethod: "post",
                 path: "/asset",
@@ -15,9 +16,13 @@ export default [
                 verified: true,
                 schema: assetValidation.createAsset,
                 files: [
-                    { name: "pics", maxCount: 3 },
-                    { name: "docs", maxCount: 3 },
+                    {name: "pics", maxCount: 3},
+                    {name: "docs", maxCount: 3},
                 ],
+                initialLog: {
+                    activityCode: activityCode.ASSET.CREATE,
+                    objectClass: objectClass.ASSET
+                }
             },
             {
                 httpMethod: "get",
@@ -25,6 +30,10 @@ export default [
                 method: "viewAsset",
                 roles: [userRole.CUSTOMER, userRole.ADMIN, userRole.AUCTIONEER],
                 verified: true,
+                initialLog: {
+                    activityCode: activityCode.ASSET.GET_BY_ID,
+                    objectClass: objectClass.ASSET
+                }
             },
             {
                 httpMethod: "get",
@@ -32,6 +41,10 @@ export default [
                 method: "listAsset",
                 roles: [userRole.CUSTOMER, userRole.AUCTIONEER, userRole.ADMIN],
                 verified: true,
+                initialLog: {
+                    activityCode: activityCode.ASSET.GET_LIST,
+                    objectClass: objectClass.ASSET
+                }
             },
             {
                 httpMethod: "put",
@@ -39,6 +52,10 @@ export default [
                 method: "verifyAsset",
                 roles: [userRole.ADMIN],
                 schema: assetValidation.verifyAsset,
+                initialLog: {
+                    activityCode: activityCode.ASSET.VERIFY,
+                    objectClass: objectClass.ASSET
+                }
             },
         ],
     },
