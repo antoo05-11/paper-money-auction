@@ -14,8 +14,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import {Filter} from "lucide-react";
-import {DropdownMenuCheckboxItemProps} from "@radix-ui/react-dropdown-menu"
-import { columns } from "./_component/columns";
+import {columns} from "./_component/columns";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -25,6 +24,35 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {useRouter, usePathname} from 'next/navigation'
+
+interface CodeMap {
+    [key: string]: string;
+}
+
+const ACTIVITY_CODE_MAP: CodeMap = {
+    'CREATE_AUCTION': 'Tạo phiên đấu giá',
+    'UPDATE_AUCTION': 'Cập nhật phiên đấu giá',
+    'GET_AUCTION_BY_ID': 'Lấy dữ liệu đấu giá từ mã phiên',
+    'GET_AUCTION_LIST': 'Lấy danh sách đấu giá',
+    'REGISTER_AUCTION': 'Đăng ký tham gia đấu giá',
+    'GET_AUCTION_ACTIVITY_LIST': 'Lấy danh sách hoạt động của phiên đấu giá',
+    'GET_AUCTION_BIDDER_LIST': 'Lấy danh sách người tham gia đấu giá',
+    'VERIFY_BIDDER_PARTICIPATION': 'Xác nhận người tham gia đấu giá',
+    'JOIN_AUCTION_SESSION': 'Tham gia phiên đấu giá',
+    'GET_PARTICIPATION_STATUS': 'Lấy trạng thái tham gia',
+    'CREATE_ASSET': 'Tạo tài sản',
+    'UPDATE_ASSET': 'Cập nhật thông tin tài sản',
+    'GET_ASSET_BY_ID': 'Lấy thông tin tài sản qua mã tài sản',
+    'GET_ASSET_LIST': 'Lấy danh sách tài sản',
+    'VERIFY_ASSET': 'Xác minh tài sản',
+    'undefined': 'Không xác định'
+};
+
+const OBJECT_CLASS_MAP: CodeMap = {
+    'auction': 'Phiên đấu giá',
+    'asset': 'Tài sản'
+}
+
 
 export default function Page() {
     const [loading, setLoading] = useState(false);
@@ -70,8 +98,14 @@ export default function Page() {
     useEffect(() => {
         setLoading(true);
         listActivityLog(debouncedFilter).then(res => {
+
+            // @ts-ignore
             const modifiedData = res.data.activities.map((log: logData) => ({
                 ...log,
+                subjectName: log.subject?.name || 'Không xác định',
+                activityCode: ACTIVITY_CODE_MAP[log.activityCode],
+                rootObjectClass: log.objectClass,
+                objectClass: OBJECT_CLASS_MAP[log.objectClass],
                 success: log.success ? "Thành công" : "Thất bại"
             }));
             setListLog(modifiedData);
@@ -112,28 +146,14 @@ export default function Page() {
                                         <div className=" items-center gap-4">
                                             <Input
                                                 id="width"
-                                                placeholder="Lọc theo tên"
+                                                placeholder="Lọc theo người thực hiện"
                                                 className="h-8"
                                                 defaultValue={""}
                                                 onChange={(e) => {
                                                     setFilter(prevFilter => ({
                                                         ...prevFilter,
-                                                        name: e.target.value,
+                                                        user: e.target.value,
                                                     }));
-                                                    router.push(`${pathName}/?page=1&limit=10`);
-                                                }}
-                                            />
-                                        </div>
-                                        <div className=" items-center gap-4">
-                                            <Input
-                                                id="maxWidth"
-                                                placeholder="Lọc theo mô tả"
-                                                className="h-8"
-                                                onChange={(e) => {
-                                                    setFilter(prevFilter => ({
-                                                        ...prevFilter,
-                                                        description: e.target.value,
-                                                    }))
                                                     router.push(`${pathName}/?page=1&limit=10`);
                                                 }}
                                             />

@@ -131,13 +131,18 @@ export type registerAuction = {
 };
 
 export type logData = {
-    _id: string,
-    subjectId: string,
-    objectId: string,
-    createdAt: string,
+    _id: string | undefined,
+    subjectId: string | undefined,
+    objectId: string | undefined,
+    createdAt: string | undefined,
     objectClass: string,
     activityCode: string,
-    success: string
+    success: string | undefined,
+    subject: {
+        _id: string | undefined,
+        name: string | undefined,
+        role: string | 'CUSTOMER'
+    }
 };
 
 export type filterLogData = {

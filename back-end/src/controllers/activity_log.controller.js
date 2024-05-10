@@ -2,6 +2,7 @@ import {ActivityLog} from "../models/activity_log";
 import mongoose from "mongoose";
 import {ceil, parseInt} from "lodash";
 
+// `activityLog` is required to perform this.
 export const writeLogStatus = (activityLog, objectId, success) => {
     try {
         activityLog.success = success;
@@ -84,7 +85,8 @@ export default class ActivityLogController {
                         {
                             $project: {
                                 _id: 1,
-                                name: 1
+                                name: 1,
+                                role: 1
                             }
                         }
                     ],
