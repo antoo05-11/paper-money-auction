@@ -22,7 +22,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-// import CountTime from "../_component/countTime";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
 import {
   Table,
   TableBody,
@@ -51,7 +52,7 @@ export default function AuctionDetail({ params }: any) {
   const [isConnected, setIsConnected] = useState(false);
   const id = params.id;
   const [infor_auction, set_infor_auction] = useState<any>();
-  const [startSession, setStartSession] = useState(true);
+  const [timeSessionAuction, setTimeSessionAuction] = useState(true);
   const [onSession, setOnSession] = useState(false);
   const [list_bidder, update_list_bidder] = useState<any>();
   const [autionToken, setAutionToken] = useState<string>();
@@ -68,7 +69,9 @@ export default function AuctionDetail({ params }: any) {
         .then((data) => data.data.data)
         .then((data) => update_list_bidder(data))
         .catch(console.error);
-      setStartSession(CompareDate(Date.now(), infor_auction?.auction_start));
+      setTimeSessionAuction(
+        !CompareDate(Date.now(), infor_auction?.auction_start)
+      );
     };
     const result = fetchData().catch(console.error);
   }, []);
@@ -89,7 +92,9 @@ export default function AuctionDetail({ params }: any) {
       setIsConnected(false);
     }
     const result = getAuctionToken(id).catch(console.error);
-    if (onSession) {
+    if (timeSessionAuction && autionToken != undefined) {
+      console.log(autionToken);
+
       socket.connect();
 
       socket.on("connect", onConnect);
@@ -99,7 +104,7 @@ export default function AuctionDetail({ params }: any) {
       });
       socket.on("join_session_response", (response) => {
         console.log("join_session_response");
-        console.log(response);
+        setOnSession(response);
       });
       socket.on("attendees_update", (response) => {
         console.log("attendees_update: " + response);
@@ -112,15 +117,12 @@ export default function AuctionDetail({ params }: any) {
       socket.on("biddings_update", (message) => {
         console.log("biddings_update");
         console.log(message);
-        update_bidding_history(message);
+        update_bidding_history(message.reverse());
       });
       socket.on("start_session_response", (message) => {
         console.log("start_session_response");
         console.log(message);
       });
-
-      console.log("start session");
-      socket.emit("start_session", autionToken);
       console.log("join session");
       socket.emit("join_session", autionToken);
       return () => {
@@ -135,10 +137,32 @@ export default function AuctionDetail({ params }: any) {
         socket.off("join_session_response");
       };
     }
-  }, [onSession]);
-
+  }, [autionToken]);
+  const handleStartSession = () => {
+    setOnSession(true);
+    console.log("start session");
+    socket.emit("start_session", autionToken);
+    console.log("join session");
+    socket.emit("join_session", autionToken);
+  };
   return (
     <div className="flex flex-col justify-center items-center">
+      {!CompareDate(infor_auction?.auction_end, Date.now()) && (
+        <Alert>
+          <AlertTitle>Phiên đấu giá đã kết thúc</AlertTitle>
+          <AlertDescription>
+            <p>
+              Nếu bạn là người trúng đấu giá vui lòng kiểm tra email để có thể
+              hoàn tất việc thanh toán cũng như nhận tài sản đấu giá
+            </p>
+            <p>
+              Nếu bạn không trúng đấu giá vui lòng kiểm tra email để có thể nhận
+              lại khoản tiền đặt cọc cho phiên đấu giá
+            </p>
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div className="w-[80%] top-0 bot-0">
         <Card className="top-0 bot-0">
           <CardHeader>
@@ -148,7 +172,7 @@ export default function AuctionDetail({ params }: any) {
           <CardContent className="grid grid-cols-7 gap-4">
             <Card className="bg-cyan-400 col-span-4">Hinh anh</Card>
             <div className=" col-span-3 grid grid-rows-6 gap-4">
-              {infor_auction?.auction_start && !startSession && (
+              {infor_auction?.auction_start && !timeSessionAuction && (
                 <div>
                   <CountTime
                     startTime={infor_auction?.auction_start}
@@ -157,7 +181,7 @@ export default function AuctionDetail({ params }: any) {
                   <Label>Thời gian bắt đầu phiên đấu giá còn</Label>
                 </div>
               )}
-              {infor_auction?.auction_end && startSession && (
+              {infor_auction?.auction_end && timeSessionAuction && (
                 <div>
                   <CountTime
                     startTime={infor_auction?.auction_end}
@@ -169,13 +193,16 @@ export default function AuctionDetail({ params }: any) {
               <Card className=" bg-cyan-400 row-span-4">
                 <CardTitle>Đặt giá</CardTitle>
                 <CardContent>
-                  <p>Giá cao nhất hiện tại</p>
-                  <p>Người trả giá cao nhất</p>
+                  <p>Giá cao nhất hiện tại: {bidding_history[0]?.price}</p>
+                  <p>
+                    Người trả giá cao nhất: {bidding_history[0]?.user?.alias}{" "}
+                    {bidding_history[0]?.user?.name}
+                  </p>
                   <p>Giá khởi điểm: {infor_auction?.starting_price} vnd</p>
                   <p>
                     Bước giá tối thiểu: {infor_auction?.bidding_increment} vnd
                   </p>
-                  {startSession && (
+                  {timeSessionAuction && (
                     <div className="w-full">
                       {!onSession && (
                         <AlertDialog>
@@ -193,9 +220,7 @@ export default function AuctionDetail({ params }: any) {
                             <AlertDialogFooter>
                               <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
                               <AlertDialogAction
-                                onClick={(e) => {
-                                  setOnSession(true);
-                                }}
+                                onClick={() => handleStartSession()}
                               >
                                 Bắt đầu
                               </AlertDialogAction>
@@ -204,32 +229,11 @@ export default function AuctionDetail({ params }: any) {
                         </AlertDialog>
                       )}
                       {onSession && (
-                        <AlertDialog>
-                          <AlertDialogTrigger>
-                            <Button>Kết thúc phiên đấu giá</Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Bạn có chắc chắn muốn kết thúc phiên đấu giá này
-                              </AlertDialogTitle>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={(e) => {
-                                  setStartSession(true);
-                                }}
-                              >
-                                Kết thúc
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                        <Button disabled>Phiên đấu giá đang diễn ra</Button>
                       )}
                     </div>
                   )}
-                  {!startSession && (
+                  {!timeSessionAuction && (
                     <Button className="w-full">
                       Chưa đến giờ bắt đầu phiên đấu giá
                     </Button>
@@ -242,11 +246,11 @@ export default function AuctionDetail({ params }: any) {
         </Card>
         <Tabs>
           <TabsList>
-            {startSession && (
+            {timeSessionAuction && (
               <TabsTrigger value="history">Lịch sử đặt giá</TabsTrigger>
             )}
             <TabsTrigger value="inform">
-              {startSession ? (
+              {!timeSessionAuction ? (
                 <text>Phê duyệt tham gia đấu giá</text>
               ) : (
                 <text>Danh sách người đấu giá</text>
@@ -263,14 +267,14 @@ export default function AuctionDetail({ params }: any) {
             ></DataTable>
           </TabsContent>
           <TabsContent value="inform">
-            {startSession && (
+            {timeSessionAuction && (
               <DataTable
                 columns={attendees_bidding}
                 data={list_bidder_attend}
                 pageCount={0}
               />
             )}
-            {!startSession && (
+            {!timeSessionAuction && (
               <DataTable
                 columns={verified_bidder}
                 data={list_bidder}

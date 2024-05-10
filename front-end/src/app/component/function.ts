@@ -1,4 +1,4 @@
-const CompareDate = (time1: string | number, time2: string) => {
+const CompareDate = (time1: string | number, time2: string | number) => {
   const Date1 = new Date(time1);
   const Date2 = new Date(time2);
 
