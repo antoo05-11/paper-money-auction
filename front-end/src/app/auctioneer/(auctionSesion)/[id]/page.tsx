@@ -45,6 +45,8 @@ import {
   bidding_act,
 } from "../_component/columns";
 import { DataTable } from "@/components/ui/data-table";
+import CompareDate from "@/app/component/function";
+import { Label } from "@radix-ui/react-dropdown-menu";
 export default function AuctionDetail({ params }: any) {
   const [isConnected, setIsConnected] = useState(false);
   const id = params.id;
@@ -66,10 +68,9 @@ export default function AuctionDetail({ params }: any) {
         .then((data) => data.data.data)
         .then((data) => update_list_bidder(data))
         .catch(console.error);
+      setStartSession(CompareDate(Date.now(), infor_auction?.auction_start));
     };
-    const result = fetchData()
-      // make sure to catch any error
-      .catch(console.error);
+    const result = fetchData().catch(console.error);
   }, []);
 
   useEffect(() => {
@@ -80,12 +81,10 @@ export default function AuctionDetail({ params }: any) {
         ""
       );
       setAutionToken(token);
-      // console.log(token);
     };
     function onConnect() {
       setIsConnected(true);
     }
-
     function onDisconnect() {
       setIsConnected(false);
     }
@@ -149,11 +148,23 @@ export default function AuctionDetail({ params }: any) {
           <CardContent className="grid grid-cols-7 gap-4">
             <Card className="bg-cyan-400 col-span-4">Hinh anh</Card>
             <div className=" col-span-3 grid grid-rows-6 gap-4">
-              {infor_auction?.auction_start && (
-                <CountTime
-                  startTime={infor_auction?.auction_start}
-                  endTime={Date.now()}
-                />
+              {infor_auction?.auction_start && !startSession && (
+                <div>
+                  <CountTime
+                    startTime={infor_auction?.auction_start}
+                    endTime={Date.now()}
+                  />
+                  <Label>Thời gian bắt đầu phiên đấu giá còn</Label>
+                </div>
+              )}
+              {infor_auction?.auction_end && startSession && (
+                <div>
+                  <CountTime
+                    startTime={infor_auction?.auction_end}
+                    endTime={Date.now()}
+                  />
+                  <Label>Thời gian phiên đấu giá còn</Label>
+                </div>
               )}
               <Card className=" bg-cyan-400 row-span-4">
                 <CardTitle>Đặt giá</CardTitle>
@@ -234,7 +245,13 @@ export default function AuctionDetail({ params }: any) {
             {startSession && (
               <TabsTrigger value="history">Lịch sử đặt giá</TabsTrigger>
             )}
-            <TabsTrigger value="inform">Thông tin người đấu giá</TabsTrigger>
+            <TabsTrigger value="inform">
+              {startSession ? (
+                <text>Phê duyệt tham gia đấu giá</text>
+              ) : (
+                <text>Danh sách người đấu giá</text>
+              )}
+            </TabsTrigger>
             <TabsTrigger value="describe">Mô tả tài sản</TabsTrigger>
             <TabsTrigger value="document">Tài liệu liên quan</TabsTrigger>
           </TabsList>

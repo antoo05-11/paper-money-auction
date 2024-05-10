@@ -189,9 +189,7 @@ const CreateAuction: React.FC<{ asset_id: any }> = ({ asset_id }) => {
                 name="deposit"
                 render={({ field }) => (
                   <FormItem className="grid grid-cols-6 items-center gap-4">
-                    <FormLabel className="col-span-3">
-                      Bước giá tối thiểu
-                    </FormLabel>
+                    <FormLabel className="col-span-3">Đặt cọc</FormLabel>
                     <FormControl>
                       <Input
                         defaultValue="Pedro Duarte"
@@ -304,14 +302,15 @@ const CreateAuction: React.FC<{ asset_id: any }> = ({ asset_id }) => {
               <FormItem className="grid grid-cols-6 items-center gap-4">
                 <FormLabel className="col-span-3">Tài liệu liên quan</FormLabel>
                 <FormControl>
-                  <Input className="col-span-3" type="file" />
+                  <Input
+                    className="col-span-3"
+                    type="file"
+                    onChange={(docs) => setDocs(docs.target.files)}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
               <div className="grid grid-cols-6 items-center gap-4 pt-6">
-                <DialogClose className="col-start-5 col-end-5">
-                  <Button>Hủy bỏ</Button>
-                </DialogClose>
                 <Button className="col-start-6 col-end-6" type="submit">
                   Phê duyệt
                 </Button>
