@@ -119,6 +119,8 @@ const CreateAuction: React.FC<{ asset_id: any }> = ({ asset_id }) => {
       const res = await createAuction(formData);
       if (res.status == HTTP_STATUS.OK) {
         setOpenDialog(false);
+        route.push(window.location.href);
+        route.refresh();
       } else {
         toast({
           title: "Tạo phiên đấu giá thất bại",

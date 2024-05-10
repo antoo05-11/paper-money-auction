@@ -39,15 +39,17 @@ import { useEffect } from "react";
 import { joinAuctionSession } from "@/app/api/apiEndpoints";
 import { socket } from "@/app/socket";
 import ListBidder from "../../_component/ListBidder";
-import HistoryBiddingTable from "../_component/HistoryBiddingTable";
-import BidderAttedTable from "../_component/BidderAttendTable";
-import { attendees_bidding, verified_bidder } from "../_component/columns";
+import {
+  attendees_bidding,
+  verified_bidder,
+  bidding_act,
+} from "../_component/columns";
 import { DataTable } from "@/components/ui/data-table";
-export default function CustomerDetail({ params }: any) {
+export default function AuctionDetail({ params }: any) {
   const [isConnected, setIsConnected] = useState(false);
   const id = params.id;
   const [infor_auction, set_infor_auction] = useState<any>();
-  const [startSession, setStartSession] = useState(false);
+  const [startSession, setStartSession] = useState(true);
   const [onSession, setOnSession] = useState(false);
   const [list_bidder, update_list_bidder] = useState<any>();
   const [autionToken, setAutionToken] = useState<string>();
@@ -138,13 +140,6 @@ export default function CustomerDetail({ params }: any) {
 
   return (
     <div className="flex flex-col justify-center items-center">
-      <Button
-        onClick={() => {
-          console.log(list_bidder);
-        }}
-      >
-        Test
-      </Button>
       <div className="w-[80%] top-0 bot-0">
         <Card className="top-0 bot-0">
           <CardHeader>
@@ -239,9 +234,11 @@ export default function CustomerDetail({ params }: any) {
             <TabsTrigger value="document">Tài liệu liên quan</TabsTrigger>
           </TabsList>
           <TabsContent value="history">
-            <HistoryBiddingTable
-              list_bid={bidding_history}
-            ></HistoryBiddingTable>
+            <DataTable
+              columns={bidding_act}
+              data={bidding_history}
+              pageCount={0}
+            ></DataTable>
           </TabsContent>
           <TabsContent value="inform">
             {startSession && (

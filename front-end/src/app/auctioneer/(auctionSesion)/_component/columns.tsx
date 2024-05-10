@@ -79,7 +79,11 @@ export const columns_auctions: ColumnDef<any>[] = [
     header: "Giờ mở đăng kí",
     cell: ({ row }) => {
       const date = row.getValue("registration_open") as Date;
-      return <div>{new Date(date).toLocaleString()}</div>;
+      return (
+        <div className="flex justify-center items-center">
+          {new Date(date).toLocaleString()}
+        </div>
+      );
     },
   },
   {
@@ -87,7 +91,11 @@ export const columns_auctions: ColumnDef<any>[] = [
     header: "Giờ đóng đăng kí",
     cell: ({ row }) => {
       const date = row.getValue("registration_close") as Date;
-      return <div>{new Date(date).toLocaleString()}</div>;
+      return (
+        <div className="flex justify-center items-center">
+          {new Date(date).toLocaleString()}
+        </div>
+      );
     },
   },
   {
@@ -95,7 +103,11 @@ export const columns_auctions: ColumnDef<any>[] = [
     header: "Giờ mở đấu giá",
     cell: ({ row }) => {
       const date = row.getValue("auction_start") as Date;
-      return <div>{new Date(date).toLocaleString()}</div>;
+      return (
+        <div className="flex justify-center items-center">
+          {new Date(date).toLocaleString()}
+        </div>
+      );
     },
   },
   {
@@ -103,7 +115,11 @@ export const columns_auctions: ColumnDef<any>[] = [
     header: "Giờ kết thúc đấu giá",
     cell: ({ row }) => {
       const date = row.getValue("auction_end") as Date;
-      return <div>{new Date(date).toLocaleString()}</div>;
+      return (
+        <div className="flex justify-center items-center">
+          {new Date(date).toLocaleString()}
+        </div>
+      );
     },
   },
   {
@@ -129,7 +145,11 @@ export const attendees_bidding: ColumnDef<any>[] = [
     accessorKey: "_id",
     header: () => <div className="flex justify-center items-center"> ID </div>,
     cell: ({ row }) => {
-      return <div>{row.getValue("_id")}</div>;
+      return (
+        <div className="flex justify-center items-center">
+          {row.getValue("_id")}
+        </div>
+      );
     },
   },
   {
@@ -138,7 +158,11 @@ export const attendees_bidding: ColumnDef<any>[] = [
       <div className="flex justify-center items-center"> Họ tên </div>
     ),
     cell: ({ row }) => {
-      return <div>{row.getValue("name")}</div>;
+      return (
+        <div className="flex justify-center items-center">
+          {row.getValue("name")}
+        </div>
+      );
     },
   },
   {
@@ -147,7 +171,11 @@ export const attendees_bidding: ColumnDef<any>[] = [
       <div className="flex justify-center items-center">Bí danh</div>
     ),
     cell: ({ row }) => {
-      return <div>{row.getValue("alias")}</div>;
+      return (
+        <div className="flex justify-center items-center">
+          {row.getValue("alias")}
+        </div>
+      );
     },
   },
 ];
@@ -166,7 +194,11 @@ export const verified_bidder: ColumnDef<any>[] = [
     accessorKey: "bidder",
     header: () => <div className="flex justify-center items-center"> ID </div>,
     cell: ({ row }) => {
-      return <div>{row.getValue("bidder")}</div>;
+      return (
+        <div className="flex justify-center items-center">
+          {row.getValue("bidder")}
+        </div>
+      );
     },
   },
   {
@@ -175,7 +207,11 @@ export const verified_bidder: ColumnDef<any>[] = [
       <div className="flex justify-center items-center">Bí danh</div>
     ),
     cell: ({ row }) => {
-      return <div>{row.getValue("alias")}</div>;
+      return (
+        <div className="flex justify-center items-center">
+          {row.getValue("alias")}
+        </div>
+      );
     },
   },
   {
@@ -184,7 +220,11 @@ export const verified_bidder: ColumnDef<any>[] = [
       <div className="flex justify-center items-center"> Phạt </div>
     ),
     cell: ({ row }) => {
-      return row.getValue("penalty") ? <div>Có</div> : <div>Không</div>;
+      return row.getValue("penalty") ? (
+        <div className="flex justify-center items-center">Có</div>
+      ) : (
+        <div className="flex justify-center items-center">Không</div>
+      );
     },
   },
   {
@@ -194,9 +234,9 @@ export const verified_bidder: ColumnDef<any>[] = [
     ),
     cell: ({ row }) => {
       return row.getValue("verified") ? (
-        <div>Đã duyệt</div>
+        <div className="flex justify-center items-center">Đã duyệt</div>
       ) : (
-        <div>Chưa duyệt</div>
+        <div className="flex justify-center items-center">Chưa duyệt</div>
       );
     },
   },
@@ -319,7 +359,7 @@ const VerifyBidder: React.FC<{ auction_id: any; bidder_id: any }> = ({
               </div>
             </div>
 
-            <div>
+            <div className="flex justify-center items-center">
               <Label htmlFor="address">Địa chỉ</Label>
               <Input
                 id="address"
@@ -351,3 +391,65 @@ const VerifyBidder: React.FC<{ auction_id: any; bidder_id: any }> = ({
     </Sheet>
   );
 };
+
+export const bidding_act: ColumnDef<any>[] = [
+  {
+    accessorKey: "stt",
+    header: () => <div className="flex justify-center items-center"> STT </div>,
+    cell: ({ row }) => (
+      <div className="flex justify-center items-center">
+        <span> {row.index + 1}</span>
+      </div>
+    ),
+  },
+  {
+    accessorKey: "alias",
+    header: () => (
+      <div className="flex justify-center items-center">Bí danh</div>
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex justify-center items-center">
+          {row.original?.user?.alias}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "penalty",
+    header: () => <div className="flex justify-center items-center">Phạt</div>,
+    cell: ({ row }) => {
+      return row.original?.user?.penalty ? (
+        <div className="flex justify-center items-center">Có</div>
+      ) : (
+        <div className="flex justify-center items-center">Không</div>
+      );
+    },
+  },
+  {
+    accessorKey: "price",
+    header: () => (
+      <div className="flex justify-center items-center">Số tiền đấu giá</div>
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex justify-center items-center">
+          {row.getValue("price")}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "createdAt",
+    header: () => (
+      <div className="flex justify-center items-center">Thời gian</div>
+    ),
+    cell: ({ row }) => {
+      return (
+        <div className="flex justify-center items-center">
+          {row.getValue("createdAt")}
+        </div>
+      );
+    },
+  },
+];
