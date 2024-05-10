@@ -149,10 +149,12 @@ export default function AuctionDetail({ params }: any) {
           <CardContent className="grid grid-cols-7 gap-4">
             <Card className="bg-cyan-400 col-span-4">Hinh anh</Card>
             <div className=" col-span-3 grid grid-rows-6 gap-4">
-              <CountTime
-                startTime={infor_auction?.auction_start}
-                endTime={Date.now()}
-              />
+              {infor_auction?.auction_start && (
+                <CountTime
+                  startTime={infor_auction?.auction_start}
+                  endTime={Date.now()}
+                />
+              )}
               <Card className=" bg-cyan-400 row-span-4">
                 <CardTitle>Đặt giá</CardTitle>
                 <CardContent>
@@ -276,29 +278,22 @@ const CountTime: React.FC<{
   const DateStart = new Date(startTime);
   const [time, setTime] = useState<number>(0);
   useEffect(() => {
-    setTime(
-      Math.floor(Math.abs(DateStart.getTime() - DateEnd.getTime()) / 1000)
-    );
-    countRef.current = setInterval(() => {
-      setTime((time) => time - 1);
-    }, 1000);
-  }, [endTime, startTime]);
+    if (startTime && endTime) {
+      console.log(123);
+      setTime(
+        Math.floor(Math.abs(DateStart.getTime() - DateEnd.getTime()) / 1000)
+      );
+      countRef.current = setInterval(() => {
+        setTime((time) => time - 1);
+      }, 1000);
+    }
+  }, []);
   return (
     <Card className=" bg-cyan-400 row-span-2 grid grid-cols-4 text-center">
       <div className="row-span-1">Day: {Math.floor(time / 86400)}</div>
       <div className="row-span-1">Giờ: {Math.floor(time / 3600) % 24}</div>
       <div>Phút: {Math.floor(time / 60) % 60}</div>
       <div>Giây: {time % 60}</div>
-      <button
-        onClick={() => {
-          setTime(
-            Math.floor(Math.abs(DateStart.getTime() - DateEnd.getTime()) / 1000)
-          );
-          console.log(time % 60);
-        }}
-      >
-        Test
-      </button>
     </Card>
   );
 };

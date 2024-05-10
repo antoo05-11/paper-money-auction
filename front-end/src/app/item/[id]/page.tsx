@@ -49,6 +49,8 @@ import HistoryBiddingTable from "../_component/HistoryBiddingTable";
 import BidderAttedTable from "../_component/BidderAttendTable";
 import CompareDate from "@/app/component/function";
 import Image from "next/image";
+import { DataTable } from "@/components/ui/data-table";
+import { attendees_bidding, bidding_act } from "../_component/columns";
 
 export default function CustomerDetail({ params, searchParams }: any) {
   const { toast } = useToast();
@@ -57,6 +59,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
   const [isConnected, setIsConnected] = useState(false);
   const [infor_auction, set_infor_auction] = useState<any>();
   const [startSession, setStartSession] = useState(false);
+  const [timeRegister, setTimeRegister] = useState<boolean>();
   const [onSession, setOnSession] = useState<boolean>();
   const [registered, setRegister] = useState<string>();
   const [autionToken, setAutionToken] = useState<string>();
@@ -69,8 +72,14 @@ export default function CustomerDetail({ params, searchParams }: any) {
       const data_get = await viewAuctionInfo(id);
       const data_use = await data_get.data;
       set_infor_auction(data_use);
-      if (CompareDate(Date.now(), data_use?.auction_start))
-        setStartSession(true);
+      setStartSession(
+        CompareDate(Date.now(), data_use?.auction_start) &&
+          !CompareDate(Date.now(), data_use?.auction_end)
+      );
+      setTimeRegister(
+        CompareDate(Date.now(), data_use?.registration_open) &&
+          !CompareDate(Date.now(), data_use?.registration_close)
+      );
     };
     const checkStatusParticipation = async () => {
       const checkRegister = await checkParticipation(id);
@@ -151,23 +160,62 @@ export default function CustomerDetail({ params, searchParams }: any) {
           </CardHeader>
 
           <CardContent className="grid grid-cols-8 gap-4">
-            <Card className="col-span-2" >
-              <Image src="/demoimage.jpg" width={300} height={200} alt="" className="w-full rounded" />
+            <Card className="col-span-2">
+              <Image
+                src="/demoimage.jpg"
+                width={300}
+                height={200}
+                alt=""
+                className="w-full rounded"
+              />
             </Card>
             <div className=" col-span-3 grid grid-rows-6 gap-4">
-              <Card className=" row-span-2 grid grid-cols-3 text-center">
-                <div className="row-span-1">Giờ</div>
-                <div>Phút</div>
-                <div>Giây</div>
-              </Card>
+              {infor_auction?.auction_start && (
+                <div>
+                  {!startSession && !timeRegister && (
+                    <div>
+                      <CountTime
+                        startTime={Date.now()}
+                        endTime={infor_auction?.auction_start}
+                      />
+                      <Label>Thời gian đến khi bắt đầu phiên đấu giá</Label>
+                    </div>
+                  )}
+                </div>
+              )}
+              {startSession && infor_auction?.auction_end && (
+                <div>
+                  <CountTime
+                    startTime={Date.now()}
+                    endTime={infor_auction?.auction_end}
+                  />
+                  <Label>Thời gian đến khi kết thúc phiên đấu giá</Label>
+                </div>
+              )}
+              {timeRegister && infor_auction?.registration_close && (
+                <div>
+                  <CountTime
+                    startTime={Date.now()}
+                    endTime={infor_auction?.registration_close}
+                  />
+                  <Label>Thời gian đăng ký</Label>
+                </div>
+              )}
               <Card className="row-span-4">
-
-
                 <CardContent className="p-6">
                   <p className="font-bold">Giá cao nhất hiện tại: </p>
-                  <p className="font-bold">Giá khởi điểm: <span className="font-normal">{infor_auction?.starting_price} vnd</span> </p>
                   <p className="font-bold">
-                    Bước giá tối thiểu: <span className="font-normal"> {infor_auction?.bidding_increment} vnd</span>
+                    Giá khởi điểm:{" "}
+                    <span className="font-normal">
+                      {infor_auction?.starting_price} vnd
+                    </span>{" "}
+                  </p>
+                  <p className="font-bold">
+                    Bước giá tối thiểu:{" "}
+                    <span className="font-normal">
+                      {" "}
+                      {infor_auction?.bidding_increment} vnd
+                    </span>
                   </p>
                   <p className="font-bold">Bạn đang trả giá: {offer}</p>
                   {startSession && (
@@ -221,7 +269,18 @@ export default function CustomerDetail({ params, searchParams }: any) {
                       )}
                     </div>
                   )}
-                  {!startSession && (
+                  {!startSession &&
+                    !timeRegister &&
+                    (registered == "VERIFIED" ? (
+                      <Button className="w-full">Đăng ký thành công</Button>
+                    ) : registered == "NOT_REGISTERED_YET" ? (
+                      <Button className="w-full">
+                        Đã quá thời hạn đăng kí tham gia
+                      </Button>
+                    ) : (
+                      <Button className="w-full">Đang chờ phê duyệt</Button>
+                    ))}
+                  {timeRegister && (
                     <div>
                       {registered === "NOT_REGISTERED_YET" && (
                         <AlertDialog>
@@ -300,11 +359,18 @@ export default function CustomerDetail({ params, searchParams }: any) {
             <HistoryBiddingTable
               list_bid={bidding_history}
             ></HistoryBiddingTable>
+            <DataTable
+              columns={bidding_act}
+              data={bidding_history}
+              pageCount={1}
+            />
           </TabsContent>
           <TabsContent value="inform">
-            <BidderAttedTable
-              list_bidder={list_bidder_attend}
-            ></BidderAttedTable>
+            <DataTable
+              columns={attendees_bidding}
+              data={list_bidder_attend}
+              pageCount={1}
+            />
           </TabsContent>
           <TabsContent value="describe">Change your password here.</TabsContent>
           <TabsContent value="document">Change your password here.</TabsContent>
@@ -314,4 +380,31 @@ export default function CustomerDetail({ params, searchParams }: any) {
   );
 }
 
-function CountTime(endTime: any) { }
+const CountTime: React.FC<{
+  startTime: string | number;
+  endTime: string | number;
+}> = ({ startTime, endTime }) => {
+  const countRef = useRef<any>(null);
+  const DateEnd = new Date(endTime);
+  const DateStart = new Date(startTime);
+  const [time, setTime] = useState<number>(0);
+  useEffect(() => {
+    if (startTime && endTime) {
+      console.log(123);
+      setTime(
+        Math.floor(Math.abs(DateStart.getTime() - DateEnd.getTime()) / 1000)
+      );
+      countRef.current = setInterval(() => {
+        setTime((time) => time - 1);
+      }, 1000);
+    }
+  }, []);
+  return (
+    <Card className=" bg-cyan-400 row-span-2 grid grid-cols-4 text-center">
+      <div className="row-span-1">Day: {Math.floor(time / 86400)}</div>
+      <div className="row-span-1">Giờ: {Math.floor(time / 3600) % 24}</div>
+      <div>Phút: {Math.floor(time / 60) % 60}</div>
+      <div>Giây: {time % 60}</div>
+    </Card>
+  );
+};
