@@ -534,6 +534,7 @@ export default class AuctionController {
                 select: "name",
             },
             { path: "winning_bidding", select: "price" },
+            { path: "asset", select: "name description pics docs"}
         ]);
         if (!auction)
             throw new HttpError({
