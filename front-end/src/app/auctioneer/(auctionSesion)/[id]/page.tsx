@@ -156,20 +156,19 @@ export default function AuctionDetail({ params }: any) {
     infor_auction.asset?.pics &&
     infor_auction.asset?.pics[0]
   ) {
-    imageUrl = `${FILE_SERVER_URL}${
-      infor_auction.asset?.pics[0]._id
-    }${path.extname(infor_auction.asset?.pics[0].name)}`;
+    imageUrl = `${FILE_SERVER_URL}${infor_auction.asset?.pics[0]._id
+      }${path.extname(infor_auction.asset?.pics[0].name)}`;
   }
 
   return (
-    <div className="flex flex-col justify-center items-center">
-      <div className="w-[80%] top-0 bot-0">
-        <Card className="top-0 bot-0">
+    <div className="container">
+      <div>
+        <Card>
           <CardHeader>
             <CardTitle>Phiên đấu giá</CardTitle>
             <CardDescription></CardDescription>
           </CardHeader>
-          <CardContent className="grid grid-cols-7 gap-4">
+          <CardContent className="flex flex-row gap-4">
             <div className="basis-1/3">
               <Image
                 src={imageUrl}
@@ -179,7 +178,7 @@ export default function AuctionDetail({ params }: any) {
                 className="w-full rounded "
               />
             </div>
-            <div className=" col-span-3 grid grid-rows-6 gap-4">
+            <div className="basis-2/3">
               {infor_auction?.auction_start && !timeSessionAuction && (
                 <Card>
                   <CountTime
@@ -202,18 +201,19 @@ export default function AuctionDetail({ params }: any) {
                   </div>
                 </Card>
               )}
-              <Card className=" bg-cyan-400 row-span-4">
-                <CardTitle>Đặt giá</CardTitle>
-                <CardContent>
-                  <p>Giá cao nhất hiện tại: {bidding_history[0]?.price}</p>
-                  <p>
-                    Người trả giá cao nhất: {bidding_history[0]?.user?.alias}{" "}
-                    {bidding_history[0]?.user?.name}
-                  </p>
-                  <p>Giá khởi điểm: {infor_auction?.starting_price} vnd</p>
-                  <p>
-                    Bước giá tối thiểu: {infor_auction?.bidding_increment} vnd
-                  </p>
+              <Card className="row-span-4 mt-5">
+                <CardContent className="p-6">
+                  <div className="mb-5">
+                    <p>Giá cao nhất hiện tại: {bidding_history[0]?.price}</p>
+                    <p>
+                      Người trả giá cao nhất: {bidding_history[0]?.user?.alias}{" "}
+                      {bidding_history[0]?.user?.name}
+                    </p>
+                    <p>Giá khởi điểm: {infor_auction?.starting_price} vnd</p>
+                    <p>
+                      Bước giá tối thiểu: {infor_auction?.bidding_increment} vnd
+                    </p>
+                  </div>
                   {timeSessionAuction && (
                     <div className="w-full">
                       {!onSession && (

@@ -80,9 +80,8 @@ export default function PageHeader() {
   ListItem.displayName = "ListItem";
   return (
     <header
-      className={`min-h-[70px] fixed w-screen z-50 flex items-center transition-all duration-300 ${
-        navBar ? "bg-card shadow" : "bg-transparent"
-      }`}
+      className={`min-h-[70px] fixed w-screen z-50 flex items-center transition-all duration-300 ${navBar ? "bg-card shadow" : "bg-transparent"
+        }`}
     >
       <div className="container">
         <div className="flex justify-between gap-4">
@@ -96,9 +95,8 @@ export default function PageHeader() {
                 <NavigationMenuItem>
                   <Link href="/" legacyBehavior passHref>
                     <NavigationMenuLink
-                      className={`${navigationMenuTriggerStyle()} ${
-                        navBar ? "text-black dark:text-white" : "text-white"
-                      }`}
+                      className={`${navigationMenuTriggerStyle()} ${navBar ? "text-black dark:text-white" : "text-white"
+                        }`}
                     >
                       Trang chủ
                     </NavigationMenuLink>
@@ -107,9 +105,8 @@ export default function PageHeader() {
 
                 <NavigationMenuItem>
                   <NavigationMenuTrigger
-                    className={`${navigationMenuTriggerStyle()} ${
-                      navBar ? "text-black dark:text-white" : "text-white"
-                    }`}
+                    className={`${navigationMenuTriggerStyle()} ${navBar ? "text-black dark:text-white" : "text-white"
+                      }`}
                   >
                     Cuộc đấu giá
                   </NavigationMenuTrigger>
@@ -117,19 +114,9 @@ export default function PageHeader() {
                     <ul className="gap-3 p-5 md:w-[300px] lg:w-[300px] lg:grid-cols-[.75fr_1fr]">
                       <ListItem
                         href="/item"
-                        title="Cuộc đáu giá sắp diễn ra"
+                        title="Cuộc đáu giá "
                         className="hover:text-highlightColor"
-                      ></ListItem>
-                      <ListItem
-                        href="/item"
-                        title="Cuộc đấu giá đang diễn ra"
-                        className="hover:text-highlightColor"
-                      ></ListItem>
-                      <ListItem
-                        href="/item"
-                        title="Cuộc đấu giá đã diễn"
-                        className="hover:text-highlightColor"
-                      ></ListItem>
+                      />
                     </ul>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
@@ -137,9 +124,8 @@ export default function PageHeader() {
                 <NavigationMenuItem>
                   <Link href="/" legacyBehavior passHref>
                     <NavigationMenuLink
-                      className={`${navigationMenuTriggerStyle()} ${
-                        navBar ? "text-black dark:text-white" : "text-white"
-                      }`}
+                      className={`${navigationMenuTriggerStyle()} ${navBar ? "text-black dark:text-white" : "text-white"
+                        }`}
                     >
                       Liên hệ
                     </NavigationMenuLink>
