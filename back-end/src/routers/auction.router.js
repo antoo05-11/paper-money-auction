@@ -69,10 +69,10 @@ export default [
                 httpMethod: "get",
                 path: "/auction/:id",
                 method: "viewAuction",
-                // initialLog: {
-                //     activityCode: activityCode.AUCTION.GET_BY_ID,
-                //     objectClass: objectClass.AUCTION
-                // }
+                initialLog: {
+                    activityCode: activityCode.AUCTION.GET_BY_ID,
+                    objectClass: objectClass.AUCTION
+                }
             },
             {
                 httpMethod: "get",
