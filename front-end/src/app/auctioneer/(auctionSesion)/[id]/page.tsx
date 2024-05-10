@@ -180,7 +180,7 @@ export default function AuctionDetail({ params }: any) {
             <Card className="bg-cyan-400 col-span-4">Hinh anh</Card>
             <div className=" col-span-3 grid grid-rows-6 gap-4">
               {infor_auction?.auction_start && !timeSessionAuction && (
-                <div>
+                <Card>
                   <CountTime
                     startTime={infor_auction?.auction_start}
                     endTime={Date.now()}
@@ -191,7 +191,7 @@ export default function AuctionDetail({ params }: any) {
                 </Card>
               )}
               {infor_auction?.auction_end && timeSessionAuction && (
-                <div>
+                <Card>
                   <CountTime
                     startTime={infor_auction?.auction_end}
                     endTime={Date.now()}
@@ -357,30 +357,22 @@ const CountTime: React.FC<{
     <div className="row-span-2 flex flex-row justify-evenly text-center p-3">
       <div>
         <div className="row-span-1 font-bold">Ngày</div>
-        <div className="text-2xl">
-          {Math.floor(time / 86400)}
-        </div>
+        <div className="text-2xl">{Math.floor(time / 86400)}</div>
       </div>
 
       <div>
         <div className="row-span-1 font-bold">Giờ</div>
-        <div className="text-2xl">
-          {Math.floor(time / 3600) % 24}
-        </div>
+        <div className="text-2xl">{Math.floor(time / 3600) % 24}</div>
       </div>
 
       <div>
         <div className="row-span-1 font-bold">Phút</div>
-        <div className="text-2xl">
-          {Math.floor(time / 60) % 60}
-        </div>
+        <div className="text-2xl">{Math.floor(time / 60) % 60}</div>
       </div>
 
       <div>
         <div className="row-span-1 font-bold">Giây</div>
-        <div className="text-2xl">
-          {time % 60}
-        </div>
+        <div className="text-2xl">{time % 60}</div>
       </div>
     </div>
   );
