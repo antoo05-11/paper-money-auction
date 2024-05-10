@@ -91,18 +91,18 @@ export type auctioneerData = {
 };
 
 export type auctionData = {
-    _id: string;
-    asset: {
-        name: string;
-    };
-    starting_price?: number;
-    bidding_increment?: number;
-    deposit?: number;
-    registration_open?: Date;
-    registration_close?: Date;
-    auction_start?: Date;
-    auction_end?: Date;
-    max_number_of_bidder?: number;
+  _id?: string | undefined;
+  asset?: {
+    name?: string | undefined;
+  };
+  starting_price?: number | undefined;
+  bidding_increment?: number | undefined;
+  deposit?: number | undefined;
+  registration_open?: Date | undefined;
+  registration_close?: Date | undefined;
+  auction_start?: Date | undefined;
+  auction_end?: Date | undefined;
+  max_number_of_bidder?: number | undefined;
 };
 
 export type filterAuctionData = {

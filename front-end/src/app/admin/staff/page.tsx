@@ -132,6 +132,7 @@ export default function Page() {
                       <Input
                         id="width"
                         placeholder="Lọc theo tên"
+                        value={filter?.name}
                         className="h-8"
                         defaultValue={""}
                         onChange={(e) => {
@@ -148,6 +149,7 @@ export default function Page() {
                       <Input
                         id="maxWidth"
                         placeholder="Lọc theo email"
+                        value={filter?.email}
                         className="h-8"
                         onChange={(e) => {
                           setFilter(prevFilter => ({
@@ -162,6 +164,7 @@ export default function Page() {
                       <Input
                         id="height"
                         placeholder="Lọc theo số điện thoại"
+                        value={filter?.phone}
                         className="h-8"
                         onChange={(e) => {
                           setFilter(prevFilter => ({

@@ -72,7 +72,7 @@ export const columns: ColumnDef<userData>[] = [
         ),
         cell: ({ row }) => {
             const status = row.getValue("active") as String;
-            const variant = status === "Đình chỉ" ? "default" : "common";
+            const variant = status === "Đình chỉ" ? "destructive" : "default";
             return (
                 <div className="flex justify-center items-center">
                     <Badge variant={variant}>

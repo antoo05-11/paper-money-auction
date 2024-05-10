@@ -55,7 +55,7 @@ export function updatePassword(data: any) {
 }
 
 export function suspenUser(id: String, data: any) {
-  return request.put(`api/user/suspend/${id}`, { data: data })
+  return request.put(`api/user/suspend/${id}`, { data: data });
 }
 
 //payment
@@ -102,7 +102,7 @@ export function verifyAsset(id: String, data: any) {
 
 // auction
 export function createAuction(data: any) {
-  return request.post("api/aution/create", { data: data });
+  return request.post("api/auction", data);
 }
 
 export function addAuctionDocument(id: String, docs: BinaryData) {
@@ -113,6 +113,17 @@ export function listAuction(data: any) {
   if (data) return request.get("api/auction", { params: data });
   else return request.get("api/auction");
 }
+
+export function listOwnAuction(data: any) {
+  if (data) return request.get("api/auction/owned", { params: data });
+  else return request.get("api/auction/owned");
+}
+
+export function listRegisteredAuction(data: any) {
+  if (data) return request.get("api/auction/registered", { params: data });
+  else return request.get("api/auction/registered");
+}
+
 export function viewAuctionInfo(id: String) {
   return request.get(`api/auction/${id}`);
 }
@@ -129,6 +140,12 @@ export function joinAuctionSession(auction_id: String) {
 
 export function listAuctionManaging(data: any) {
   return request.get("api/auction/managing", { params: data });
+}
+
+export function payDeposit(auction_id: any, amount: any) {
+  return request.post(`/api/payment/${auction_id}`, {
+    data: { type: "DEPOSIT", amount: amount },
+  });
 }
 
 //bidder

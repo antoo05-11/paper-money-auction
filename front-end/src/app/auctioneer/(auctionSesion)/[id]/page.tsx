@@ -33,36 +33,51 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Car } from "lucide-react";
-import { useRef, useState } from "react";
-import { viewAuctionInfo } from "@/app/api/apiEndpoints";
+import React, { useRef, useState } from "react";
+import { listBidder, viewAuctionInfo } from "@/app/api/apiEndpoints";
 import { useEffect } from "react";
 import { joinAuctionSession } from "@/app/api/apiEndpoints";
 import { socket } from "@/app/socket";
 import ListBidder from "../../_component/ListBidder";
-import HistoryBiddingTable from "../_component/HistoryBiddingTable";
-import BidderAttedTable from "../_component/BidderAttendTable";
-export default function CustomerDetail({ params }: any) {
+import {
+  attendees_bidding,
+  verified_bidder,
+  bidding_act,
+} from "../_component/columns";
+import { DataTable } from "@/components/ui/data-table";
+import CompareDate from "@/app/component/function";
+import { Label } from "@radix-ui/react-dropdown-menu";
+import Image from "next/image";
+import path from "path";
+
+const FILE_SERVER_URL =
+  process.env.FILE_SERVER ||
+  "https://muzik-files-server.000webhostapp.com/paper-money-auction-files/asset-docs/";
+
+export default function AuctionDetail({ params }: any) {
   const [isConnected, setIsConnected] = useState(false);
   const id = params.id;
   const [infor_auction, set_infor_auction] = useState<any>();
   const [startSession, setStartSession] = useState(true);
   const [onSession, setOnSession] = useState(false);
-  const [list_bidder, update_list_bidder] = useState();
+  const [list_bidder, update_list_bidder] = useState<any>();
   const [autionToken, setAutionToken] = useState<string>();
   const [time, setTime] = useState(Date.now());
   const [list_bidder_attend, update_list_bidder_attend] = useState<any>([]);
   const [bidding_history, update_bidding_history] = useState<any>([]);
   useEffect(() => {
     const fetchData = async () => {
-      const listFisrt = await viewAuctionInfo(id);
-      // const json = await listFisrt.json()
-      const data_use = await listFisrt.data;
-      // console.log(data_use);
-      set_infor_auction(data_use);
+      const dataAution = await viewAuctionInfo(id)
+        .then((data) => data.data)
+        .then((data) => set_infor_auction(data))
+        .catch(console.error);
+      const dataBidder = await listBidder(id)
+        .then((data) => data.data.data)
+        .then((data) => update_list_bidder(data))
+        .catch(console.error);
+      setStartSession(CompareDate(Date.now(), infor_auction?.auction_start));
     };
-    const result = fetchData()
-      // make sure to catch any error
-      .catch(console.error);
+    const result = fetchData().catch(console.error);
   }, []);
 
   useEffect(() => {
@@ -73,12 +88,10 @@ export default function CustomerDetail({ params }: any) {
         ""
       );
       setAutionToken(token);
-      // console.log(token);
     };
     function onConnect() {
       setIsConnected(true);
     }
-
     function onDisconnect() {
       setIsConnected(false);
     }
@@ -131,33 +144,59 @@ export default function CustomerDetail({ params }: any) {
     }
   }, [onSession]);
 
-  return (
-    <div className="flex flex-col justify-center items-center">
-      <Button
-        onClick={() => {
-          // const hihi = new Date(infor_auction?.auction_end);
-          console.log(bidding_history);
 
-          // console.log(autionToken);
-          // console.log(socket.connected);
-        }}
-      >
-        {isConnected && <div>Connected</div>}
-        {!isConnected && <div>Disconnected</div>}
-      </Button>
-      <div className="w-[80%] top-0 bot-0">
-        <Card className="top-0 bot-0">
+  let imageUrl = "";
+  if (infor_auction && infor_auction.asset?.pics && infor_auction.asset?.pics[0]) {
+    imageUrl = `${FILE_SERVER_URL}${infor_auction.asset?.pics[0]._id}${path.extname(
+      infor_auction.asset?.pics[0].name
+    )}`;
+  }
+
+  return (
+    <div className="container">
+      <div>
+        <Card>
           <CardHeader>
             <CardTitle>Phiên đấu giá</CardTitle>
             <CardDescription></CardDescription>
           </CardHeader>
-          <CardContent className="grid grid-cols-7 gap-4">
-            <Card className="bg-cyan-400 col-span-4">Hinh anh</Card>
-            <div className=" col-span-3 grid grid-rows-6 gap-4">
-              {CountTime(new Date(infor_auction?.auction_start))}
-              <Card className=" bg-cyan-400 row-span-4">
-                <CardTitle>Đặt giá</CardTitle>
-                <CardContent>
+
+          <CardContent className="flex flex-row gap-4">
+            <div className="basis-1/3">
+              <Image
+                src={imageUrl}
+                width={300}
+                height={200}
+                alt=""
+                className="w-full rounded "
+              />
+            </div>
+
+            <div className="basis-2/3">
+              {infor_auction?.auction_start && !startSession && (
+                <Card>
+                  <CountTime
+                    startTime={infor_auction?.auction_start}
+                    endTime={Date.now()}
+                  />
+                  <div className="flex justify-center mb-1">
+                    <Label>Thời gian bắt đầu phiên đấu giá còn</Label>
+                  </div>
+                </Card>
+              )}
+              {infor_auction?.auction_end && startSession && (
+                <Card>
+                  <CountTime
+                    startTime={infor_auction?.auction_end}
+                    endTime={Date.now()}
+                  />
+                  <div className="flex justify-center mb-1">
+                    <Label>Thời gian phiên đấu giá còn</Label>
+                  </div>
+                </Card>
+              )}
+              <Card className="mt-3">
+                <CardContent className="p-6">
                   <p>Giá cao nhất hiện tại</p>
                   <p>Người trả giá cao nhất</p>
                   <p>Giá khởi điểm: {infor_auction?.starting_price} vnd</p>
@@ -168,7 +207,7 @@ export default function CustomerDetail({ params }: any) {
                     <div className="w-full">
                       {!onSession && (
                         <AlertDialog>
-                          <AlertDialogTrigger>
+                          <AlertDialogTrigger asChild>
                             <Button className="w-full">
                               Bắt đầu phiên đấu giá
                             </Button>
@@ -229,64 +268,133 @@ export default function CustomerDetail({ params }: any) {
           </CardContent>
           <CardFooter className="flex flex-col"></CardFooter>
         </Card>
-        <Tabs>
+        <Tabs defaultValue="describe">
           <TabsList>
-            <TabsTrigger value="history">Lịch sử đặt giá</TabsTrigger>
-            <TabsTrigger value="inform">Thông tin đấu giá</TabsTrigger>
+            {startSession && (
+              <TabsTrigger value="history">Lịch sử đặt giá</TabsTrigger>
+            )}
+            <TabsTrigger value="inform">
+              {startSession ? (
+                <text>Phê duyệt tham gia đấu giá</text>
+              ) : (
+                <text>Danh sách người đấu giá</text>
+              )}
+            </TabsTrigger>
             <TabsTrigger value="describe">Mô tả tài sản</TabsTrigger>
             <TabsTrigger value="document">Tài liệu liên quan</TabsTrigger>
           </TabsList>
           <TabsContent value="history">
-            <HistoryBiddingTable
-              list_bid={bidding_history}
-            ></HistoryBiddingTable>
+            <DataTable
+              columns={bidding_act}
+              data={bidding_history}
+              pageCount={0}
+            ></DataTable>
           </TabsContent>
           <TabsContent value="inform">
-            <BidderAttedTable
-              list_bidder={list_bidder_attend}
-            ></BidderAttedTable>
+            {startSession && (
+              <DataTable
+                columns={attendees_bidding}
+                data={list_bidder_attend}
+                pageCount={0}
+              />
+            )}
+            {!startSession && (
+              <DataTable
+                columns={verified_bidder}
+                data={list_bidder}
+                pageCount={1}
+              />
+            )}
           </TabsContent>
-          <TabsContent value="describe">Change your password here.</TabsContent>
-          <TabsContent value="document">Change your password here.</TabsContent>
+          <TabsContent value="describe">
+            <Card>
+              <CardContent className="p-6">
+                <div>
+                  <p className="text-2xl font-bold">
+                    Tên tài sản: {infor_auction?.asset?.name}
+                  </p>
+                  <p className="text-slate-500 dark:text-slate-400 mt-2">
+                    Mô tả tài sản: {infor_auction?.asset?.description}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="document">
+            <Card>
+              <CardContent className="p-6">
+                {infor_auction?.asset?.docs.map(
+                  (doc: { name: string; _id: string }) => (
+                    <div key={doc._id} className="underline">
+                      <a
+                        href={`${FILE_SERVER_URL}/${doc._id}${path.extname(
+                          doc.name
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {doc.name}
+                      </a>
+                    </div>
+                  )
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
     </div>
   );
 }
 
-function CountTime(endTime: Date) {
+const CountTime: React.FC<{
+  startTime: string | number;
+  endTime: string | number;
+}> = ({ startTime, endTime }) => {
   const countRef = useRef<any>(null);
-  const startTime = new Date(Date.now());
-  const [time, setTime] = useState<any>();
-  const [start, setStart] = useState<boolean>();
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     if (start) setStart(true);
-  //   }),
-  //     1000;
-  // }, []);
-  // useEffect(() => {
-  //   if (start) {
-  //     countRef.current = setInterval(() => {
-  //       setTime(time - 1);
-  //     }, 1000);
-  //   }
-  // }, [start]);
+  const DateEnd = new Date(endTime);
+  const DateStart = new Date(startTime);
+  const [time, setTime] = useState<number>(0);
+  useEffect(() => {
+    if (startTime && endTime) {
+      console.log(123);
+      setTime(
+        Math.floor(Math.abs(DateStart.getTime() - DateEnd.getTime()) / 1000)
+      );
+      countRef.current = setInterval(() => {
+        setTime((time) => time - 1);
+      }, 1000);
+    }
+  }, []);
   return (
-    <Card className=" bg-cyan-400 row-span-2 grid grid-cols-4 text-center">
-      <div className="row-span-1">Day</div>
-      <div className="row-span-1">Giờ</div>
-      <div>Phút</div>
-      {/* <div>Giây</div> */}
-      <button
-        onClick={() => {
-          // console.log((end.getTime() - start.getTime()) / 3600);
-          // console.log("start" + start.getTime());
-          // console.log("end" + end.getDay());
-        }}
-      >
-        Test
-      </button>
-    </Card>
+    <div className="row-span-2 flex flex-row justify-evenly text-center p-3">
+      <div>
+        <div className="row-span-1 font-bold">Ngày</div>
+        <div className="text-2xl">
+          {Math.floor(time / 86400)}
+        </div>
+      </div>
+
+      <div>
+        <div className="row-span-1 font-bold">Giờ</div>
+        <div className="text-2xl">
+          {Math.floor(time / 3600) % 24}
+        </div>
+      </div>
+
+      <div>
+        <div className="row-span-1 font-bold">Phút</div>
+        <div className="text-2xl">
+          {Math.floor(time / 60) % 60}
+        </div>
+      </div>
+
+      <div>
+        <div className="row-span-1 font-bold">Giây</div>
+        <div className="text-2xl">
+          {time % 60}
+        </div>
+      </div>
+    </div>
   );
-}
+};

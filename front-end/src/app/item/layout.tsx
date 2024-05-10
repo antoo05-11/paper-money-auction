@@ -12,10 +12,10 @@ export default async function Layout({
 }) {
   // const featuredPosts = await getFeaturedPosts()
   return (
-    <div className="bg-[url(/demo.png)] dark:bg-[url(/Shape.png)] bg-cover">
-      {/* <PageHeader /> */}
+    <div className="bg-[url(/demo.png)] dark:bg-[url(/Shape.jpg)] bg-cover">
+      <PageHeader />
       {children}
-      {/* <PageFooter /> */}
+      <PageFooter />
     </div>
   );
 }

@@ -33,7 +33,6 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { getUserProfileByID, verifyBidder } from "@/app/api/apiEndpoints";
 import { HTTP_STATUS } from "@/lib/constant/constant";
-import { useToast } from "@/components/ui/use-toast";
 const ActionCell: React.FC<{ row: any }> = ({ row }) => {
   const asset = row.original;
   const route = useRouter();
@@ -49,7 +48,7 @@ const ActionCell: React.FC<{ row: any }> = ({ row }) => {
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>Chi tiết</DropdownMenuLabel>
         <DropdownMenuItem
-          onClick={(e: any) => {
+          onClick={(e) => {
             route.push(path_name + "/" + asset._id);
           }}
         >
@@ -247,7 +246,7 @@ export const verified_bidder: ColumnDef<any>[] = [
     cell: ({ row }) => {
       return (
         <VerifyBidder
-          auction_id={row.original?.auction}
+          auction_id={row.original?.aution}
           bidder_id={row.original?.bidder}
         />
       );
@@ -259,7 +258,6 @@ const VerifyBidder: React.FC<{ auction_id: any; bidder_id: any }> = ({
   auction_id,
   bidder_id,
 }) => {
-  const { toast } = useToast();
   const [customer_profile, set_customer_profile] = useState<userData>();
   const [success, setSuccess] = useState<boolean>();
   useEffect(() => {
@@ -332,21 +330,21 @@ const VerifyBidder: React.FC<{ auction_id: any; bidder_id: any }> = ({
                 <Label htmlFor="phone">Trạng thái</Label>
                 {/* <Input id="phone" defaultValue={customer_profile?.active ? 'Hoạt động' : 'Đình chỉ'} disabled className="rounded-full" /> */}
                 {/* <Select
-                  defaultValue={customer_profile?.active?.toString()}
-                  onValueChange={(e) => {
-                    handleSuspendUser(e);
-                  }}
-                >
-                  <SelectTrigger className="w-full rounded-full">
-                    <SelectValue placeholder="" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="true">Hoạt động</SelectItem>
-                      <SelectItem value="false">Đình chỉ</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select> */}
+                    defaultValue={customer_profile?.active?.toString()}
+                    onValueChange={(e) => {
+                      handleSuspendUser(e);
+                    }}
+                  >
+                    <SelectTrigger className="w-full rounded-full">
+                      <SelectValue placeholder="" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="true">Hoạt động</SelectItem>
+                        <SelectItem value="false">Đình chỉ</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select> */}
               </div>
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="email">Xác minh</Label>
@@ -376,21 +374,14 @@ const VerifyBidder: React.FC<{ auction_id: any; bidder_id: any }> = ({
           <Button
             onClick={() => {
               const verify = async () => {
-                console.log(auction_id);
-
                 await verifyBidder(bidder_id, auction_id)
                   .then((res) => {
                     if (res.status == HTTP_STATUS.OK) {
-                      toast({
-                        title: "Xác thực thành công",
-                        description: `Người đấu giá có ID: ${bidder_id} tham gia phiên đấu giá `,
-                      });
-                      setSuccess(false);
+                      setSuccess(true);
                     }
                   })
                   .catch(console.error);
               };
-              verify().catch(console.log);
             }}
           >
             Phê duyệt
@@ -403,15 +394,6 @@ const VerifyBidder: React.FC<{ auction_id: any; bidder_id: any }> = ({
 
 export const bidding_act: ColumnDef<any>[] = [
   {
-    accessorKey: "stt",
-    header: () => <div className="flex justify-center items-center"> STT </div>,
-    cell: ({ row }) => (
-      <div className="flex justify-center items-center">
-        <span> {row.index + 1}</span>
-      </div>
-    ),
-  },
-  {
     accessorKey: "alias",
     header: () => (
       <div className="flex justify-center items-center">Bí danh</div>
@@ -421,17 +403,6 @@ export const bidding_act: ColumnDef<any>[] = [
         <div className="flex justify-center items-center">
           {row.original?.user?.alias}
         </div>
-      );
-    },
-  },
-  {
-    accessorKey: "penalty",
-    header: () => <div className="flex justify-center items-center">Phạt</div>,
-    cell: ({ row }) => {
-      return row.original?.user?.penalty ? (
-        <div className="flex justify-center items-center">Có</div>
-      ) : (
-        <div className="flex justify-center items-center">Không</div>
       );
     },
   },
