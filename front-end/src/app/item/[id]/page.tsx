@@ -49,6 +49,12 @@ import CompareDate from "@/app/component/function";
 import Image from "next/image";
 import { DataTable } from "@/components/ui/data-table";
 import { attendees_bidding, bidding_act } from "../_component/columns";
+import path from "path";
+
+const FILE_SERVER_URL =
+  process.env.FILE_SERVER ||
+  "https://muzik-files-server.000webhostapp.com/paper-money-auction-files/asset-docs/";
+
 
 export default function CustomerDetail({ params, searchParams }: any) {
   const { toast } = useToast();
@@ -65,6 +71,14 @@ export default function CustomerDetail({ params, searchParams }: any) {
   const [list_bidder_attend, update_list_bidder_attend] = useState<any>([]);
   const [offer, setOffer] = useState<any>();
   const inputOffer = useRef<any>();
+
+  let imageUrl = "";
+  if (infor_auction && infor_auction.asset?.pics && infor_auction.asset?.pics[0]) {
+    imageUrl = `${FILE_SERVER_URL}${infor_auction.asset?.pics[0]._id}${path.extname(
+      infor_auction.asset?.pics[0].name
+    )}`;
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       const data_get = await viewAuctionInfo(id);
@@ -160,7 +174,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
           <CardContent className="grid grid-cols-8 gap-4">
             <div className="col-span-2">
               <Image
-                src="/demoimage.jpg"
+                src={imageUrl}
                 width={300}
                 height={200}
                 alt=""
@@ -390,7 +404,27 @@ export default function CustomerDetail({ params, searchParams }: any) {
               </CardContent>
             </Card>
           </TabsContent>
-          <TabsContent value="document">Change your password here.</TabsContent>
+          <TabsContent value="document">
+            <Card>
+              <CardContent className="p-6">
+                {infor_auction?.asset?.docs.map(
+                  (doc: { name: string; _id: string }) => (
+                    <div key={doc._id} className="underline">
+                      <a
+                        href={`${FILE_SERVER_URL}/${doc._id}${path.extname(
+                          doc.name
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {doc.name}
+                      </a>
+                    </div>
+                  )
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
     </div>
