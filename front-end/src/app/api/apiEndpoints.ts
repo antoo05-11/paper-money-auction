@@ -142,6 +142,12 @@ export function listAuctionManaging(data: any) {
   return request.get("api/auction/managing", { params: data });
 }
 
+export function payDeposit(auction_id: any, amount: any) {
+  return request.post(`/api/payment/${auction_id}`, {
+    data: { type: "DEPOSIT", amount: amount },
+  });
+}
+
 //bidder
 export function listBidder(auction_id: any) {
   return request.get(`/api/auction/${auction_id}/bidders`);
