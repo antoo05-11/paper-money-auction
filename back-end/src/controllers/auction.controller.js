@@ -1,29 +1,28 @@
-import {HttpError} from '../utils/http.error';
-import errorCode from '../constants/error.code';
-import {Auction} from '../models/auction';
-import {Asset} from '../models/asset';
-import {Participation} from '../models/participation';
-import auctionStatus from '../constants/auction.status';
-import _, {ceil, parseInt} from 'lodash';
-import jwt from 'jsonwebtoken';
-import participationStatus from '../constants/participation.status';
-import userRole from '../constants/user.role';
-import {Bidding} from '../models/bidding';
-import mongoose from 'mongoose';
+import { HttpError } from "../utils/http.error";
+import errorCode from "../constants/error.code";
+import { Auction } from "../models/auction";
+import { Asset } from "../models/asset";
+import { Participation } from "../models/participation";
+import auctionStatus from "../constants/auction.status";
+import _, { ceil, parseInt } from "lodash";
+import jwt from "jsonwebtoken";
+import participationStatus from "../constants/participation.status";
+import userRole from "../constants/user.role";
+import { Bidding } from "../models/bidding";
+import mongoose from "mongoose";
 
 export default class AuctionController {
-    constructor() {
-    }
+    constructor() {}
 
     createAuction = async (req, res) => {
-        const {user} = req;
-        const {data} = req.body;
+        const { user } = req;
+        const { data } = req.body;
 
         const asset = await Asset.findById(data.asset);
         if (!asset)
-            throw new HttpError({...errorCode.ASSET.NOT_FOUND, status: 403});
+            throw new HttpError({ ...errorCode.ASSET.NOT_FOUND, status: 403 });
 
-        const uploadedDocs = _.map(req.files['docs'], 'originalname'); // Replace this with real files url return from server
+        const uploadedDocs = _.map(req.files["docs"], "originalname"); // Replace this with real files url return from server
 
         data.docs = uploadedDocs;
         data.auctioneer = user._id;
@@ -38,65 +37,79 @@ export default class AuctionController {
     };
 
     listAuction = async (req, res) => {
-        const {query} = req;
+        const { query } = req;
 
         const pageSize = parseInt(query.page_size || 10);
         const pageIndex = parseInt(query.page || 1);
 
-        const {addFieldsStage, dateMatchFilter, dateSortObject} = this.#createFilterForAuction(query);
+        const { addFieldsStage, dateMatchFilter, dateSortObject } =
+            this.#createFilterForAuction(query);
 
         // Start find with filter.
         const auctions = await Auction.aggregate([
             addFieldsStage,
-            {$match: dateMatchFilter},
+            { $match: dateMatchFilter },
             {
                 $lookup: {
-                    from: 'assets',
-                    localField: 'asset',
-                    foreignField: '_id',
+                    from: "assets",
+                    localField: "asset",
+                    foreignField: "_id",
                     pipeline: [
                         {
                             $match: {
-                                $or: [{name: {$regex: query.asset || ''}},
-                                    {description: {$regex: query.asset || ''}}]
-                            }
+                                $or: [
+                                    { name: { $regex: query.asset || "" } },
+                                    {
+                                        description: {
+                                            $regex: query.asset || "",
+                                        },
+                                    },
+                                ],
+                            },
                         },
                         {
                             $project: {
                                 _id: 0,
-                                name: 1
-                            }
-                        }
+                                name: 1,
+                                description: 1,
+                                pics: 1,
+                            },
+                        },
                     ],
-                    as: 'assets'
-                }
+                    as: "assets",
+                },
             },
             {
                 $addFields: {
                     asset: {
                         $cond: {
-                            if: {$gt: [{$size: "$assets"}, 0]},
-                            then: {$arrayElemAt: ["$assets", 0]},
-                            else: {}
-                        }
-                    }
-                }
+                            if: { $gt: [{ $size: "$assets" }, 0] },
+                            then: { $arrayElemAt: ["$assets", 0] },
+                            else: {},
+                        },
+                    },
+                },
             },
-            {$match: {assets: {$ne: []}}},
-            {$sort: dateSortObject},
+            { $match: { assets: { $ne: [] } } },
+            { $sort: dateSortObject },
 
             {
                 $group: {
                     _id: null,
-                    count: {$sum: 1},
-                    entries: {$push: "$$ROOT"}
-                }
-            }, {
+                    count: { $sum: 1 },
+                    entries: { $push: "$$ROOT" },
+                },
+            },
+            {
                 $addFields: {
                     auctions: {
-                        $slice: ['$entries', (pageIndex - 1) * pageSize, pageIndex * pageSize]
-                    }
-                }
+                        $slice: [
+                            "$entries",
+                            (pageIndex - 1) * pageSize,
+                            pageIndex * pageSize,
+                        ],
+                    },
+                },
             },
             {
                 $project: {
@@ -108,10 +121,10 @@ export default class AuctionController {
                         registration_open: 1,
                         registration_close: 1,
                         starting_price: 1,
-                        asset: 1
-                    }
-                }
-            }
+                        asset: 1,
+                    },
+                },
+            },
         ]);
 
         let payload;
@@ -119,13 +132,13 @@ export default class AuctionController {
             payload = {
                 page: pageIndex,
                 totalPages: 0,
-                auctions: []
+                auctions: [],
             };
         } else {
             payload = {
                 page: pageIndex,
                 totalPages: ceil(auctions[0].count / pageSize),
-                auctions: auctions[0].auctions
+                auctions: auctions[0].auctions,
             };
         }
         return res.status(200).json(payload);
@@ -133,92 +146,105 @@ export default class AuctionController {
 
     listRegisteredAuction = async (req, res) => {
         const user = req.user;
-        const {query} = req;
+        const { query } = req;
 
         const pageSize = parseInt(query.page_size || 10);
         const pageIndex = parseInt(query.page || 1);
 
-        const {addFieldsStage, dateMatchFilter, dateSortObject} = this.#createFilterForAuction(query);
+        const { addFieldsStage, dateMatchFilter, dateSortObject } =
+            this.#createFilterForAuction(query);
 
         // Start find with filter.
         const auctions = await Auction.aggregate([
             addFieldsStage,
-            {$match: dateMatchFilter},
+            { $match: dateMatchFilter },
             {
                 $lookup: {
-                    from: 'participations',
-                    as: 'participations',
-                    localField: '_id',
-                    foreignField: 'auction',
+                    from: "participations",
+                    as: "participations",
+                    localField: "_id",
+                    foreignField: "auction",
                     pipeline: [
                         {
                             $match: {
-                                bidder: {$eq: user._id}
-                            }
-                        }
-                    ]
-                }
+                                bidder: { $eq: user._id },
+                            },
+                        },
+                    ],
+                },
             },
-            {$match: {participations: {$ne: []}}},
+            { $match: { participations: { $ne: [] } } },
             {
                 $addFields: {
                     participation: {
                         $cond: {
-                            if: {$gt: [{$size: "$participations"}, 0]},
-                            then: {$arrayElemAt: ["$participations", 0]},
-                            else: {}
-                        }
-                    }
-                }
+                            if: { $gt: [{ $size: "$participations" }, 0] },
+                            then: { $arrayElemAt: ["$participations", 0] },
+                            else: {},
+                        },
+                    },
+                },
             },
             {
                 $lookup: {
-                    from: 'assets',
-                    localField: 'asset',
-                    foreignField: '_id',
+                    from: "assets",
+                    localField: "asset",
+                    foreignField: "_id",
                     pipeline: [
                         {
                             $match: {
-                                $or: [{name: {$regex: query.asset || ''}},
-                                    {description: {$regex: query.asset || ''}}]
-                            }
+                                $or: [
+                                    { name: { $regex: query.asset || "" } },
+                                    {
+                                        description: {
+                                            $regex: query.asset || "",
+                                        },
+                                    },
+                                ],
+                            },
                         },
                         {
                             $project: {
                                 _id: 0,
-                                name: 1
-                            }
-                        }
+                                name: 1,
+                                description: 1,
+                            },
+                        },
                     ],
-                    as: 'assets'
-                }
+                    as: "assets",
+                },
             },
             {
                 $addFields: {
                     asset: {
                         $cond: {
-                            if: {$gt: [{$size: "$assets"}, 0]},
-                            then: {$arrayElemAt: ["$assets", 0]},
-                            else: {}
-                        }
-                    }
-                }
+                            if: { $gt: [{ $size: "$assets" }, 0] },
+                            then: { $arrayElemAt: ["$assets", 0] },
+                            else: {},
+                        },
+                    },
+                },
             },
-            {$match: {assets: {$ne: []}}},
-            {$sort: dateSortObject},
+            { $match: { assets: { $ne: [] } } },
+            { $sort: dateSortObject },
 
             {
                 $group: {
                     _id: null,
-                    count: {$sum: 1},
-                    entries: {$push: "$$ROOT"}
-                }
-            }, {
+                    count: { $sum: 1 },
+                    entries: { $push: "$$ROOT" },
+                },
+            },
+            {
                 $addFields: {
                     auctions: {
-                        $slice: ['$entries', (pageIndex - 1) * pageSize, pageIndex * pageSize]
-                    }
-                }
+                        $slice: [
+                            "$entries",
+                            (pageIndex - 1) * pageSize,
+                            pageIndex * pageSize,
+                        ],
+                    },
+                },
             },
             {
                 $project: {
@@ -231,11 +257,11 @@ export default class AuctionController {
                         registration_close: 1,
                         asset: 1,
                         participation: {
-                            verified: 1
-                        }
-                    }
-                }
-            }
+                            verified: 1,
+                        },
+                    },
+                },
+            },
         ]);
 
         let payload;
@@ -244,13 +270,13 @@ export default class AuctionController {
             payload = {
                 page: pageIndex,
                 totalPages: 0,
-                auctions: []
+                auctions: [],
             };
         } else {
             payload = {
                 page: pageIndex,
                 totalPages: ceil(auctions[0].count / pageSize),
-                auctions: auctions[0].auctions
+                auctions: auctions[0].auctions,
             };
         }
         return res.status(200).json(payload);
@@ -258,14 +284,15 @@ export default class AuctionController {
 
     listManagingAuction = async (req, res) => {
         const user = req.user;
-        const {query} = req;
+        const { query } = req;
 
         let auctioneerId;
         if (user.role === userRole.ADMIN) {
             auctioneerId = query.auctioneer_id;
             if (!auctioneerId) {
-                const error = {...errorCode.LACK_INFO_QUERY};
-                error.message += " Field `auctioneer_id` is required in query package."
+                const error = { ...errorCode.LACK_INFO_QUERY };
+                error.message +=
+                    " Field `auctioneer_id` is required in query package.";
                 throw new HttpError({
                     ...error,
                     status: 400,
@@ -273,66 +300,85 @@ export default class AuctionController {
             }
         } else auctioneerId = user._id;
 
-        console.log(auctioneerId)
+        console.log(auctioneerId);
 
         const pageSize = parseInt(query.page_size || 10);
         const pageIndex = parseInt(query.page || 1);
 
-        const {addFieldsStage, dateMatchFilter, dateSortObject} = this.#createFilterForAuction(query);
+        const { addFieldsStage, dateMatchFilter, dateSortObject } =
+            this.#createFilterForAuction(query);
 
         // Start find with filter.
         const auctions = await Auction.aggregate([
             addFieldsStage,
-            {$match: dateMatchFilter},
-            {$match: {auctioneer: {$eq: new mongoose.Types.ObjectId(auctioneerId)}}},
+            { $match: dateMatchFilter },
+            {
+                $match: {
+                    auctioneer: {
+                        $eq: new mongoose.Types.ObjectId(auctioneerId),
+                    },
+                },
+            },
             {
                 $lookup: {
-                    from: 'assets',
-                    localField: 'asset',
-                    foreignField: '_id',
+                    from: "assets",
+                    localField: "asset",
+                    foreignField: "_id",
                     pipeline: [
                         {
                             $match: {
-                                $or: [{name: {$regex: query.asset || ''}},
-                                    {description: {$regex: query.asset || ''}}]
-                            }
+                                $or: [
+                                    { name: { $regex: query.asset || "" } },
+                                    {
+                                        description: {
+                                            $regex: query.asset || "",
+                                        },
+                                    },
+                                ],
+                            },
                         },
                         {
                             $project: {
                                 _id: 0,
-                                name: 1
-                            }
-                        }
+                                name: 1,
+                                description: 1,
+                            },
+                        },
                     ],
-                    as: 'assets'
-                }
+                    as: "assets",
+                },
             },
             {
                 $addFields: {
                     asset: {
                         $cond: {
-                            if: {$gt: [{$size: "$assets"}, 0]},
-                            then: {$arrayElemAt: ["$assets", 0]},
-                            else: {}
-                        }
-                    }
-                }
+                            if: { $gt: [{ $size: "$assets" }, 0] },
+                            then: { $arrayElemAt: ["$assets", 0] },
+                            else: {},
+                        },
+                    },
+                },
             },
-            {$match: {assets: {$ne: []}}},
-            {$sort: dateSortObject},
+            { $match: { assets: { $ne: [] } } },
+            { $sort: dateSortObject },
 
             {
                 $group: {
                     _id: null,
-                    count: {$sum: 1},
-                    entries: {$push: "$$ROOT"}
-                }
-            }, {
+                    count: { $sum: 1 },
+                    entries: { $push: "$$ROOT" },
+                },
+            },
+            {
                 $addFields: {
                     auctions: {
-                        $slice: ['$entries', (pageIndex - 1) * pageSize, pageIndex * pageSize]
-                    }
-                }
+                        $slice: [
+                            "$entries",
+                            (pageIndex - 1) * pageSize,
+                            pageIndex * pageSize,
+                        ],
+                    },
+                },
             },
             {
                 $project: {
@@ -343,10 +389,10 @@ export default class AuctionController {
                         auction_end: 1,
                         registration_open: 1,
                         registration_close: 1,
-                        asset: 1
-                    }
-                }
-            }
+                        asset: 1,
+                    },
+                },
+            },
         ]);
 
         let payload = {};
@@ -355,13 +401,13 @@ export default class AuctionController {
             payload = {
                 page: pageIndex,
                 totalPages: 0,
-                auctions: []
+                auctions: [],
             };
         } else {
             payload = {
                 page: pageIndex,
                 totalPages: ceil(auctions[0].count / pageSize),
-                auctions: auctions[0].auctions
+                auctions: auctions[0].auctions,
             };
         }
         return res.status(200).json(payload);
@@ -369,68 +415,80 @@ export default class AuctionController {
 
     listOwnedAuction = async (req, res) => {
         const user = req.user;
-        const {query} = req;
+        const { query } = req;
 
-        console.log(user._id)
+        console.log(user._id);
 
         const pageSize = parseInt(query.page_size || 10);
         const pageIndex = parseInt(query.page || 1);
 
-        const {addFieldsStage, dateMatchFilter, dateSortObject} = this.#createFilterForAuction(query);
+        const { addFieldsStage, dateMatchFilter, dateSortObject } =
+            this.#createFilterForAuction(query);
 
         // Start find with filter.
         const auctions = await Auction.aggregate([
             addFieldsStage,
-            {$match: dateMatchFilter},
+            { $match: dateMatchFilter },
             {
                 $lookup: {
-                    from: 'assets',
-                    localField: 'asset',
-                    foreignField: '_id',
+                    from: "assets",
+                    localField: "asset",
+                    foreignField: "_id",
                     pipeline: [
                         {
                             $match: {
-                                $or: [{name: {$regex: query.asset || ''}},
-                                    {description: {$regex: query.asset || ''}}],
-                                owner: {$eq: user._id.toString()}
-                            }
+                                $or: [
+                                    { name: { $regex: query.asset || "" } },
+                                    {
+                                        description: {
+                                            $regex: query.asset || "",
+                                        },
+                                    },
+                                ],
+                                owner: { $eq: user._id.toString() },
+                            },
                         },
                         {
                             $project: {
                                 _id: 1,
-                                name: 1
-                            }
-                        }
+                                name: 1,
+                            },
+                        },
                     ],
-                    as: 'assets'
-                }
+                    as: "assets",
+                },
             },
             {
                 $addFields: {
                     asset: {
                         $cond: {
-                            if: {$gt: [{$size: "$assets"}, 0]},
-                            then: {$arrayElemAt: ["$assets", 0]},
-                            else: {}
-                        }
-                    }
-                }
+                            if: { $gt: [{ $size: "$assets" }, 0] },
+                            then: { $arrayElemAt: ["$assets", 0] },
+                            else: {},
+                        },
+                    },
+                },
             },
-            {$match: {assets: {$ne: []}}},
-            {$sort: dateSortObject},
+            { $match: { assets: { $ne: [] } } },
+            { $sort: dateSortObject },
 
             {
                 $group: {
                     _id: null,
-                    count: {$sum: 1},
-                    entries: {$push: "$$ROOT"}
-                }
-            }, {
+                    count: { $sum: 1 },
+                    entries: { $push: "$$ROOT" },
+                },
+            },
+            {
                 $addFields: {
                     auctions: {
-                        $slice: ['$entries', (pageIndex - 1) * pageSize, pageIndex * pageSize]
-                    }
-                }
+                        $slice: [
+                            "$entries",
+                            (pageIndex - 1) * pageSize,
+                            pageIndex * pageSize,
+                        ],
+                    },
+                },
             },
             {
                 $project: {
@@ -441,10 +499,10 @@ export default class AuctionController {
                         auction_end: 1,
                         registration_open: 1,
                         registration_close: 1,
-                        asset: 1
-                    }
-                }
-            }
+                        asset: 1,
+                    },
+                },
+            },
         ]);
 
         let payload = {};
@@ -453,26 +511,27 @@ export default class AuctionController {
             payload = {
                 page: pageIndex,
                 totalPages: 0,
-                auctions: []
+                auctions: [],
             };
         } else {
             payload = {
                 page: pageIndex,
                 totalPages: ceil(auctions[0].count / pageSize),
-                auctions: auctions[0].auctions
+                auctions: auctions[0].auctions,
             };
         }
         return res.status(200).json(payload);
-
     };
-
 
     viewAuction = async (req, res) => {
         const auctionId = req.params.id;
-        const auction = await Auction.findById(auctionId).populate([{
-            path: 'auctioneer',
-            select: 'name'
-        }, {path: 'winning_bidding', select: 'price'}]);
+        const auction = await Auction.findById(auctionId).populate([
+            {
+                path: "auctioneer",
+                select: "name",
+            },
+            { path: "winning_bidding", select: "price" },
+        ]);
         if (!auction)
             throw new HttpError({
                 ...errorCode.AUCTION.NOT_FOUND,
@@ -497,48 +556,55 @@ export default class AuctionController {
             const rawBiddings = await Bidding.aggregate([
                 {
                     $match: {
-                        auction: new mongoose.Types.ObjectId(auctionId)
-                    }
+                        auction: new mongoose.Types.ObjectId(auctionId),
+                    },
                 },
                 {
                     $lookup: {
-                        from: 'participations',
-                        let: {bidderId: '$bidder'},
+                        from: "participations",
+                        let: { bidderId: "$bidder" },
                         pipeline: [
                             {
                                 $match: {
                                     $expr: {
                                         $and: [
-                                            {$eq: ['$auction', new mongoose.Types.ObjectId(auctionId)]},
-                                            {$eq: ['$bidder', '$$bidderId']}
-                                        ]
-                                    }
-                                }
+                                            {
+                                                $eq: [
+                                                    "$auction",
+                                                    new mongoose.Types.ObjectId(
+                                                        auctionId
+                                                    ),
+                                                ],
+                                            },
+                                            { $eq: ["$bidder", "$$bidderId"] },
+                                        ],
+                                    },
+                                },
                             },
                             {
                                 $project: {
-                                    alias: 1
-                                }
-                            }
+                                    alias: 1,
+                                },
+                            },
                         ],
-                        as: 'bidderParticipation'
-                    }
+                        as: "bidderParticipation",
+                    },
                 },
                 {
                     $lookup: {
-                        from: 'users',
-                        localField: 'bidder',
-                        foreignField: '_id',
-                        as: 'bidderInfo',
+                        from: "users",
+                        localField: "bidder",
+                        foreignField: "_id",
+                        as: "bidderInfo",
                         pipeline: [
                             {
                                 $project: {
                                     name: 1,
-                                    phone: 1
-                                }
-                            }
-                        ]
-                    }
+                                    phone: 1,
+                                },
+                            },
+                        ],
+                    },
                 },
                 {
                     $project: {
@@ -546,74 +612,81 @@ export default class AuctionController {
                         price: 1,
                         createdAt: 1,
                         bidderParticipation: 1,
-                        bidderInfo: 1
-                    }
-                }
+                        bidderInfo: 1,
+                    },
+                },
             ]);
 
             for (let bidding of rawBiddings) {
-                bidding = {...bidding}
+                bidding = { ...bidding };
                 bidding.bidder = {
                     _id: bidding.bidderInfo[0]?._id,
                     name: bidding.bidderInfo[0]?.name,
                     phone: bidding.bidderInfo[0]?.phone,
-                    alias: bidding.bidderParticipation[0]?.alias
-                }
-                delete bidding.bidderParticipation
-                delete bidding.bidderInfo
+                    alias: bidding.bidderParticipation[0]?.alias,
+                };
+                delete bidding.bidderParticipation;
+                delete bidding.bidderInfo;
                 biddings.push(bidding);
             }
         } else {
             const rawBiddings = await Bidding.aggregate([
                 {
                     $match: {
-                        auction: new mongoose.Types.ObjectId(auctionId)
-                    }
+                        auction: new mongoose.Types.ObjectId(auctionId),
+                    },
                 },
                 {
                     $lookup: {
-                        from: 'participations',
-                        let: {'bidderId': '$bidder'},
+                        from: "participations",
+                        let: { bidderId: "$bidder" },
                         pipeline: [
                             {
                                 $match: {
                                     $expr: {
                                         $and: [
-                                            {$eq: ['$auction', new mongoose.Types.ObjectId(auctionId)]},
-                                            {$eq: ['$bidder', '$$bidderId']}
-                                        ]
-                                    }
-                                }
+                                            {
+                                                $eq: [
+                                                    "$auction",
+                                                    new mongoose.Types.ObjectId(
+                                                        auctionId
+                                                    ),
+                                                ],
+                                            },
+                                            { $eq: ["$bidder", "$$bidderId"] },
+                                        ],
+                                    },
+                                },
                             },
                             {
                                 $project: {
-                                    alias: 1
-                                }
-                            }
+                                    alias: 1,
+                                },
+                            },
                         ],
-                        as: 'bidderParticipation'
-                    }
+                        as: "bidderParticipation",
+                    },
                 },
                 {
                     $project: {
                         price: 1,
                         createdAt: 1,
-                        bidderParticipation: 1
-                    }
-                }
-            ])
+                        bidderParticipation: 1,
+                    },
+                },
+            ]);
 
             for (let bidding of rawBiddings) {
-                bidding = {...bidding}
+                bidding = { ...bidding };
                 bidding.bidder = {
-                    alias: bidding.bidderParticipation[0]?.alias
-                }
-                delete bidding.bidderParticipation
+                    alias: bidding.bidderParticipation[0]?.alias,
+                };
+                delete bidding.bidderParticipation;
                 biddings.push(bidding);
             }
         }
         return res.status(200).json(biddings);
-    }
+    };
 
     getParticipationStatus = async (req, res) => {
         const user = req.user;
@@ -626,14 +699,23 @@ export default class AuctionController {
                 status: 400,
             });
 
-        const participation = await Participation.findOne({auction: auctionId, bidder: user._id});
+        const participation = await Participation.findOne({
+            auction: auctionId,
+            bidder: user._id,
+        });
         if (!participation) {
-            return res.status(200).json({status: participationStatus.NOT_REGISTERED_YET});
+            return res
+                .status(200)
+                .json({ status: participationStatus.NOT_REGISTERED_YET });
         }
         if (participation.verified)
-            return res.status(200).json({status: participationStatus.VERIFIED});
-        return res.status(200).json({status: participationStatus.NOT_VERIFIED});
-    }
+            return res
+                .status(200)
+                .json({ status: participationStatus.VERIFIED });
+        return res
+            .status(200)
+            .json({ status: participationStatus.NOT_VERIFIED });
+    };
 
     register = async (req, res) => {
         const user = req.user;
@@ -670,7 +752,8 @@ export default class AuctionController {
         }
 
         // Create a new participation record.
-        let num = (await Participation.countDocuments({auction: auctionId})) + 1;
+        let num =
+            (await Participation.countDocuments({ auction: auctionId })) + 1;
         participation = {
             auction: auctionId,
             bidder: user._id,
@@ -688,9 +771,12 @@ export default class AuctionController {
         const user = req.user;
         const auctionId = req.params.id;
 
-        const auction = await Auction.findById(auctionId).populate('asset', 'owner');
+        const auction = await Auction.findById(auctionId).populate(
+            "asset",
+            "owner"
+        );
 
-        let alias = 'auctioneer';
+        let alias = "auctioneer";
         let role = user.role;
 
         if (!auction)
@@ -699,7 +785,10 @@ export default class AuctionController {
                 status: 400,
             });
 
-        if (auction.auction_start - Date.now() > 5 * 60 * 1000 || auction.auction_end < Date.now()) {
+        if (
+            auction.auction_start - Date.now() > 5 * 60 * 1000 ||
+            auction.auction_end < Date.now()
+        ) {
             throw new HttpError({
                 ...errorCode.AUCTION.NOT_IN_JOINING_TIME,
                 status: 400,
@@ -725,7 +814,7 @@ export default class AuctionController {
                         status: 404,
                     });
                 } else {
-                    alias = 'asset owner';
+                    alias = "asset owner";
                     role = userRole.ASSET_OWNER;
                 }
             } else {
@@ -738,12 +827,11 @@ export default class AuctionController {
             }
         }
 
-
         const token = jwt.sign(
-            {auctionId: auctionId, userID: user._id, role: role},
+            { auctionId: auctionId, userID: user._id, role: role },
             process.env.JWT_AUCTION_KEY,
             {
-                expiresIn: '1h',
+                expiresIn: "1h",
             }
         );
         return res.status(200).json({
@@ -752,7 +840,7 @@ export default class AuctionController {
                 token: `Bearer ${token}`,
                 participation: {
                     alias: alias,
-                }
+                },
             },
         });
     };
@@ -767,7 +855,7 @@ export default class AuctionController {
                 status: 400,
             });
 
-        const participations = await Participation.find({auction: auctionId});
+        const participations = await Participation.find({ auction: auctionId });
         return res.status(200).json({
             ok: true,
             data: participations,
@@ -775,8 +863,8 @@ export default class AuctionController {
     };
 
     verifyBidder = async (req, res) => {
-        const auctionId = req.params.id || '';
-        const bidderId = req.params.bidderId || '';
+        const auctionId = req.params.id || "";
+        const bidderId = req.params.bidderId || "";
         const user = req.user;
 
         const auction = await Auction.findById(auctionId);
@@ -807,43 +895,49 @@ export default class AuctionController {
 
     #createFilterForAuction = (query) => {
         // Create date match query, date sort: Add new date fields without time and compare.
-        let dateFields = ['auction_start', 'auction_end', 'registration_open', 'registration_close'];
+        let dateFields = [
+            "auction_start",
+            "auction_end",
+            "registration_open",
+            "registration_close",
+        ];
         const dateMatchFilter = {};
-        let dateSortObject = {'auction_start': -1};
-        dateFields.forEach(field => {
+        let dateSortObject = { auction_start: -1 };
+        dateFields.forEach((field) => {
             if (query[field]) {
-                dateMatchFilter[`formatted_${field}`] = {$eq: query[field]};
+                dateMatchFilter[`formatted_${field}`] = { $eq: query[field] };
             }
             if (query[`${field}_sorted`]) {
                 dateSortObject = {}; // Sort one field one time.
-                dateSortObject[`${field}`] = query[`${field}_sorted`] === 'asc' ? 1 : -1;
+                dateSortObject[`${field}`] =
+                    query[`${field}_sorted`] === "asc" ? 1 : -1;
             }
         });
 
         const addFieldsStage = {
-            $addFields: {}
+            $addFields: {},
         };
-        dateFields.forEach(field => {
+        dateFields.forEach((field) => {
             addFieldsStage.$addFields[`formatted_${field}`] = {
-                $dateToString: {format: "%Y-%m-%d", date: `$${field}`},
+                $dateToString: { format: "%Y-%m-%d", date: `$${field}` },
             };
         });
 
         if (query.status) {
             if (query.status === "ON_GOING") {
-                dateMatchFilter['auction_start'] = {$lte: new Date()};
-                dateMatchFilter['auction_end'] = {$gte: new Date()};
+                dateMatchFilter["auction_start"] = { $lte: new Date() };
+                dateMatchFilter["auction_end"] = { $gte: new Date() };
             } else if (query.status === "NOT_STARTED") {
-                dateMatchFilter['auction_start'] = {$gte: new Date()};
+                dateMatchFilter["auction_start"] = { $gte: new Date() };
             } else if (query.status === "ENDED") {
-                dateMatchFilter['auction_end'] = {$lte: new Date()};
+                dateMatchFilter["auction_end"] = { $lte: new Date() };
             }
         }
 
         return {
             dateMatchFilter: dateMatchFilter,
             addFieldsStage: addFieldsStage,
-            dateSortObject: dateSortObject
-        }
-    }
+            dateSortObject: dateSortObject,
+        };
+    };
 }
