@@ -10,7 +10,7 @@ const ParticipationSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
         },
-        alias: { type: String, unique: true },
+        alias: { type: String },
         verified: { type: Boolean, default: false },
         penalty: { type: Boolean, default: false }
     },

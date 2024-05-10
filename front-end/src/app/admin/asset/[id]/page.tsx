@@ -119,6 +119,7 @@ export default function Page({ params, searchParams }: any) {
   if (infor_asset && infor_asset.pics && infor_asset.pics[0]) {
     imageUrl = `${FILE_SERVER_URL}${infor_asset.pics[0]._id}${path.extname(infor_asset.pics[0].name)}`;
   }
+  console.log(imageUrl)
 
   return (
     <div className="container">
