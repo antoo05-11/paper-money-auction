@@ -3,6 +3,7 @@ import TopBar from "@/components/_layout/topbar";
 import BlogNavLink from "./page";
 import PageHeader from "../component/page-header";
 import PageFooter from "../component/page-footer";
+import { Toaster } from "@/components/ui/toaster";
 // import getFeaturedPosts from './get-featured-posts'
 
 export default async function Layout({
@@ -16,6 +17,7 @@ export default async function Layout({
       <PageHeader />
       {children}
       <PageFooter />
+      <Toaster />
     </div>
   );
 }

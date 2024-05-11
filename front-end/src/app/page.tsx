@@ -102,7 +102,7 @@ export default function HomePage() {
         >
           <div className="my-6">
             <h3 className="font-bold text-2xl text-primary">
-              Tài sản sắp được đấu gíá
+              Các cuộc đấu giá
             </h3>
           </div>
           <MyCarousel />

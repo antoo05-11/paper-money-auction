@@ -24,17 +24,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Car } from "lucide-react";
 import { useRef, useState } from "react";
 import {
   checkParticipation,
@@ -51,7 +40,7 @@ import Image from "next/image";
 import { DataTable } from "@/components/ui/data-table";
 import { attendees_bidding, bidding_act } from "../_component/columns";
 import path from "path";
-
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 const FILE_SERVER_URL =
   process.env.FILE_SERVER ||
   "https://muzik-files-server.000webhostapp.com/paper-money-auction-files/asset-docs/";
@@ -59,17 +48,18 @@ const FILE_SERVER_URL =
 export default function CustomerDetail({ params, searchParams }: any) {
   const { toast } = useToast();
   const id = params.id;
-  const use_auth = useAuth();
   const [isConnected, setIsConnected] = useState(false);
   const [infor_auction, set_infor_auction] = useState<any>();
-  const [startSession, setStartSession] = useState(false);
+  const [timeSessionAuction, setTimeSessionAuction] = useState(false);
   const [timeRegister, setTimeRegister] = useState<boolean>();
   const [onSession, setOnSession] = useState<boolean>();
   const [registered, setRegister] = useState<string>();
-  const [autionToken, setAutionToken] = useState<string>();
+  const [auctionToken, setAuctionToken] = useState<string>();
   const [bidding_history, update_bidding_history] = useState<any>([]);
   const [list_bidder_attend, update_list_bidder_attend] = useState<any>([]);
   const [offer, setOffer] = useState<any>();
+  const [offerRes, setOfferRes] = useState<string>();
+  const [penalty, setPenalty] = useState<any>();
   const inputOffer = useRef<any>();
 
   let imageUrl = "";
@@ -88,7 +78,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
       const data_get = await viewAuctionInfo(id);
       const data_use = await data_get.data;
       set_infor_auction(data_use);
-      setStartSession(
+      setTimeSessionAuction(
         CompareDate(Date.now(), data_use?.auction_start) &&
           !CompareDate(Date.now(), data_use?.auction_end)
       );
@@ -113,17 +103,18 @@ export default function CustomerDetail({ params, searchParams }: any) {
         "Bearer ",
         ""
       );
-      setAutionToken(token);
+      setAuctionToken(token);
     };
     function onConnect() {
       setIsConnected(true);
     }
-
     function onDisconnect() {
       setIsConnected(false);
     }
     const result = getAuctionToken(id).catch(console.error);
-    if (onSession) {
+    if (timeSessionAuction && auctionToken != undefined) {
+      console.log(auctionToken);
+
       socket.connect();
 
       socket.on("connect", onConnect);
@@ -133,7 +124,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
       });
       socket.on("join_session_response", (response) => {
         console.log("join_session_response");
-        console.log(response);
+        if (response == true) setOnSession(response);
       });
       socket.on("attendees_update", (response) => {
         console.log("attendees_update: " + response);
@@ -141,19 +132,15 @@ export default function CustomerDetail({ params, searchParams }: any) {
       });
       socket.on("make_offer_response", (message) => {
         console.log("make_offer_response");
-        console.log(message);
-      });
-      socket.on("withdraw_offer_response", (message) => {
-        console.log("withdraw_offer_response");
-        console.log(message);
+        console.log(message.message);
+        if (message.message) setOfferRes(message.message);
       });
       socket.on("biddings_update", (message) => {
         console.log("biddings_update");
-        console.log(message);
-        update_bidding_history(message);
+        update_bidding_history(message.reverse());
       });
-
-      socket.emit("join_session", autionToken);
+      console.log("join session");
+      socket.emit("join_session", auctionToken);
       return () => {
         socket.off("connect", onConnect);
         socket.off("disconnect", onDisconnect);
@@ -162,12 +149,36 @@ export default function CustomerDetail({ params, searchParams }: any) {
         socket.off("attendees_update");
         socket.off("make_offer_response");
         socket.off("biddings_update");
+        socket.off("join_session_response");
       };
     }
-  }, [onSession]);
-
+  }, [auctionToken]);
+  const handleJoinSession = () => {
+    setOnSession(true);
+    console.log("join session");
+    socket.emit("join_session", auctionToken);
+  };
+  const handleWithdrawOffer = () => {
+    setPenalty(true);
+    socket.emit("withdraw_offer", auctionToken);
+  };
   return (
     <div className="pt-24 container">
+      {!CompareDate(infor_auction?.auction_end, Date.now()) && (
+        <Alert>
+          <AlertTitle>Phiên đấu giá đã kết thúc</AlertTitle>
+          <AlertDescription>
+            <p>
+              Nếu bạn là người trúng đấu giá vui lòng kiểm tra email để có thể
+              hoàn tất việc thanh toán cũng như nhận tài sản đấu giá
+            </p>
+            <p>
+              Nếu bạn không trúng đấu giá vui lòng kiểm tra email để có thể nhận
+              lại khoản tiền đặt cọc cho phiên đấu giá
+            </p>
+          </AlertDescription>
+        </Alert>
+      )}
       <div>
         <Card>
           <CardHeader>
@@ -189,27 +200,31 @@ export default function CustomerDetail({ params, searchParams }: any) {
             <div className=" col-span-3 grid grid-rows-1 gap-4">
               {infor_auction?.auction_start && (
                 <>
-                  {!startSession && !timeRegister && (
+                  {!timeSessionAuction && !timeRegister && (
                     <Card>
                       <CountTime
                         startTime={Date.now()}
                         endTime={infor_auction?.auction_start}
                       />
                       <div className="flex justify-center mb-1">
-                        <Label>Thời gian đến khi bắt đầu phiên đấu giá</Label>
+                        <Label className="italic">
+                          Thời gian đến khi bắt đầu phiên đấu giá
+                        </Label>
                       </div>
                     </Card>
                   )}
                 </>
               )}
-              {startSession && infor_auction?.auction_end && (
+              {timeSessionAuction && infor_auction?.auction_end && (
                 <Card>
                   <CountTime
                     startTime={Date.now()}
                     endTime={infor_auction?.auction_end}
                   />
-                  <div>
-                    <Label>Thời gian đến khi kết thúc phiên đấu giá</Label>
+                  <div className="flex justify-center mb-1">
+                    <Label className="italic">
+                      Thời gian đến khi kết thúc phiên đấu giá
+                    </Label>
                   </div>
                 </Card>
               )}
@@ -221,14 +236,16 @@ export default function CustomerDetail({ params, searchParams }: any) {
                   />
                   <div className="flex justify-center mb-1">
                     <Label className="italic">
-                      Thời gian đến khi kết thúc phiên đấu giá
+                      Thời gian đến khi kết thúc đăng ký
                     </Label>
                   </div>
                 </Card>
               )}
               <Card className="row-span-4">
                 <CardContent className="p-6">
-                  <p className="font-bold">Giá cao nhất hiện tại: </p>
+                  <p className="font-bold">
+                    Giá cao nhất hiện tại: {bidding_history[0]?.price}
+                  </p>
                   <p className="font-bold">
                     Giá khởi điểm:{" "}
                     <span className="font-normal">
@@ -254,7 +271,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
               </Card>
 
               <div>
-                {startSession && (
+                {timeSessionAuction && (
                   <div className="mt-4">
                     {registered == "VERIFIED" && (
                       <div>
@@ -271,22 +288,65 @@ export default function CustomerDetail({ params, searchParams }: any) {
                             <Button
                               className="col-span-1"
                               onClick={() => {
-                                console.log(autionToken);
+                                console.log(offerRes);
 
                                 if (onSession) {
-                                  socket.emit("make_offer", autionToken, offer);
+                                  socket.emit(
+                                    "make_offer",
+                                    auctionToken,
+                                    offer
+                                  );
+                                }
+                                if (
+                                  offerRes ==
+                                  "Your bidding price is not big enough."
+                                ) {
+                                  toast({
+                                    title: "Lỗi trả giá",
+                                    description:
+                                      "Giá bạn đưa ra chưa lớn hớn giá cao nhất hiện tại",
+                                  });
                                 }
                               }}
                             >
                               Trả giá
                             </Button>
+
+                            <AlertDialog>
+                              <AlertDialogTrigger className="w-full col-start-1 col-end-5 mt-3">
+                                {" "}
+                                <Button className="w-full col-start-1 col-end-5 mt-3">
+                                  Rút giá
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Bạn có chắc chắn muốn rút giá?
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Việc bạn rút giá có thể gây ảnh hưởng đến
+                                    cuộc đấu giá và vì vậy tiền cọc của bạn sẽ
+                                    không được hoàn trả
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => handleWithdrawOffer()}
+                                  >
+                                    Vẫn rút giá
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </div>
                         )}
                         {!onSession && (
                           <Button
                             className="w-full"
-                            onClick={(e) => {
-                              setOnSession(true);
+                            onClick={() => {
+                              handleJoinSession();
                             }}
                           >
                             Tham gia phiên đấu giá
@@ -301,7 +361,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
                     )}
                   </div>
                 )}
-                {!startSession &&
+                {!timeSessionAuction &&
                   !timeRegister &&
                   (registered == "VERIFIED" ? (
                     <Button className="w-full">Đăng ký thành công</Button>
@@ -340,11 +400,11 @@ export default function CustomerDetail({ params, searchParams }: any) {
                                 const result = await register_auction(id).catch(
                                   console.error
                                 );
-                                await payDeposit(
-                                  infor_auction?._id,
-                                  infor_auction?.deposit
-                                );
                                 if (result?.status == 200) {
+                                  await payDeposit(
+                                    infor_auction?._id,
+                                    infor_auction?.deposit
+                                  );
                                   setRegister("NOT_VERIFIED");
                                 }
                               }}
@@ -389,8 +449,9 @@ export default function CustomerDetail({ params, searchParams }: any) {
         </Card>
         <Tabs defaultValue="describe" className="mb-9">
           <TabsList>
-            <TabsTrigger value="history">Lịch sử đặt giá</TabsTrigger>
-            <TabsTrigger value="inform">Thông tin đấu giá</TabsTrigger>
+            {timeSessionAuction && (
+              <TabsTrigger value="inform">Danh sách người đấu giá</TabsTrigger>
+            )}
             <TabsTrigger value="describe">Mô tả tài sản</TabsTrigger>
             <TabsTrigger value="document">Tài liệu liên quan</TabsTrigger>
           </TabsList>
