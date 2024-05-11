@@ -67,7 +67,7 @@ class MailService extends Service {
         await this.#sendMessage(mailOption);
     }
 
-    sendWinningBidding = async (mailAddress, bidder, auctioneer, winningBidding) => {
+    sendWinningBidding = async (mailAddress, bidder, auctioneer, winningBidding, link) => {
         const mailOption = {
             from: this.#config.auth.user,
             to: mailAddress,
@@ -81,6 +81,7 @@ class MailService extends Service {
                 .replace("{{auctioneerName}}", auctioneer.name)
                 .replace("{{auctioneerPhone}}", auctioneer.phone)
                 .replace("{{auctioneerEmail}}", auctioneer.email)
+                .replace("{{link}}", link)
         };
         await this.#sendMessage(mailOption);
     }
