@@ -3,9 +3,13 @@ import axios from "axios";
 import { toast } from "sonner";
 import { AUTH, HTTP_STATUS } from "@/lib/constant/constant";
 
+// const API_BASE_URL =
+//   process.env.NEXT_PUBLIC_API_BASE_URL ||
+//   "https://paper-money-auction.onrender.com/";
+
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ||
-  "https://paper-money-auction.onrender.com/";
+  "http://localhost:5050/";
 
 const service = axios.create({
   withCredentials: false,
