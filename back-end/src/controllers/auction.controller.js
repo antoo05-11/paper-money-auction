@@ -1069,24 +1069,10 @@ export default class AuctionController {
             const highestBidding = await Bidding.findOne({
                 auction: auction._id,
             }).sort("-price");
-
-            if (highestBidding) {
-                auction.winning_bidding = highestBidding._id;
-                auction.status = auctionStatus.SUCCEED;
-            } else {
-                auction.status = auctionStatus.FAILED;
-            }
+            auction.winning_bidding = highestBidding._id;
+            auction.status = auctionStatus.SUCCEED;
         } else {
-            const secondHighestBidding = await Bidding.findOne({
-                auction: auction._id,
-            })
-                .sort("-price")
-                .skip(1);
-            if (secondHighestBidding) {
-                AuctionController.sendOutcomeMail(auction, false);
-            } else {
-                auction.status = auctionStatus.FAILED;
-            }
+            auction.status = auctionStatus.FAILED;
         }
 
         await auction.save();
