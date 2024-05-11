@@ -20,10 +20,10 @@ const DATABASE_URL = process.env.DATABASE_URL;
 mongoose
     .connect(DATABASE_URL)
     .then(() => {
-        console.log("Database connected.");
+        console.log("Server message: Database connected.");
     })
     .catch((error) => {
-        console.log("Database connecting error: ", error);
+        console.log("Server message: Database connecting error: ", error);
     });
 
 // Init Express App
@@ -49,7 +49,7 @@ app.use((req, res) => {
 const httpServer = http.createServer(app);
 
 httpServer.listen(PORT, () => {
-    console.log(`Server started running on port ${PORT}.`);
+    console.log(`Server message: Server started running on port ${PORT}.`);
 });
 
 //Init app services
@@ -71,14 +71,14 @@ function makeRequest() {
             res.on("end", () => {
                 try {
                     const jsonData = JSON.parse(data);
-                    console.log("Activate server connected.");
+                    console.log("Server message: Activate server connected.");
                 } catch (error) {
-                    console.error("Error parsing JSON:", error);
+                    console.error("Server message: Error parsing JSON:", error);
                 }
             });
         })
         .on("error", (err) => {
-            console.log("Error: " + err.message);
+            console.log("Server message: Error: " + err.message);
         });
 }
 

@@ -8,7 +8,7 @@ const biddingSchema = new mongoose.Schema(
         },
         bidder: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Auction",
+            ref: "User",
         },
         price: Number,
     },

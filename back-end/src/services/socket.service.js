@@ -8,6 +8,7 @@ import {Bidding} from '../models/bidding';
 import cron from 'node-cron';
 import NodeCache from 'node-cache';
 import userRole from '../constants/user.role';
+import {mailService} from "./mail.service";
 
 let instance;
 
@@ -20,12 +21,23 @@ cron.schedule('* * * * *', () => {
         for (const auction of expiredAuctions) {
             Bidding.findOne({
                 auction: auction._id
-            }).sort('-price').then((highestBidding) => {
+            }).sort('-price').populate('bidder', 'name email').then((highestBidding) => {
                 if (highestBidding) {
                     Auction.findByIdAndUpdate(auction._id, {
                         winning_bidding: highestBidding._id
-                    }).then(() => {
-                        console.log(`Socket message: Auction ${auction._id} updated with winning bidding ${highestBidding._id}`);
+                    }).populate('auctioneer', 'name email phone').populate('asset', 'name').then((auction) => {
+                        console.log(`Server message: Auction ${auction._id} updated with winning bidding ${highestBidding._id}`);
+
+                        const bidder = highestBidding.bidder;
+                        const mailAddress = bidder.email;
+                        const auctioneer = auction.auctioneer;
+                        const winningBidding = {price: highestBidding.price, assetName: auction.asset.name};
+
+                        mailService.sendWinningBidding(mailAddress, bidder, auctioneer, winningBidding).then(() => {
+                            console.log(`Server message: Mail sent to notify winning bidding.`);
+                        }).catch((e) => {
+                            console.log(`Server message: Error: ${e.message}`);
+                        })
                     });
                 }
             });
@@ -41,7 +53,7 @@ class SocketService extends Service {
     constructor() {
         super();
         if (instance) {
-            throw new Error('SocketService must be constructed only one time!');
+            throw new Error('Socket Service must be constructed only one time!');
         }
         instance = this;
     }
@@ -75,6 +87,7 @@ class SocketService extends Service {
         const secretKey = process.env.JWT_AUCTION_KEY || '';
         try {
             const decoded = jwt.verify(auctionToken, secretKey);
+            console.log(decoded)
 
             delete decoded.iat;
             delete decoded.exp;

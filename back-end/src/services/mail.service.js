@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { Service } from "./service";
+import {Service} from "./service";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -30,6 +30,9 @@ class MailService extends Service {
             sendVerifyCodeTemplate: this.#readMailTemplate(
                 "send_verify_code_template.html"
             ),
+            notifyWinningBidTemplate: this.#readMailTemplate(
+                "notify_winning_bid_template.html"
+            )
         };
     }
 
@@ -44,6 +47,24 @@ class MailService extends Service {
         );
         return fs.readFileSync(fullPath, "utf-8");
     };
+
+    sendWinningBidding = async (mailAddress, bidder, auctioneer, winningBidding) => {
+        const mailOption = {
+            from: this.#config.auth.user,
+            to: mailAddress,
+            subject: `Congratulations! You've Won the Auction for ${winningBidding.assetName}`,
+            html: this.#mailTemplates.notifyWinningBidTemplate.replace(
+                "{{bidderName}}",
+                bidder.name
+            ).replace("{{assetName}}", winningBidding.assetName)
+                .replace("{{price}}", winningBidding.price)
+                .replace("{{time}}", winningBidding.createdAt)
+                .replace("{{auctioneerName}}", auctioneer.name)
+                .replace("{{auctioneerPhone}}", auctioneer.phone)
+                .replace("{{auctioneerEmail}}", auctioneer.email)
+        };
+        await this.#sendMessage(mailOption);
+    }
 
     send2FACode = async (mailAddress, code) => {
         const mailOption = {
