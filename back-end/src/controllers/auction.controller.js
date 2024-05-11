@@ -959,7 +959,7 @@ export default class AuctionController {
         };
     };
 
-    static sendOutcomeMail = (auction, deposit = true) => {
+    static sendOutcomeMail = (auction) => {
         Bidding.findOne({
             auction: auction._id,
         })
@@ -1016,39 +1016,37 @@ export default class AuctionController {
                                     );
                                 });
 
-                            if (deposit) {
-                                // Send mail to other bidders for deposit reimbursement.
-                                Participation.find({
-                                    bidder: { $ne: bidder._id },
-                                })
-                                    .populate("bidder")
-                                    .then((participations) => {
-                                        for (const participation of participations) {
-                                            const otherBidder =
-                                                participation.bidder;
-                                            mailService
-                                                .sendNotifyReimburseDeposit(
-                                                    otherBidder.email,
-                                                    otherBidder,
-                                                    auctioneer,
-                                                    winningBidding
-                                                )
-                                                .then(() => {
-                                                    console.log(
-                                                        `Server message: Mail sent to ${otherBidder._id} for deposit reimbursement.`
-                                                    );
-                                                })
-                                                .catch((e) => {
-                                                    console.log(
-                                                        `Server message: Error: ${e.message}`
-                                                    );
-                                                    console.log(
-                                                        `Server message: Mail not been sent to ${otherBidder._id} for deposit reimbursement.`
-                                                    );
-                                                });
-                                        }
-                                    });
-                            }
+                            // Send mail to other bidders for deposit reimbursement.
+                            Participation.find({
+                                bidder: { $ne: bidder._id },
+                            })
+                                .populate("bidder")
+                                .then((participations) => {
+                                    for (const participation of participations) {
+                                        const otherBidder =
+                                            participation.bidder;
+                                        mailService
+                                            .sendNotifyReimburseDeposit(
+                                                otherBidder.email,
+                                                otherBidder,
+                                                auctioneer,
+                                                winningBidding
+                                            )
+                                            .then(() => {
+                                                console.log(
+                                                    `Server message: Mail sent to ${otherBidder._id} for deposit reimbursement.`
+                                                );
+                                            })
+                                            .catch((e) => {
+                                                console.log(
+                                                    `Server message: Error: ${e.message}`
+                                                );
+                                                console.log(
+                                                    `Server message: Mail not been sent to ${otherBidder._id} for deposit reimbursement.`
+                                                );
+                                            });
+                                    }
+                                });
                         });
                 }
             });
