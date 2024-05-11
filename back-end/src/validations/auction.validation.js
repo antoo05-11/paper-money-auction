@@ -12,4 +12,8 @@ export default {
         auction_end: Joi.date().required(),
         max_number_of_bidder: Joi.number().integer().min(0).required(),
     }).required(),
+
+    confirm: Joi.object({
+        confirm: Joi.boolean().required(),
+    }).required(),
 };

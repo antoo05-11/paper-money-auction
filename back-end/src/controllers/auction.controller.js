@@ -1,16 +1,17 @@
-import {HttpError} from '../utils/http.error';
-import errorCode from '../constants/error.code';
-import {Auction} from '../models/auction';
-import {Asset} from '../models/asset';
-import {Participation} from '../models/participation';
-import auctionStatus from '../constants/auction.status';
-import _, {ceil, parseInt} from 'lodash';
-import jwt from 'jsonwebtoken';
-import participationStatus from '../constants/participation.status';
-import userRole from '../constants/user.role';
-import {Bidding} from '../models/bidding';
-import mongoose from 'mongoose';
-import {writeLogStatus} from "./activity_log.controller";
+import { HttpError } from "../utils/http.error";
+import errorCode from "../constants/error.code";
+import { Auction } from "../models/auction";
+import { Asset } from "../models/asset";
+import { Participation } from "../models/participation";
+import auctionStatus from "../constants/auction.status";
+import _, { ceil, parseInt } from "lodash";
+import jwt from "jsonwebtoken";
+import participationStatus from "../constants/participation.status";
+import userRole from "../constants/user.role";
+import { Bidding } from "../models/bidding";
+import mongoose from "mongoose";
+import { writeLogStatus } from "./activity_log.controller";
+import { mailService } from "../services/mail.service";
 
 export default class AuctionController {
     constructor() {}
@@ -30,7 +31,7 @@ export default class AuctionController {
         data.status = auctionStatus.ONGOING;
         const auction = await Auction.create(data);
 
-       if(req.activityLog)  writeLogStatus(req.activityLog, auction._id, true);
+        if (req.activityLog) writeLogStatus(req.activityLog, auction._id, true);
 
         const payload = auction;
         res.status(200).json({
@@ -534,14 +535,14 @@ export default class AuctionController {
                 select: "name",
             },
             { path: "winning_bidding", select: "price" },
-            { path: "asset", select: "name description pics docs"}
+            { path: "asset", select: "name description pics docs" },
         ]);
         if (!auction)
             throw new HttpError({
                 ...errorCode.AUCTION.NOT_FOUND,
                 status: 400,
             });
-     if(req.activityLog) writeLogStatus(req.activityLog, auction._id, true);
+        if (req.activityLog) writeLogStatus(req.activityLog, auction._id, true);
         return res.status(200).json(auction);
     };
 
@@ -690,7 +691,8 @@ export default class AuctionController {
                 biddings.push(bidding);
             }
         }
-      if(req.activityLog)   writeLogStatus(req.activityCode, auction._id, true);
+        if (req.activityLog)
+            writeLogStatus(req.activityCode, auction._id, true);
         return res.status(200).json(biddings);
     };
 
@@ -714,7 +716,8 @@ export default class AuctionController {
                 .status(200)
                 .json({ status: participationStatus.NOT_REGISTERED_YET });
         }
-      if(req.activityLog)   writeLogStatus(req.activityLog, participation._id, true);
+        if (req.activityLog)
+            writeLogStatus(req.activityLog, participation._id, true);
         if (participation.verified)
             return res
                 .status(200)
@@ -734,7 +737,6 @@ export default class AuctionController {
                 ...errorCode.AUCTION.NOT_FOUND,
                 status: 400,
             });
-
 
         // Check valid registration time.
         if (
@@ -769,7 +771,7 @@ export default class AuctionController {
         };
         participation = await Participation.create(participation);
 
-     if(req.activityLog)    writeLogStatus(req.activityLog, auction._id, true);
+        if (req.activityLog) writeLogStatus(req.activityLog, auction._id, true);
 
         return res.status(200).json({
             ok: true,
@@ -837,11 +839,10 @@ export default class AuctionController {
             }
         }
 
-      if(req.activityLog)   writeLogStatus(req.activityLog, auction._id, true);
-
+        if (req.activityLog) writeLogStatus(req.activityLog, auction._id, true);
 
         const token = jwt.sign(
-            {sessionId: auctionId, userId: user._id, role: role},
+            { sessionId: auctionId, userId: user._id, role: role },
             process.env.JWT_AUCTION_KEY,
             {
                 expiresIn: "1h",
@@ -868,8 +869,8 @@ export default class AuctionController {
                 status: 400,
             });
 
-        const participations = await Participation.find({auction: auctionId});
-     if(req.activityLog)    writeLogStatus(req.activityLog, auction._id, true);
+        const participations = await Participation.find({ auction: auctionId });
+        if (req.activityLog) writeLogStatus(req.activityLog, auction._id, true);
         return res.status(200).json({
             ok: true,
             data: participations,
@@ -901,7 +902,8 @@ export default class AuctionController {
         participation.verified = true;
         await participation.save();
 
-      if(req.activityLog)   writeLogStatus(req.activityLog, participation._id, true);
+        if (req.activityLog)
+            writeLogStatus(req.activityLog, participation._id, true);
 
         return res.status(200).json({
             ok: true,
@@ -955,5 +957,143 @@ export default class AuctionController {
             addFieldsStage: addFieldsStage,
             dateSortObject: dateSortObject,
         };
+    };
+
+    static sendOutcomeMail = (auction, deposit = true) => {
+        Bidding.findOne({
+            auction: auction._id,
+        })
+            .sort("-price")
+            .populate("bidder", "name email role")
+            .then((highestBidding) => {
+                if (highestBidding) {
+                    Auction.findById(auction._id)
+                        .populate("auctioneer", "name email phone")
+                        .populate("asset", "name")
+                        .then((auction) => {
+                            console.log(
+                                `Server message: Auction ${auction._id} updated with winning bidding ${highestBidding._id}`
+                            );
+
+                            // Send mail to winning bidder.
+                            const bidder = highestBidding.bidder;
+                            const auctioneer = auction.auctioneer;
+                            const winningBidding = {
+                                price: highestBidding.price,
+                                assetName: auction.asset.name,
+                                createdAt: highestBidding.createdAt,
+                            };
+
+                            const token = jwt.sign(
+                                {
+                                    id: bidder._id.toString(),
+                                    name: bidder.name,
+                                    role: bidder.role,
+                                },
+                                process.env.SECRET,
+                                {
+                                    expiresIn: "1d",
+                                }
+                            );
+                            const link = `https://paper-money-auction.vercel.app/auction/${auction._id}/${token}`;
+
+                            mailService
+                                .sendWinningBidding(
+                                    bidder.email,
+                                    bidder,
+                                    auctioneer,
+                                    winningBidding,
+                                    link
+                                )
+                                .then(() => {
+                                    console.log(
+                                        `Server message: Mail sent to notify winning bidding.`
+                                    );
+                                })
+                                .catch((e) => {
+                                    console.log(
+                                        `Server message: Error: ${e.message}`
+                                    );
+                                });
+
+                            if (deposit) {
+                                // Send mail to other bidders for deposit reimbursement.
+                                Participation.find({
+                                    bidder: { $ne: bidder._id },
+                                })
+                                    .populate("bidder")
+                                    .then((participations) => {
+                                        for (const participation of participations) {
+                                            const otherBidder =
+                                                participation.bidder;
+                                            mailService
+                                                .sendNotifyReimburseDeposit(
+                                                    otherBidder.email,
+                                                    otherBidder,
+                                                    auctioneer,
+                                                    winningBidding
+                                                )
+                                                .then(() => {
+                                                    console.log(
+                                                        `Server message: Mail sent to ${otherBidder._id} for deposit reimbursement.`
+                                                    );
+                                                })
+                                                .catch((e) => {
+                                                    console.log(
+                                                        `Server message: Error: ${e.message}`
+                                                    );
+                                                    console.log(
+                                                        `Server message: Mail not been sent to ${otherBidder._id} for deposit reimbursement.`
+                                                    );
+                                                });
+                                        }
+                                    });
+                            }
+                        });
+                }
+            });
+    };
+
+    confirmOutcome = async (req, res) => {
+        const { data } = req.body;
+        const { params } = req;
+
+        let auction = await Auction.findById(params.id);
+        if (!auction)
+            throw new HttpError({
+                ...errorCode.AUCTION.NOT_FOUND,
+                status: 403,
+            });
+
+        if (data.confirm) {
+            const highestBidding = await Bidding.findOne({
+                auction: auction._id,
+            }).sort("-price");
+
+            if (highestBidding) {
+                auction.winning_bidding = highestBidding._id;
+                auction.status = auctionStatus.SUCCEED;
+            } else {
+                auction.status = auctionStatus.FAILED;
+            }
+        } else {
+            const secondHighestBidding = await Bidding.findOne({
+                auction: auction._id,
+            })
+                .sort("-price")
+                .skip(1);
+            if (secondHighestBidding) {
+                AuctionController.sendOutcomeMail(auction, false);
+            } else {
+                auction.status = auctionStatus.FAILED;
+            }
+        }
+
+        await auction.save();
+
+        res.status(200).json({
+            ok: true,
+            data: null,
+        });
     };
 }

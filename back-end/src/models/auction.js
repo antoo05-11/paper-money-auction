@@ -20,7 +20,7 @@ const auctionSchema = new mongoose.Schema(
         auction_start: Date,
         auction_end: Date,
         max_number_of_bidder: Number,
-        docs: [String],
+        docs: [Object],
         // Result
         winning_bidding: {
             type: mongoose.Schema.Types.ObjectId,

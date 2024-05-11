@@ -18,8 +18,8 @@ export default [
                 files: [{ name: "docs", maxCount: 3 }],
                 initialLog: {
                     activityCode: activityCode.AUCTION.CREATE,
-                    objectClass: objectClass.AUCTION
-                }
+                    objectClass: objectClass.AUCTION,
+                },
             },
             {
                 httpMethod: "get",
@@ -28,8 +28,8 @@ export default [
                 initialLog: {
                     activityCode: activityCode.AUCTION.GET_LIST,
                     success: true,
-                    objectClass: objectClass.AUCTION
-                }
+                    objectClass: objectClass.AUCTION,
+                },
             },
             {
                 httpMethod: "get",
@@ -40,8 +40,8 @@ export default [
                 initialLog: {
                     activityCode: activityCode.AUCTION.GET_LIST,
                     success: true,
-                    objectClass: objectClass.AUCTION
-                }
+                    objectClass: objectClass.AUCTION,
+                },
             },
             {
                 httpMethod: "get",
@@ -51,8 +51,8 @@ export default [
                 initialLog: {
                     activityCode: activityCode.AUCTION.GET_LIST,
                     success: true,
-                    objectClass: objectClass.AUCTION
-                }
+                    objectClass: objectClass.AUCTION,
+                },
             },
             {
                 httpMethod: "get",
@@ -62,8 +62,8 @@ export default [
                 initialLog: {
                     activityCode: activityCode.AUCTION.GET_LIST,
                     success: true,
-                    objectClass: objectClass.AUCTION
-                }
+                    objectClass: objectClass.AUCTION,
+                },
             },
             {
                 httpMethod: "get",
@@ -71,8 +71,8 @@ export default [
                 method: "viewAuction",
                 initialLog: {
                     activityCode: activityCode.AUCTION.GET_BY_ID,
-                    objectClass: objectClass.AUCTION
-                }
+                    objectClass: objectClass.AUCTION,
+                },
             },
             {
                 httpMethod: "get",
@@ -81,8 +81,8 @@ export default [
                 roles: [userRole.CUSTOMER, userRole.AUCTIONEER],
                 initialLog: {
                     activityCode: activityCode.AUCTION.GET_ACTIVITIES,
-                    objectClass: objectClass.AUCTION
-                }
+                    objectClass: objectClass.AUCTION,
+                },
             },
             {
                 httpMethod: "post",
@@ -91,8 +91,8 @@ export default [
                 roles: [userRole.CUSTOMER],
                 initialLog: {
                     activityCode: activityCode.AUCTION.REGISTER,
-                    objectClass: objectClass.AUCTION
-                }
+                    objectClass: objectClass.AUCTION,
+                },
             },
             {
                 httpMethod: "get",
@@ -101,8 +101,8 @@ export default [
                 roles: [userRole.AUCTIONEER],
                 initialLog: {
                     activityCode: activityCode.AUCTION.GET_BIDDERS,
-                    objectClass: objectClass.AUCTION
-                }
+                    objectClass: objectClass.AUCTION,
+                },
             },
             {
                 httpMethod: "put",
@@ -111,8 +111,8 @@ export default [
                 roles: [userRole.AUCTIONEER],
                 initialLog: {
                     activityCode: activityCode.AUCTION.VERIFY_BIDDER,
-                    objectClass: objectClass.AUCTION
-                }
+                    objectClass: objectClass.AUCTION,
+                },
             },
             {
                 httpMethod: "get",
@@ -121,8 +121,8 @@ export default [
                 roles: [userRole.AUCTIONEER, userRole.CUSTOMER],
                 initialLog: {
                     activityCode: activityCode.AUCTION.JOIN_SESSION,
-                    objectClass: objectClass.AUCTION
-                }
+                    objectClass: objectClass.AUCTION,
+                },
             },
             {
                 httpMethod: "get",
@@ -131,9 +131,20 @@ export default [
                 roles: [userRole.CUSTOMER],
                 initialLog: {
                     activityCode: activityCode.AUCTION.GET_PARTICIPATION_STATUS,
-                    objectClass: objectClass.AUCTION
-                }
-            }
+                    objectClass: objectClass.AUCTION,
+                },
+            },
+            {
+                httpMethod: "put",
+                path: "/auction/:id/confirm",
+                method: "confirmOutcome",
+                role: [userRole.CUSTOMER],
+                schema: auctionValidation.confirm,
+                initialLog: {
+                    activityCode: activityCode.AUCTION.CONFIRM_OUTCOME,
+                    objectClass: objectClass.AUCTION,
+                },
+            },
         ],
     },
 ];
