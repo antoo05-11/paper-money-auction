@@ -1077,7 +1077,7 @@ export default class AuctionController {
 
         res.status(200).json({
             ok: true,
-            data: null,
+            data: data,
         });
     };
 }
