@@ -995,7 +995,7 @@ export default class AuctionController {
                                     expiresIn: "1d",
                                 }
                             );
-                            const link = `https://paper-money-auction.vercel.app/auction/${auction._id}/${token}`;
+                            const link = `https://paper-money-auction.vercel.app/item/${auction._id}/${token}`;
 
                             mailService
                                 .sendWinningBidding(
