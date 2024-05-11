@@ -26,7 +26,7 @@ import Link from "next/link";
 import { loginUser, login2FA } from "@/app/api/apiEndpoints";
 import { HTTP_STATUS, ROLES } from "@/lib/constant/constant";
 import { redirect, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth/useAuth";
 import axios, { AxiosError } from "axios";
 const formSchema = z.object({
@@ -46,11 +46,16 @@ export default function LoginForm() {
     },
   });
 
-  const { user, login } = useAuth();
+  const { user, login, logout } = useAuth();
+  const router = useRouter();
   const [verifyState, setVerify] = useState(false);
   const [loadingMessage, setLoading] = useState("Đăng nhập");
   const [otpValue, setOTP] = useState("");
   const [authData, setAuthData] = useState({ email: "", password: "" });
+
+  useEffect(() => {
+    logout();
+  }, []);
 
   const handleOTPInput = (value: string) => {
     setOTP(value);
@@ -73,11 +78,11 @@ export default function LoginForm() {
     login(session);
     switch (role) {
       case ROLES.ADMIN:
-        redirect("/admin");
+        router.push("/admin");
       case ROLES.AUCTIONEER:
-        redirect("/auctioneer");
+        router.push("/auctioneer");
       default:
-        redirect("/me");
+        router.push("/me");
     }
   }
 
@@ -120,120 +125,117 @@ export default function LoginForm() {
       }
     }
   }
-  if (!user) {
-    return (
-      <section className="bg-[url(/Shape.jpg)] bg-cover">
-        <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-          <Link
-            href={"/"}
-            className="flex items-center mb-6 text-2xl font-semibold text-white"
-          >
-            Vua Tiền Tệ
-          </Link>
-          {!verifyState && (
-            <div className="w-full bg-card rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0">
-              <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-                <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                  Đăng nhập
-                </h1>
-                <Form {...form}>
-                  <form
-                    className="space-y-4 md:space-y-6"
-                    onSubmit={form.handleSubmit(onSubmit)}
-                  >
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Tài khoản</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Tài khoản"
-                              {...field}
-                              className="rounded-full"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+  return (
+    <section className="bg-[url(/Shape.jpg)] bg-cover">
+      <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+        <Link
+          href={"/"}
+          className="flex items-center mb-6 text-2xl font-semibold text-white"
+        >
+          Vua Tiền Tệ
+        </Link>
+        {!verifyState && (
+          <div className="w-full bg-card rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0">
+            <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
+              <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+                Đăng nhập
+              </h1>
+              <Form {...form}>
+                <form
+                  className="space-y-4 md:space-y-6"
+                  onSubmit={form.handleSubmit(onSubmit)}
+                >
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Tài khoản</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Tài khoản"
+                            {...field}
+                            className="rounded-full"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <FormField
-                      control={form.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Password</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Password"
-                              {...field}
-                              className="rounded-full"
-                              type="password"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button
-                      type="submit"
-                      className={`w-full ${loadingMessage == "Thành công" ? "bg-lime-600" : ""
-                        }`}
-                      disabled={loadingMessage != "Đăng nhập"}
-                    >
-                      {loadingMessage}
-                    </Button>
-                  </form>
-                </Form>
-                <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                  Chưa có tài khoản?
-                  <Link
-                    href={"/login/signup"}
-                    className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Password"
+                            {...field}
+                            className="rounded-full"
+                            type="password"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button
+                    type="submit"
+                    className={`w-full ${
+                      loadingMessage == "Thành công" ? "bg-lime-600" : ""
+                    }`}
+                    disabled={loadingMessage != "Đăng nhập"}
                   >
-                    {" "}
-                    Đăng kí
-                  </Link>
-                </p>
-              </div>
+                    {loadingMessage}
+                  </Button>
+                </form>
+              </Form>
+              <p className="text-sm font-light text-gray-500 dark:text-gray-400">
+                Chưa có tài khoản?
+                <Link
+                  href={"/login/signup"}
+                  className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                >
+                  {" "}
+                  Đăng kí
+                </Link>
+              </p>
             </div>
-          )}
-          {verifyState && (
-            <div
-              className="w-full bg-white rounded-lg shadow dark:border 
+          </div>
+        )}
+        {verifyState && (
+          <div
+            className="w-full bg-white rounded-lg shadow dark:border 
                           md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700 
                           flex flex-col items-center justify-center
                           min-h-52"
+          >
+            <span>
+              Please enter the code we&apos;ve just send to your email.
+            </span>
+            <InputOTP
+              maxLength={6}
+              value={otpValue}
+              onChange={(value) => handleOTPInput(value)}
+              pattern={REGEXP_ONLY_DIGITS}
             >
-              <span>
-                Please enter the code we&apos;ve just send to your email.
-              </span>
-              <InputOTP
-                maxLength={6}
-                value={otpValue}
-                onChange={(value) => handleOTPInput(value)}
-                pattern={REGEXP_ONLY_DIGITS}
-              >
-                <InputOTPGroup>
-                  <InputOTPSlot index={0} />
-                  <InputOTPSlot index={1} />
-                  <InputOTPSlot index={2} />
-                </InputOTPGroup>
-                <InputOTPSeparator />
-                <InputOTPGroup>
-                  <InputOTPSlot index={3} />
-                  <InputOTPSlot index={4} />
-                  <InputOTPSlot index={5} />
-                </InputOTPGroup>
-              </InputOTP>
-            </div>
-          )}
-        </div>
-      </section>
-    );
-  } else {
-    redirect("/");
-  }
+              <InputOTPGroup>
+                <InputOTPSlot index={0} />
+                <InputOTPSlot index={1} />
+                <InputOTPSlot index={2} />
+              </InputOTPGroup>
+              <InputOTPSeparator />
+              <InputOTPGroup>
+                <InputOTPSlot index={3} />
+                <InputOTPSlot index={4} />
+                <InputOTPSlot index={5} />
+              </InputOTPGroup>
+            </InputOTP>
+          </div>
+        )}
+      </div>
+    </section>
+  );
 }

@@ -7,7 +7,9 @@ import {
   registerAuction,
   userData,
   userLoginData,
-  filterUserData, filterLogData,
+  filterUserData,
+  filterLogData,
+  confirmAuction,
 } from "@/lib/constant/dataInterface";
 import request from "./request";
 
@@ -140,6 +142,10 @@ export function joinAuctionSession(auction_id: String) {
 
 export function listAuctionManaging(data: any) {
   return request.get("api/auction/managing", { params: data });
+}
+
+export function confirmBid(auction_id: string, data: confirmAuction) {
+  return request.put(`api/auction/${auction_id}/confirm`, { data: data });
 }
 
 export function payDeposit(auction_id: any, amount: any) {
