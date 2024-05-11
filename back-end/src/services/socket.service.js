@@ -4,47 +4,10 @@ import errorCode from '../constants/error.code';
 import {Server} from 'socket.io';
 import {Service} from './service';
 import {Auction} from '../models/auction';
-import {Bidding} from '../models/bidding';
-import cron from 'node-cron';
 import NodeCache from 'node-cache';
 import userRole from '../constants/user.role';
-import {mailService} from "./mail.service";
 
 let instance;
-
-// Schedule to finalize ended auctions every minute.
-cron.schedule('* * * * *', () => {
-    Auction.find({
-        auction_end: {$lte: new Date()},
-        winning_bidding: null
-    }).then((expiredAuctions) => {
-        for (const auction of expiredAuctions) {
-            Bidding.findOne({
-                auction: auction._id
-            }).sort('-price').populate('bidder', 'name email').then((highestBidding) => {
-                if (highestBidding) {
-                    Auction.findByIdAndUpdate(auction._id, {
-                        winning_bidding: highestBidding._id
-                    }).populate('auctioneer', 'name email phone').populate('asset', 'name').then((auction) => {
-                        console.log(`Server message: Auction ${auction._id} updated with winning bidding ${highestBidding._id}`);
-
-                        const bidder = highestBidding.bidder;
-                        const mailAddress = bidder.email;
-                        const auctioneer = auction.auctioneer;
-                        const winningBidding = {price: highestBidding.price, assetName: auction.asset.name};
-
-                        mailService.sendWinningBidding(mailAddress, bidder, auctioneer, winningBidding).then(() => {
-                            console.log(`Server message: Mail sent to notify winning bidding.`);
-                        }).catch((e) => {
-                            console.log(`Server message: Error: ${e.message}`);
-                        })
-                    });
-                }
-            });
-        }
-    });
-});
-
 
 class SocketService extends Service {
     #sessions = new NodeCache({stdTTL: 6 * 60 * 60, checkperiod: 120}); // Map socketId _ AuctionSession.

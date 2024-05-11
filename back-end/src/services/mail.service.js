@@ -32,6 +32,9 @@ class MailService extends Service {
             ),
             notifyWinningBidTemplate: this.#readMailTemplate(
                 "notify_winning_bid_template.html"
+            ),
+            notifyReimburseDepositTemplate: this.#readMailTemplate(
+                "notify_reimburse_deposit_template.html"
             )
         };
     }
@@ -47,6 +50,22 @@ class MailService extends Service {
         );
         return fs.readFileSync(fullPath, "utf-8");
     };
+
+    sendNotifyReimburseDeposit = async (mailAddress, bidder, auctioneer, winningBidding) => {
+        const mailOption = {
+            from: this.#config.auth.user,
+            to: mailAddress,
+            subject: `Notification: Reimbursement of Deposit for ${winningBidding.assetName} Auction`,
+            html: this.#mailTemplates.notifyReimburseDepositTemplate.replace(
+                "{{bidderName}}",
+                bidder.name
+            ).replace("{{assetName}}", winningBidding.assetName)
+                .replace("{{auctioneerName}}", auctioneer.name)
+                .replace("{{auctioneerPhone}}", auctioneer.phone)
+                .replace("{{auctioneerEmail}}", auctioneer.email)
+        };
+        await this.#sendMessage(mailOption);
+    }
 
     sendWinningBidding = async (mailAddress, bidder, auctioneer, winningBidding) => {
         const mailOption = {

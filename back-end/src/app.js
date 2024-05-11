@@ -9,6 +9,7 @@ import router from "./routers/index";
 import { socketService } from "./services/socket.service";
 import { mailService } from "./services/mail.service";
 import { ftpService } from "./services/ftp.service";
+import mailSchedule from "./services/mail.schedule";
 import errorHandle from "./middlewares/error.handle";
 
 // Load .env variables

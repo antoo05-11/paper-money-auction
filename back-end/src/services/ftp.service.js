@@ -15,6 +15,7 @@ class FtpService extends Service {
     }
 
     init = () => {
+
         this.#ftpClient.connect({
             host: process.env.FTP_HOST,
             user: process.env.FTP_USER,
@@ -24,12 +25,15 @@ class FtpService extends Service {
         })
             .then((serverMessage) => {
                 console.log('FTP sever message: ' + serverMessage);
-            });
+            }).catch((e) => {
+            console.log(`Server message: ${e.message}`);
+        });
+
     }
 
     uploadFiles = async (files, nameIdMap, remoteDir) => {
         try {
-           await this.#ftpClient.reconnect();
+            await this.#ftpClient.reconnect();
         } catch (e) {
         }
         for (const fileKey in files) {
