@@ -50,7 +50,6 @@ class SocketService extends Service {
         const secretKey = process.env.JWT_AUCTION_KEY || '';
         try {
             const decoded = jwt.verify(auctionToken, secretKey);
-            console.log(decoded)
 
             delete decoded.iat;
             delete decoded.exp;

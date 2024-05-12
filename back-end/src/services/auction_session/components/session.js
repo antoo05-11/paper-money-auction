@@ -11,7 +11,7 @@ export class AuctionSession {
     #auction; // ORM Auction.
 
     static MAX_RECENT_USER = 20;
-    static TIME_INTERVAL_BETWEEN_2_BIDDINGS = 2 * 60 * 1000;
+    static TIME_INTERVAL_BETWEEN_2_BIDDINGS = 30 * 1000;
 
     constructor(auction) {
         this.#auction = auction;
@@ -140,7 +140,6 @@ export class AuctionSession {
                 createdAt: bidding.createdAt
             });
         }
-        console.log(biddings)
         return biddings;
     }
 
