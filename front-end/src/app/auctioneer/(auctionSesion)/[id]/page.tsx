@@ -50,12 +50,14 @@ import CompareDate from "@/app/component/function";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import Image from "next/image";
 import path from "path";
+import { useRouter } from "next/navigation";
 
 const FILE_SERVER_URL =
   process.env.FILE_SERVER ||
   "https://muzik-files-server.000webhostapp.com/paper-money-auction-files/asset-docs/";
 
 export default function AuctionDetail({ params }: any) {
+  const router = useRouter();
   const [isConnected, setIsConnected] = useState(false);
   const id = params.id;
   const [infor_auction, set_infor_auction] = useState<any>();
@@ -66,21 +68,28 @@ export default function AuctionDetail({ params }: any) {
   const [list_bidder_attend, update_list_bidder_attend] = useState<any>([]);
   const [bidding_history, update_bidding_history] = useState<any>([]);
   useEffect(() => {
+    if (infor_auction) {
+      setTimeSessionAuction(
+        CompareDate(Date.now(), infor_auction?.auction_start)
+      );
+    }
+  });
+  useEffect(() => {
     const fetchData = async () => {
       const dataAution = await viewAuctionInfo(id)
         .then((data) => data.data)
-        .then((data) => set_infor_auction(data))
+        .then((data) => {
+          set_infor_auction(data);
+        })
         .catch(console.error);
       const dataBidder = await listBidder(id)
         .then((data) => data.data.data)
         .then((data) => update_list_bidder(data))
         .catch(console.error);
-      setTimeSessionAuction(
-        !CompareDate(Date.now(), infor_auction?.auction_start)
-      );
     };
     const result = fetchData().catch(console.error);
   }, []);
+  console.log(timeSessionAuction);
 
   useEffect(() => {
     const getAuctionToken = async (id: any) => {
@@ -145,10 +154,9 @@ export default function AuctionDetail({ params }: any) {
   }, [autionToken]);
   const handleStartSession = () => {
     setOnSession(true);
-    console.log("start session");
     socket.emit("start_session", autionToken);
-    console.log("join session");
     socket.emit("join_session", autionToken);
+    router.refresh();
   };
   let imageUrl = "";
   if (
@@ -262,13 +270,15 @@ export default function AuctionDetail({ params }: any) {
             {timeSessionAuction && (
               <TabsTrigger value="history">Lịch sử đặt giá</TabsTrigger>
             )}
-            <TabsTrigger value="inform">
-              {!timeSessionAuction ? (
-                <text>Phê duyệt tham gia đấu giá</text>
-              ) : (
-                <text>Danh sách người đấu giá</text>
-              )}
-            </TabsTrigger>
+            {!CompareDate(Date.now(), infor_auction?.auction_end) && (
+              <TabsTrigger value="inform">
+                {!timeSessionAuction ? (
+                  <text>Phê duyệt tham gia đấu giá</text>
+                ) : (
+                  <text>Danh sách người đấu giá</text>
+                )}
+              </TabsTrigger>
+            )}
             <TabsTrigger value="describe">Mô tả tài sản</TabsTrigger>
             <TabsTrigger value="document">Tài liệu liên quan</TabsTrigger>
           </TabsList>
@@ -287,13 +297,14 @@ export default function AuctionDetail({ params }: any) {
                 pageCount={0}
               />
             )}
-            {!timeSessionAuction && (
-              <DataTable
-                columns={verified_bidder}
-                data={list_bidder}
-                pageCount={1}
-              />
-            )}
+            {CompareDate(Date.now(), infor_auction?.registration_open) &&
+              !CompareDate(Date.now(), infor_auction?.auction_start) && (
+                <DataTable
+                  columns={verified_bidder}
+                  data={list_bidder}
+                  pageCount={1}
+                />
+              )}
           </TabsContent>
           <TabsContent value="describe">
             <Card>
@@ -346,7 +357,6 @@ const CountTime: React.FC<{
   const [time, setTime] = useState<number>(0);
   useEffect(() => {
     if (startTime && endTime) {
-      console.log(123);
       setTime(
         Math.floor(Math.abs(DateStart.getTime() - DateEnd.getTime()) / 1000)
       );

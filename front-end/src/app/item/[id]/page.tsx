@@ -61,7 +61,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
   const [offerRes, setOfferRes] = useState<string>();
   const [penalty, setPenalty] = useState<any>(false);
   const [alias, setAlias] = useState<string>();
-  const inputOffer = useRef<any>();
+  const [maxOffer, setMaxOffer] = useState<any>(0);
 
   let imageUrl = "";
   if (
@@ -73,16 +73,19 @@ export default function CustomerDetail({ params, searchParams }: any) {
       infor_auction.asset?.pics[0]._id
     }${path.extname(infor_auction.asset?.pics[0].name)}`;
   }
-
+  useEffect(() => {
+    if (infor_auction) {
+      setTimeSessionAuction(
+        CompareDate(Date.now(), infor_auction?.auction_start) &&
+          !CompareDate(Date.now(), infor_auction?.auction_end)
+      );
+    }
+  });
   useEffect(() => {
     const fetchData = async () => {
       const data_get = await viewAuctionInfo(id);
       const data_use = await data_get.data;
       set_infor_auction(data_use);
-      setTimeSessionAuction(
-        CompareDate(Date.now(), data_use?.auction_start) &&
-          !CompareDate(Date.now(), data_use?.auction_end)
-      );
       setTimeRegister(
         CompareDate(Date.now(), data_use?.registration_open) &&
           !CompareDate(Date.now(), data_use?.registration_close)
@@ -125,10 +128,17 @@ export default function CustomerDetail({ params, searchParams }: any) {
       });
       socket.on("join_session_response", (response) => {
         console.log("join_session_response");
-        console.log(response);
-        if (response.code == true) setOnSession(true);
-        if (response.joinInfo.penalty == true) setPenalty(true);
-        if (response.joinInfo.alias) setAlias(response.joinInfo.alias);
+        console.log(response?.code);
+        if (response?.code == true) setOnSession(true);
+        else {
+          setOnSession(false);
+          toast({
+            title: "Chưa đến phiên đấu giá",
+            description: "Hãy đợi chờ sự bắt đâu của đấu giá viên phụ trách",
+          });
+        }
+        if (response?.joinInfo?.penalty == true) setPenalty(true);
+        if (response?.joinInfo?.alias) setAlias(response.joinInfo.alias);
       });
       socket.on("attendees_update", (response) => {
         console.log("attendees_update: " + response);
@@ -143,8 +153,10 @@ export default function CustomerDetail({ params, searchParams }: any) {
         console.log(message);
         update_bidding_history(message.reverse());
       });
-      console.log("join session");
-      socket.emit("join_session", auctionToken);
+      console.log("join session hihi");
+      if (timeSessionAuction) {
+        socket.emit("join_session", auctionToken);
+      }
       return () => {
         socket.off("connect", onConnect);
         socket.off("disconnect", onDisconnect);
@@ -161,6 +173,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
     if (bidding_history) {
       for (let i = 0; i < bidding_history.length; i++) {
         if (bidding_history[i]?.user?.alias == alias) {
+          setMaxOffer(bidding_history[i]?.price);
           setOffer(bidding_history[i]?.price);
           break;
         }
@@ -168,7 +181,6 @@ export default function CustomerDetail({ params, searchParams }: any) {
     }
   }, [bidding_history]);
   const handleJoinSession = () => {
-    setOnSession(true);
     console.log("join session");
     socket.emit("join_session", auctionToken);
   };
@@ -280,7 +292,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
                       {infor_auction?.deposit} vnd
                     </span>
                   </p>
-                  <p className="font-bold">Bạn đang trả giá: {offer}</p>
+                  <p className="font-bold">Bạn đang trả giá: {maxOffer}</p>
                 </CardContent>
               </Card>
 
@@ -296,7 +308,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
                                 <Input
                                   type="number"
                                   className="col-span-3"
-                                  ref={inputOffer}
+                                  defaultValue={offer}
                                   onChange={(e) => {
                                     setOffer(e.target.value);
                                   }}
@@ -304,7 +316,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
                                 <Button
                                   className="col-span-1"
                                   onClick={() => {
-                                    console.log(offerRes);
+                                    console.log(offer);
 
                                     if (onSession) {
                                       socket.emit(
@@ -321,6 +333,15 @@ export default function CustomerDetail({ params, searchParams }: any) {
                                         title: "Lỗi trả giá",
                                         description:
                                           "Giá bạn đưa ra chưa lớn hớn giá cao nhất hiện tại",
+                                      });
+                                    }
+                                    if (
+                                      offerRes == "Your bidding is too quick."
+                                    ) {
+                                      toast({
+                                        title: "Lỗi trả giá",
+                                        description:
+                                          "Bạn trả giá quá nhanh, hãy kiên nhẫn",
                                       });
                                     }
                                   }}
