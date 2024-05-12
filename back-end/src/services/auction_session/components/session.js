@@ -143,4 +143,9 @@ export class AuctionSession {
         console.log(biddings)
         return biddings;
     }
+
+    getBidder = (userId, role) => {
+        const user = this.#users.get(userId);
+        return user.getJSON(role);
+    }
 }

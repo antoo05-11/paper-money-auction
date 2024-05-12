@@ -11,7 +11,7 @@ export class User {
         this.#alias = alias;
     }
 
-    getUserId = () =>{
+    getUserId = () => {
         return this.#user._id.toString();
     }
 
@@ -28,7 +28,7 @@ export class User {
     }
 
     getJSON = (role) => {
-        if (role == null || role === userRole.CUSTOMER) {
+        if (role == null || role === userRole.CUSTOMER || role === userRole.ASSET_OWNER) {
             return {
                 alias: this.#alias,
                 penalty: this.#penalty

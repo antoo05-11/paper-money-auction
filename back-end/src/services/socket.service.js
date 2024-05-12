@@ -149,7 +149,10 @@ class SocketService extends Service {
                 if (authResult.role === userRole.AUCTIONEER) socket.join(auctioneerRoomId);
                 socket.join(authResult.sessionId);
 
-                socket.emit('join_session_response', true);
+                socket.emit('join_session_response', {
+                    code: true,
+                    joinInfo: session.getBidder(authResult.userId, authResult.role)
+                });
 
                 this.io.to(authResult.sessionId).except(auctioneerRoomId).emit('attendees_update', JSON.stringify(session.getRecentUsers(userRole.CUSTOMER)));
                 this.io.to(auctioneerRoomId).emit('attendees_update', JSON.stringify(session.getRecentUsers(userRole.AUCTIONEER)));
