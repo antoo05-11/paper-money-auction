@@ -226,15 +226,16 @@ export default function ListItem() {
 }
 
 function CardItem({ infor_auction }: any) {
-  console.log("Hello", infor_auction)
   let imageUrl = "";
-  if (infor_auction && infor_auction.asset?.pics && infor_auction.asset?.pics[0]) {
-    imageUrl = `${FILE_SERVER_URL}${infor_auction.asset?.pics[0]._id}${path.extname(
-      infor_auction.asset?.pics[0].name
-    )}`;
+  if (
+    infor_auction &&
+    infor_auction.asset?.pics &&
+    infor_auction.asset?.pics[0]
+  ) {
+    imageUrl = `${FILE_SERVER_URL}${
+      infor_auction.asset?.pics[0]._id
+    }${path.extname(infor_auction.asset?.pics[0].name)}`;
   }
-
-  console.log(imageUrl)
 
   const route = useRouter();
   const path_name = usePathname();
@@ -265,7 +266,13 @@ function CardItem({ infor_auction }: any) {
         </div>
       </div>
       <div className="w-3/12">
-        <Image src={imageUrl} alt="Image" width={200} height={300} className="w-full h-full rounded-r-lg" />
+        <Image
+          src={imageUrl}
+          alt="Image"
+          width={200}
+          height={300}
+          className="w-full h-full rounded-r-lg"
+        />
       </div>
     </div>
   );

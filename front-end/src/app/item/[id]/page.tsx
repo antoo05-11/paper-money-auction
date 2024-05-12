@@ -159,12 +159,12 @@ export default function CustomerDetail({ params, searchParams }: any) {
   }, [auctionToken]);
   useEffect(() => {
     if (bidding_history) {
-      bidding_history.map((bid: any) => {
-        if (bid?.user?.alias == alias) {
-          setOffer(bid?.price);
-          return;
+      for (let i = 0; i < bidding_history.length; i++) {
+        if (bidding_history[i]?.user?.alias == alias) {
+          setOffer(bidding_history[i]?.price);
+          break;
         }
-      });
+      }
     }
   }, [bidding_history]);
   const handleJoinSession = () => {
