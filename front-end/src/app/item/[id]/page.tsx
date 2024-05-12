@@ -59,7 +59,8 @@ export default function CustomerDetail({ params, searchParams }: any) {
   const [list_bidder_attend, update_list_bidder_attend] = useState<any>([]);
   const [offer, setOffer] = useState<any>();
   const [offerRes, setOfferRes] = useState<string>();
-  const [penalty, setPenalty] = useState<any>();
+  const [penalty, setPenalty] = useState<any>(false);
+  const [alias, setAlias] = useState<string>();
   const inputOffer = useRef<any>();
 
   let imageUrl = "";
@@ -124,7 +125,10 @@ export default function CustomerDetail({ params, searchParams }: any) {
       });
       socket.on("join_session_response", (response) => {
         console.log("join_session_response");
-        if (response == true) setOnSession(response);
+        console.log(response);
+        if (response.code == true) setOnSession(true);
+        if (response.joinInfo.penalty == true) setPenalty(true);
+        if (response.joinInfo.alias) setAlias(response.joinInfo.alias);
       });
       socket.on("attendees_update", (response) => {
         console.log("attendees_update: " + response);
@@ -136,7 +140,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
         if (message.message) setOfferRes(message.message);
       });
       socket.on("biddings_update", (message) => {
-        console.log("biddings_update");
+        console.log(message);
         update_bidding_history(message.reverse());
       });
       console.log("join session");
@@ -153,6 +157,16 @@ export default function CustomerDetail({ params, searchParams }: any) {
       };
     }
   }, [auctionToken]);
+  useEffect(() => {
+    if (bidding_history) {
+      bidding_history.map((bid: any) => {
+        if (bid?.user?.alias == alias) {
+          setOffer(bid?.price);
+          return;
+        }
+      });
+    }
+  }, [bidding_history]);
   const handleJoinSession = () => {
     setOnSession(true);
     console.log("join session");
@@ -276,70 +290,80 @@ export default function CustomerDetail({ params, searchParams }: any) {
                     {registered == "VERIFIED" && (
                       <div>
                         {onSession && (
-                          <div className="grid grid-cols-4">
-                            <Input
-                              type="number"
-                              className="col-span-3"
-                              ref={inputOffer}
-                              onChange={(e) => {
-                                setOffer(e.target.value);
-                              }}
-                            />
-                            <Button
-                              className="col-span-1"
-                              onClick={() => {
-                                console.log(offerRes);
+                          <div>
+                            {!penalty ? (
+                              <div className="grid grid-cols-4">
+                                <Input
+                                  type="number"
+                                  className="col-span-3"
+                                  ref={inputOffer}
+                                  onChange={(e) => {
+                                    setOffer(e.target.value);
+                                  }}
+                                />
+                                <Button
+                                  className="col-span-1"
+                                  onClick={() => {
+                                    console.log(offerRes);
 
-                                if (onSession) {
-                                  socket.emit(
-                                    "make_offer",
-                                    auctionToken,
-                                    offer
-                                  );
-                                }
-                                if (
-                                  offerRes ==
-                                  "Your bidding price is not big enough."
-                                ) {
-                                  toast({
-                                    title: "Lỗi trả giá",
-                                    description:
-                                      "Giá bạn đưa ra chưa lớn hớn giá cao nhất hiện tại",
-                                  });
-                                }
-                              }}
-                            >
-                              Trả giá
-                            </Button>
-
-                            <AlertDialog>
-                              <AlertDialogTrigger className="w-full col-start-1 col-end-5 mt-3">
-                                {" "}
-                                <Button className="w-full col-start-1 col-end-5 mt-3">
-                                  Rút giá
+                                    if (onSession) {
+                                      socket.emit(
+                                        "make_offer",
+                                        auctionToken,
+                                        offer
+                                      );
+                                    }
+                                    if (
+                                      offerRes ==
+                                      "Your bidding price is not big enough."
+                                    ) {
+                                      toast({
+                                        title: "Lỗi trả giá",
+                                        description:
+                                          "Giá bạn đưa ra chưa lớn hớn giá cao nhất hiện tại",
+                                      });
+                                    }
+                                  }}
+                                >
+                                  Trả giá
                                 </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>
-                                    Bạn có chắc chắn muốn rút giá?
-                                  </AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    Việc bạn rút giá có thể gây ảnh hưởng đến
-                                    cuộc đấu giá và vì vậy tiền cọc của bạn sẽ
-                                    không được hoàn trả
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
-                                  <AlertDialogAction
-                                    onClick={() => handleWithdrawOffer()}
-                                  >
-                                    Vẫn rút giá
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
+
+                                <AlertDialog>
+                                  <AlertDialogTrigger className="w-full col-start-1 col-end-5 mt-3">
+                                    {" "}
+                                    <Button className="w-full col-start-1 col-end-5 mt-3">
+                                      Rút giá
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>
+                                        Bạn có chắc chắn muốn rút giá?
+                                      </AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Việc bạn rút giá có thể gây ảnh hưởng
+                                        đến cuộc đấu giá và vì vậy tiền cọc của
+                                        bạn sẽ không được hoàn trả
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>
+                                        Hủy bỏ
+                                      </AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() => handleWithdrawOffer()}
+                                      >
+                                        Vẫn rút giá
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </div>
+                            ) : (
+                              <Button className="w-full" disabled>
+                                Bạn đã rút giá
+                              </Button>
+                            )}
                           </div>
                         )}
                         {!onSession && (

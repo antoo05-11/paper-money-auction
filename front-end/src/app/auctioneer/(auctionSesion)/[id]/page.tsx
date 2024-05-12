@@ -109,8 +109,8 @@ export default function AuctionDetail({ params }: any) {
         console.log("socket_error: ", message);
       });
       socket.on("join_session_response", (response) => {
-        console.log("join_session_response");
-        if (response == true) setOnSession(response);
+        console.log(response);
+        if (response.code == true) setOnSession(true);
       });
       socket.on("attendees_update", (response) => {
         console.log("attendees_update: " + response);
@@ -156,8 +156,9 @@ export default function AuctionDetail({ params }: any) {
     infor_auction.asset?.pics &&
     infor_auction.asset?.pics[0]
   ) {
-    imageUrl = `${FILE_SERVER_URL}${infor_auction.asset?.pics[0]._id
-      }${path.extname(infor_auction.asset?.pics[0].name)}`;
+    imageUrl = `${FILE_SERVER_URL}${
+      infor_auction.asset?.pics[0]._id
+    }${path.extname(infor_auction.asset?.pics[0].name)}`;
   }
 
   return (
