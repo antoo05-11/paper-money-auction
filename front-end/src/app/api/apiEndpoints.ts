@@ -154,6 +154,12 @@ export function payDeposit(auction_id: any, amount: any) {
   });
 }
 
+export function payAuction(auction_id: any, amount: any) {
+  return request.post(`/api/payment/${auction_id}`, {
+    data: { type: "PAYMENT", amount: amount },
+  });
+}
+
 //bidder
 export function listBidder(auction_id: any) {
   return request.get(`/api/auction/${auction_id}/bidders`);

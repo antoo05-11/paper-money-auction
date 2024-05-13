@@ -1,40 +1,28 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSeparator,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
-import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import Link from "next/link";
-import { loginUser, login2FA, confirmBid } from "@/app/api/apiEndpoints";
+import {
+  loginUser,
+  login2FA,
+  confirmBid,
+  payAuction,
+  viewAuctionInfo,
+} from "@/app/api/apiEndpoints";
 import { HTTP_STATUS, ROLES } from "@/lib/constant/constant";
 import { redirect, usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth/useAuth";
 import axios, { AxiosError } from "axios";
 import { User, confirmAuction } from "@/lib/constant/dataInterface";
-
 export default function ConfirmAuctionPage() {
   const { user, login } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [confirmed, setConfirm] = useState(false);
+  const [auction, setAuction] = useState<any>();
   const [message, setMessage] = useState(
     "Vui lòng xác nhận việc trúng đấu giá của bạn"
   );
@@ -43,6 +31,21 @@ export default function ConfirmAuctionPage() {
   const pathRegex = pathname.match(regexConfirm);
   const auctionId = pathRegex ? pathRegex[1] : null;
   const token = pathRegex ? pathRegex[2] : null;
+
+  function goToAuctionDetail() {
+    setTimeout(() => {
+      router.push(`/item/${auctionId}`);
+    }, 1000);
+  }
+
+  useEffect(() => {
+    if (auctionId) {
+      const auctionInfo = viewAuctionInfo(auctionId).then((res) => {
+        setAuction(res.data);
+      });
+    }
+  }, []);
+
   async function onConfirm(confirm: boolean) {
     setLoading(true);
     if (!auctionId || !token) {
@@ -61,7 +64,7 @@ export default function ConfirmAuctionPage() {
         if (res.status == HTTP_STATUS.OK) {
           setMessage(res.data.message);
           setTimeout(() => {
-            router.push(`/item/${auctionId}`);
+            setConfirm(true);
           }, 1000);
         }
       });
@@ -72,6 +75,8 @@ export default function ConfirmAuctionPage() {
         setLoading(false);
       }
     }
+    setConfirm(true);
+    setLoading(false);
   }
   if (!user) {
     setTimeout(() => {
@@ -94,14 +99,40 @@ export default function ConfirmAuctionPage() {
                           min-h-52 space-y-4"
         >
           <span>{message}</span>
-          <div className="flex flex-row space-x-4">
-            <Button onClick={() => onConfirm(false)} disabled={loading}>
-              Reject
-            </Button>
-            <Button onClick={() => onConfirm(true)} disabled={loading}>
-              Confirm
-            </Button>
-          </div>
+          <Link href={`/item/${auctionId}`} className="hover:underline">
+            ID: {auctionId}
+          </Link>
+          {!confirmed && (
+            <div className="flex flex-row space-x-4">
+              <Button onClick={() => onConfirm(false)} disabled={loading}>
+                Reject
+              </Button>
+              <Button onClick={() => onConfirm(true)} disabled={loading}>
+                Confirm
+              </Button>
+            </div>
+          )}
+          {confirmed && (
+            <div className="flex flex-col space-y-4 items-center">
+              <Input placeholder="Nhập mã CCV" />
+              <Button
+                onClick={async (e) => {
+                  await payAuction(
+                    auctionId,
+                    auction.winning_bidding.price
+                  ).then((res) => {
+                    if (res.status == HTTP_STATUS.OK) {
+                      toast.success("Bạn đã thanh toán thành công!");
+                      goToAuctionDetail();
+                    }
+                  });
+                }}
+                className="w-1/2"
+              >
+                Thanh toán
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </section>
