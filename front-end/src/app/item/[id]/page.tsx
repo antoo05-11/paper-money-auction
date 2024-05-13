@@ -41,12 +41,14 @@ import { DataTable } from "@/components/ui/data-table";
 import { attendees_bidding, bidding_act } from "../_component/columns";
 import path from "path";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ROLES } from "@/lib/constant/constant";
 const FILE_SERVER_URL =
   process.env.FILE_SERVER ||
   "https://muzik-files-server.000webhostapp.com/paper-money-auction-files/asset-docs/";
 
 export default function CustomerDetail({ params, searchParams }: any) {
   const { toast } = useToast();
+  const { user, login } = useAuth();
   const id = params.id;
   const [isConnected, setIsConnected] = useState(false);
   const [infor_auction, set_infor_auction] = useState<any>();
@@ -92,9 +94,11 @@ export default function CustomerDetail({ params, searchParams }: any) {
       );
     };
     const checkStatusParticipation = async () => {
-      const checkRegister = await checkParticipation(id);
-      const register_use = await checkRegister?.data?.status;
-      setRegister(register_use);
+      if (user?.role == ROLES.CUSTOMER) {
+        const checkRegister = await checkParticipation(id);
+        const register_use = await checkRegister?.data?.status;
+        setRegister(register_use);
+      }
     };
     fetchData().catch(console.error);
     checkStatusParticipation().catch(console.error);

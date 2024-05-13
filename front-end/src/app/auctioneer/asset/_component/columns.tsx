@@ -119,8 +119,7 @@ const CreateAuction: React.FC<{ asset_id: any }> = ({ asset_id }) => {
       const res = await createAuction(formData);
       if (res.status == HTTP_STATUS.OK) {
         setOpenDialog(false);
-        route.push(window.location.href);
-        route.refresh();
+        route.push("/auctioneer/asset");
       } else {
         toast({
           title: "Tạo phiên đấu giá thất bại",
@@ -128,7 +127,7 @@ const CreateAuction: React.FC<{ asset_id: any }> = ({ asset_id }) => {
         });
       }
     };
-    // const result = create_auction().catch(console.error);
+    const result = create_auction().catch(console.error);
     console.log(data);
   }
   return (
