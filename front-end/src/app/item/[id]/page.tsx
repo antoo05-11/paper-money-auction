@@ -75,14 +75,18 @@ export default function CustomerDetail({ params, searchParams }: any) {
       infor_auction.asset?.pics[0]._id
     }${path.extname(infor_auction.asset?.pics[0].name)}`;
   }
+  const timezone = new Date().getTimezoneOffset();
   useEffect(() => {
     if (infor_auction) {
       setTimeSessionAuction(
         CompareDate(
-          Date.now() + 3600 * 7 * 1000,
+          Date.now() - timezone * 60 * 1000,
           infor_auction?.auction_start
         ) &&
-          !CompareDate(Date.now() + 3600 * 7 * 1000, infor_auction?.auction_end)
+          !CompareDate(
+            Date.now() - timezone * 60 * 1000,
+            infor_auction?.auction_end
+          )
       );
     }
   });
@@ -93,11 +97,11 @@ export default function CustomerDetail({ params, searchParams }: any) {
       set_infor_auction(data_use);
       setTimeRegister(
         CompareDate(
-          Date.now() + 3600 * 7 * 1000,
+          Date.now() - timezone * 60 * 1000,
           data_use?.registration_open
         ) &&
           !CompareDate(
-            Date.now() + 3600 * 7 * 1000,
+            Date.now() - timezone * 60 * 1000,
             data_use?.registration_close
           )
       );
@@ -206,7 +210,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
     <div className="pt-24 container">
       {!CompareDate(
         infor_auction?.auction_end,
-        Date.now() + 3600 * 7 * 1000
+        Date.now() - timezone * 60 * 1000
       ) && (
         <Alert>
           <AlertTitle>Phiên đấu giá đã kết thúc</AlertTitle>
@@ -247,11 +251,11 @@ export default function CustomerDetail({ params, searchParams }: any) {
                     !timeRegister &&
                     CompareDate(
                       infor_auction?.auction_start,
-                      Date.now() + 3600 * 7 * 1000
+                      Date.now() - timezone * 60 * 1000
                     ) && (
                       <Card>
                         <CountTime
-                          startTime={Date.now() + 3600 * 7 * 1000}
+                          startTime={Date.now() - timezone * 60 * 1000}
                           endTime={infor_auction?.auction_start}
                         />
                         <div className="flex justify-center mb-1">
@@ -266,7 +270,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
               {timeSessionAuction && infor_auction?.auction_end && (
                 <Card>
                   <CountTime
-                    startTime={Date.now() + 3600 * 7 * 1000}
+                    startTime={Date.now() - timezone * 60 * 1000}
                     endTime={infor_auction?.auction_end}
                   />
                   <div className="flex justify-center mb-1">
@@ -279,7 +283,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
               {timeRegister && infor_auction?.registration_close && (
                 <Card>
                   <CountTime
-                    startTime={Date.now() + 3600 * 7 * 1000}
+                    startTime={Date.now() - timezone * 60 * 1000}
                     endTime={infor_auction?.registration_close}
                   />
                   <div className="flex justify-center mb-1">
@@ -333,7 +337,10 @@ export default function CustomerDetail({ params, searchParams }: any) {
               </Card>
 
               <div>
-                {timeSessionAuction && (
+                {CompareDate(
+                  Date.now() - timezone * 60 * 1000,
+                  infor_auction?.register_end
+                ) && (
                   <div className="mt-4">
                     {registered == "VERIFIED" && (
                       <div>
@@ -446,7 +453,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
                   !timeRegister &&
                   CompareDate(
                     infor_auction?.auction_start,
-                    Date.now() + 3600 * 7 * 1000
+                    Date.now() - timezone * 60 * 1000
                   ) &&
                   (registered == "VERIFIED" ? (
                     <Button className="w-full">Đăng ký thành công</Button>
