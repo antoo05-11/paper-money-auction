@@ -69,6 +69,7 @@ export default function Page() {
       })
       .finally(() => {
         setLoading(false);
+        console.log(auction[0]?.asset?.name);
       });
   }, [debouncedFilter]);
 

@@ -65,10 +65,10 @@ export default function ListItem() {
   useEffect(() => {
     setFilter((prevFilter: any) => ({
       ...prevFilter,
-      registration_close: date_register?.to?.toISOString(),
-      registration_open: date_register?.from?.toISOString(),
-      auction_end: date_auction?.to?.toISOString(),
-      auction_start: date_auction?.from?.toISOString(),
+      registration_close: date_register?.to?.toISOString().slice(0, 10),
+      registration_open: date_register?.from?.toISOString().slice(0, 10),
+      auction_end: date_auction?.to?.toISOString().slice(0, 10),
+      auction_start: date_auction?.from?.toISOString().slice(0, 10),
       page: undefined,
       page_size: undefined,
     }));
