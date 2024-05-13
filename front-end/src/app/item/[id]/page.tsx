@@ -169,6 +169,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
       };
     }
   }, [auctionToken]);
+  console.log(infor_auction);
   useEffect(() => {
     if (bidding_history) {
       for (let i = 0; i < bidding_history.length; i++) {
@@ -226,19 +227,21 @@ export default function CustomerDetail({ params, searchParams }: any) {
             <div className=" col-span-3 grid grid-rows-1 gap-4">
               {infor_auction?.auction_start && (
                 <>
-                  {!timeSessionAuction && !timeRegister && (
-                    <Card>
-                      <CountTime
-                        startTime={Date.now()}
-                        endTime={infor_auction?.auction_start}
-                      />
-                      <div className="flex justify-center mb-1">
-                        <Label className="italic">
-                          Thời gian đến khi bắt đầu phiên đấu giá
-                        </Label>
-                      </div>
-                    </Card>
-                  )}
+                  {!timeSessionAuction &&
+                    !timeRegister &&
+                    CompareDate(infor_auction?.auction_start, Date.now()) && (
+                      <Card>
+                        <CountTime
+                          startTime={Date.now()}
+                          endTime={infor_auction?.auction_start}
+                        />
+                        <div className="flex justify-center mb-1">
+                          <Label className="italic">
+                            Thời gian đến khi bắt đầu phiên đấu giá
+                          </Label>
+                        </div>
+                      </Card>
+                    )}
                 </>
               )}
               {timeSessionAuction && infor_auction?.auction_end && (
@@ -268,31 +271,45 @@ export default function CustomerDetail({ params, searchParams }: any) {
                 </Card>
               )}
               <Card className="row-span-4">
-                <CardContent className="p-6">
-                  <p className="font-bold">
-                    Giá cao nhất hiện tại: {bidding_history[0]?.price}
+                <CardContent className="p-4 flex-col flex">
+                  <p className="font-bold flex p-2">
+                    <text>Giá cao nhất hiện tại:</text>
+                    <div className="float-right">
+                      {bidding_history[0]?.price}
+                    </div>
                   </p>
-                  <p className="font-bold">
+                  <hr></hr>
+                  <p className="font-bold p-2">
                     Giá khởi điểm:{" "}
-                    <span className="font-normal">
+                    <span className="font-normal float-right">
                       {infor_auction?.starting_price} vnd
                     </span>{" "}
                   </p>
-                  <p className="font-bold">
+                  <hr></hr>
+                  <p className="font-bold p-2">
                     Bước giá tối thiểu:{" "}
-                    <span className="font-normal">
+                    <span className="font-normal  float-right">
                       {" "}
                       {infor_auction?.bidding_increment} vnd
                     </span>
                   </p>
-                  <p className="font-bold">
+                  <hr></hr>
+                  <p className="font-bold p-2">
                     Tiền đặt cọc:{" "}
-                    <span className="font-normal">
+                    <span className="font-normal  float-right">
                       {" "}
                       {infor_auction?.deposit} vnd
                     </span>
                   </p>
-                  <p className="font-bold">Bạn đang trả giá: {maxOffer}</p>
+                  <hr></hr>
+                  <p className="font-bold p-2">
+                    Bạn đang trả giá:
+                    <span className="font-normal  float-right">
+                      {" "}
+                      {maxOffer} vnd
+                    </span>
+                  </p>
+                  <hr></hr>
                 </CardContent>
               </Card>
 
@@ -408,6 +425,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
                 )}
                 {!timeSessionAuction &&
                   !timeRegister &&
+                  CompareDate(infor_auction?.auction_start, Date.now()) &&
                   (registered == "VERIFIED" ? (
                     <Button className="w-full">Đăng ký thành công</Button>
                   ) : registered == "NOT_REGISTERED_YET" ? (
@@ -570,6 +588,7 @@ const CountTime: React.FC<{
         Math.floor(Math.abs(DateStart.getTime() - DateEnd.getTime()) / 1000)
       );
       countRef.current = setInterval(() => {
+        if (time == 0) clearInterval(countRef.current);
         setTime((time) => time - 1);
       }, 1000);
     }
