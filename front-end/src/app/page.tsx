@@ -21,34 +21,38 @@ export default function HomePage() {
       {/* === Banner === */}
       <div className="bg-[url(/home-1-bg-shape.png)] dark:bg-[url(/bachngu1.png)] bg-cover center h-screen">
         <PageHeader />
-        <div>
-        </div>
+        <div></div>
         <div className="container flex flex-row h-full">
           <div className="basis-1/2 flex-row content-center pl-4 relative">
-            <h3 className="font-bold mb-3 text-3xl text-primary">Chào mừng bạn đến với </h3>
-            <h1 className="font-extrabold mb-3 text-6xl animate-typing overflow-hidden whitespace-nowrap leading-normal">MONESY</h1>
+            <h3 className="font-bold mb-3 text-3xl text-primary">
+              Chào mừng bạn đến với{" "}
+            </h3>
+            <h1 className="font-extrabold mb-3 text-6xl animate-typing overflow-hidden whitespace-nowrap leading-normal">
+              Vua tiền tệ
+            </h1>
             <h1 className="font-normal mb-3 text-slate-500 dark:text-slate-400">
-              Tự hào là một trong những nền tảng đấu giá trực tuyến hàng đầu tại Việt Nam.
+              Tự hào là một trong những nền tảng đấu giá trực tuyến hàng đầu tại
+              Việt Nam.
             </h1>
             <Button className="mt-2" onClick={executeScroll}>
               Khám phá
             </Button>
-            <div className="absolute left-72 -bottom-1 z-10" >
+            <div className="absolute left-72 -bottom-1 z-10">
               <div className=" animate-floating3">
                 <Image src="/shape3.png" width={29} height={29} alt="" />
               </div>
             </div>
-            <div className="absolute -bottom-32 " >
+            <div className="absolute -bottom-32 ">
               <div className="animate-floating2">
                 <Image src="/shape5.png" width={29} height={29} alt="" />
               </div>
             </div>
-            <div className="absolute -bottom-32 right-2/3" >
+            <div className="absolute -bottom-32 right-2/3">
               <div className="animate-floating1">
                 <Image src="/shape6.png" width={29} height={29} alt="" />
               </div>
             </div>
-            <div className="absolute top-1/2 z-10" >
+            <div className="absolute top-1/2 z-10">
               <div className="animate-floating3">
                 <Image src="/shape1.png" width={10} height={10} alt="" />
               </div>
@@ -76,7 +80,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="absolute -bottom-32 right-24" >
+            <div className="absolute -bottom-32 right-24">
               <div className="animate-floating1">
                 <Image src="/shape6.png" width={29} height={29} alt="" />
               </div>
@@ -88,10 +92,7 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-
         </div>
-
-
       </div>
 
       {/* === Item show === */}
@@ -108,7 +109,6 @@ export default function HomePage() {
           <MyCarousel />
         </div>
       </div>
-
 
       {/*=== Footer === */}
       <PageFooter />
