@@ -10,8 +10,13 @@ export function serverRole(): any {
   const cookies = getCookies();
   const userInCookies = cookies.get("user");
   if (userInCookies) {
-    const user = JSON?.parse(userInCookies);    
+    const user = JSON?.parse(userInCookies);
     return user.role;
   }
   return null;
+}
+
+export function removeCookie(): any {
+  const cookies = getCookies();
+  cookies.remove("user");
 }
