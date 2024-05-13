@@ -211,18 +211,37 @@ export default function AuctionDetail({ params }: any) {
                 </Card>
               )}
               <Card className="row-span-4 mt-5">
-                <CardContent className="p-6">
-                  <div className="mb-5">
-                    <p>Giá cao nhất hiện tại: {bidding_history[0]?.price}</p>
-                    <p>
-                      Người trả giá cao nhất: {bidding_history[0]?.user?.alias}{" "}
-                      {bidding_history[0]?.user?.name}
-                    </p>
-                    <p>Giá khởi điểm: {infor_auction?.starting_price} vnd</p>
-                    <p>
-                      Bước giá tối thiểu: {infor_auction?.bidding_increment} vnd
-                    </p>
-                  </div>
+                <CardContent className="p-4">
+                  <p className="font-bold flex p-2">
+                    <text>Giá cao nhất hiện tại:</text>
+                    <div className="float-right">
+                      {bidding_history[0]?.price}
+                    </div>
+                  </p>
+                  <hr></hr>
+                  <p className="font-bold p-2">
+                    Giá khởi điểm:{" "}
+                    <span className="font-normal float-right">
+                      {infor_auction?.starting_price} vnd
+                    </span>{" "}
+                  </p>
+                  <hr></hr>
+                  <p className="font-bold p-2">
+                    Bước giá tối thiểu:{" "}
+                    <span className="font-normal  float-right">
+                      {" "}
+                      {infor_auction?.bidding_increment} vnd
+                    </span>
+                  </p>
+                  <hr></hr>
+                  <p className="font-bold p-2">
+                    Tiền đặt cọc:{" "}
+                    <span className="font-normal  float-right">
+                      {" "}
+                      {infor_auction?.deposit} vnd
+                    </span>
+                  </p>
+                  <hr></hr>
                   {timeSessionAuction && (
                     <div className="w-full">
                       {!onSession && (
