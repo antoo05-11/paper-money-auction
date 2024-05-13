@@ -12,6 +12,7 @@ import { Bidding } from "../models/bidding";
 import mongoose from "mongoose";
 import { writeLogStatus } from "./activity_log.controller";
 import { mailService } from "../services/mail.service";
+import { ftpService } from "../services/ftp.service";
 
 export default class AuctionController {
     constructor() {}
@@ -24,20 +25,56 @@ export default class AuctionController {
         if (!asset)
             throw new HttpError({ ...errorCode.ASSET.NOT_FOUND, status: 403 });
 
-        const uploadedDocs = _.map(req.files["docs"], "originalname"); // Replace this with real files url return from server
+        // const uploadedDocs = _.map(req.files["docs"], "originalname"); // Replace this with real files url return from server
+
+        const uploadedDocs = [];
+        if (req.files["docs"])
+            for (const file of req.files["docs"]) {
+                uploadedDocs.push({ name: file.originalname });
+            }
 
         data.docs = uploadedDocs;
         data.auctioneer = user._id;
         data.status = auctionStatus.ONGOING;
-        const auction = await Auction.create(data);
 
-        if (req.activityLog) writeLogStatus(req.activityLog, auction._id, true);
+        const session = await mongoose.startSession();
+        session.startTransaction(); // Start the transaction
+        try {
+            const auction = (
+                await Auction.create([data], { session: session })
+            )[0].toObject();
 
-        const payload = auction;
-        res.status(200).json({
-            ok: true,
-            data: payload,
-        });
+            const nameIdMap = new Map();
+            for (const file of auction.docs) {
+                nameIdMap.set(file.name, file._id.toString());
+            }
+            await ftpService.uploadFiles(
+                req.files["docs"],
+                nameIdMap,
+                `${process.env.FTP_PUBLIC_PATH}auction-docs/`
+            );
+
+            await session.commitTransaction();
+            await session.endSession();
+
+            if (req.activityLog)
+                writeLogStatus(req.activityLog, auction._id, true);
+
+            const payload = auction;
+            res.status(200).json({
+                ok: true,
+                data: payload,
+                auctionDocRootUrl: `${process.env.FTP_URL}auction-docs/`,
+            });
+        } catch (e) {
+            console.log(e);
+            await session.abortTransaction();
+            await session.endSession();
+            throw new HttpError({
+                ...errorCode.INTERNAL_SERVER_ERROR,
+                status: 403,
+            });
+        }
     };
 
     listAuction = async (req, res) => {
