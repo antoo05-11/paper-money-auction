@@ -127,7 +127,7 @@ const CreateAuction: React.FC<{ asset_id: any }> = ({ asset_id }) => {
         });
       }
     };
-    // const result = create_auction().catch(console.error);
+    const result = create_auction().catch(console.error);
     console.log(data);
   }
   return (

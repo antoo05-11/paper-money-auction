@@ -42,6 +42,8 @@ import { attendees_bidding, bidding_act } from "../_component/columns";
 import path from "path";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ROLES } from "@/lib/constant/constant";
+import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 const FILE_SERVER_URL =
   process.env.FILE_SERVER ||
   "https://muzik-files-server.000webhostapp.com/paper-money-auction-files/asset-docs/";
@@ -444,7 +446,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
                     )}
                     {registered != "VERIFIED" && (
                       <Button className="w-full">
-                        Đã quá thời hạn đăng kí tham gia
+                        Đã quá thời hạn đăng kí tham gia {timeSessionAuction}
                       </Button>
                     )}
                   </div>
@@ -453,6 +455,10 @@ export default function CustomerDetail({ params, searchParams }: any) {
                   !timeRegister &&
                   CompareDate(
                     infor_auction?.auction_start,
+                    Date.now() - timezone * 60 * 1000
+                  ) &&
+                  !CompareDate(
+                    infor_auction?.register_close,
                     Date.now() - timezone * 60 * 1000
                   ) &&
                   (registered == "VERIFIED" ? (
@@ -608,6 +614,8 @@ const CountTime: React.FC<{
 }> = ({ startTime, endTime }) => {
   const countRef = useRef<any>(null);
   const DateEnd = new Date(endTime);
+  const route = useRouter();
+  const pathName = usePathname();
   const DateStart = new Date(startTime);
   const [time, setTime] = useState<number>(0);
   useEffect(() => {
@@ -620,11 +628,16 @@ const CountTime: React.FC<{
         Math.floor(Math.abs(DateStart.getTime() - DateEnd.getTime()) / 1000)
       );
       countRef.current = setInterval(() => {
-        if (time == 0) clearInterval(countRef.current);
         setTime((time) => time - 1);
       }, 1000);
     }
   }, []);
+  useEffect(() => {
+    if (time < 0) {
+      clearInterval(countRef.current);
+      route.push(pathName);
+    }
+  }, [time]);
   return (
     <div className="row-span-2 flex flex-row justify-evenly text-center p-3">
       <div>
