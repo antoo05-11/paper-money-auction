@@ -112,6 +112,10 @@ const CreateAuction: React.FC<{ asset_id: any }> = ({ asset_id }) => {
     resolver: zodResolver(FormSchema),
   });
   function onSubmit(data: z.infer<typeof FormSchema>) {
+    data.auction_end = String(Date.parse(data.auction_end));
+    data.registration_open = String(Date.parse(data.registration_open));
+    data.registration_close = String(Date.parse(data.registration_close));
+    data.auction_start = String(Date.parse(data.auction_start));
     const formData = new FormData();
     formData.append("data", JSON.stringify(data));
     formData.append("docs", JSON.stringify(docs));

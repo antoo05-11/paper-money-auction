@@ -67,10 +67,14 @@ export default function AuctionDetail({ params }: any) {
   const [autionToken, setAutionToken] = useState<string>();
   const [list_bidder_attend, update_list_bidder_attend] = useState<any>([]);
   const [bidding_history, update_bidding_history] = useState<any>([]);
+  const timezone = 0;
   useEffect(() => {
     if (infor_auction) {
       setTimeSessionAuction(
-        CompareDate(Date.now(), infor_auction?.auction_start)
+        CompareDate(
+          Date.now() - timezone * 60 * 1000,
+          infor_auction?.auction_start
+        )
       );
     }
   });
@@ -168,10 +172,16 @@ export default function AuctionDetail({ params }: any) {
       infor_auction.asset?.pics[0]._id
     }${path.extname(infor_auction.asset?.pics[0].name)}`;
   }
-
   return (
     <div className="container">
       <div>
+        <Button
+          onClick={() => {
+            console.log(timezone);
+          }}
+        >
+          Test
+        </Button>
         <Card>
           <CardHeader>
             <CardTitle>Phiên đấu giá</CardTitle>
@@ -192,7 +202,7 @@ export default function AuctionDetail({ params }: any) {
                 <Card>
                   <CountTime
                     startTime={infor_auction?.auction_start}
-                    endTime={Date.now()}
+                    endTime={Date.now() - timezone * 60 * 1000}
                   />
                   <div className="flex justify-center mb-1">
                     <Label>Thời gian bắt đầu phiên đấu giá còn</Label>
@@ -203,7 +213,7 @@ export default function AuctionDetail({ params }: any) {
                 <Card>
                   <CountTime
                     startTime={infor_auction?.auction_end}
-                    endTime={Date.now()}
+                    endTime={Date.now() - timezone * 60 * 1000}
                   />
                   <div className="flex justify-center mb-1">
                     <Label>Thời gian phiên đấu giá còn</Label>
@@ -289,7 +299,10 @@ export default function AuctionDetail({ params }: any) {
             {timeSessionAuction && (
               <TabsTrigger value="history">Lịch sử đặt giá</TabsTrigger>
             )}
-            {!CompareDate(Date.now(), infor_auction?.auction_end) && (
+            {!CompareDate(
+              Date.now() - timezone * 60 * 1000,
+              infor_auction?.auction_end
+            ) && (
               <TabsTrigger value="inform">
                 {!timeSessionAuction ? (
                   <text>Phê duyệt tham gia đấu giá</text>
@@ -316,8 +329,14 @@ export default function AuctionDetail({ params }: any) {
                 pageCount={0}
               />
             )}
-            {CompareDate(Date.now(), infor_auction?.registration_open) &&
-              !CompareDate(Date.now(), infor_auction?.auction_start) && (
+            {CompareDate(
+              Date.now() - timezone * 60 * 1000,
+              infor_auction?.registration_open
+            ) &&
+              !CompareDate(
+                Date.now() - timezone * 60 * 1000,
+                infor_auction?.auction_start
+              ) && (
                 <DataTable
                   columns={verified_bidder}
                   data={list_bidder}

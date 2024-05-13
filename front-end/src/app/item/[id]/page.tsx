@@ -42,6 +42,8 @@ import { attendees_bidding, bidding_act } from "../_component/columns";
 import path from "path";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ROLES } from "@/lib/constant/constant";
+import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 const FILE_SERVER_URL =
   process.env.FILE_SERVER ||
   "https://muzik-files-server.000webhostapp.com/paper-money-auction-files/asset-docs/";
@@ -75,14 +77,18 @@ export default function CustomerDetail({ params, searchParams }: any) {
       infor_auction.asset?.pics[0]._id
     }${path.extname(infor_auction.asset?.pics[0].name)}`;
   }
+  const timezone = 0;
   useEffect(() => {
     if (infor_auction) {
       setTimeSessionAuction(
         CompareDate(
-          Date.now() + 3600 * 7 * 1000,
+          Date.now() - timezone * 60 * 1000,
           infor_auction?.auction_start
         ) &&
-          !CompareDate(Date.now() + 3600 * 7 * 1000, infor_auction?.auction_end)
+          !CompareDate(
+            Date.now() - timezone * 60 * 1000,
+            infor_auction?.auction_end
+          )
       );
     }
   });
@@ -93,11 +99,11 @@ export default function CustomerDetail({ params, searchParams }: any) {
       set_infor_auction(data_use);
       setTimeRegister(
         CompareDate(
-          Date.now() + 3600 * 7 * 1000,
+          Date.now() - timezone * 60 * 1000,
           data_use?.registration_open
         ) &&
           !CompareDate(
-            Date.now() + 3600 * 7 * 1000,
+            Date.now() - timezone * 60 * 1000,
             data_use?.registration_close
           )
       );
@@ -206,7 +212,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
     <div className="pt-24 container">
       {!CompareDate(
         infor_auction?.auction_end,
-        Date.now() + 3600 * 7 * 1000
+        Date.now() - timezone * 60 * 1000
       ) && (
         <Alert>
           <AlertTitle>Phiên đấu giá đã kết thúc</AlertTitle>
@@ -247,11 +253,11 @@ export default function CustomerDetail({ params, searchParams }: any) {
                     !timeRegister &&
                     CompareDate(
                       infor_auction?.auction_start,
-                      Date.now() + 3600 * 7 * 1000
+                      Date.now() - timezone * 60 * 1000
                     ) && (
                       <Card>
                         <CountTime
-                          startTime={Date.now() + 3600 * 7 * 1000}
+                          startTime={Date.now() - timezone * 60 * 1000}
                           endTime={infor_auction?.auction_start}
                         />
                         <div className="flex justify-center mb-1">
@@ -266,7 +272,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
               {timeSessionAuction && infor_auction?.auction_end && (
                 <Card>
                   <CountTime
-                    startTime={Date.now() + 3600 * 7 * 1000}
+                    startTime={Date.now() - timezone * 60 * 1000}
                     endTime={infor_auction?.auction_end}
                   />
                   <div className="flex justify-center mb-1">
@@ -279,7 +285,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
               {timeRegister && infor_auction?.registration_close && (
                 <Card>
                   <CountTime
-                    startTime={Date.now() + 3600 * 7 * 1000}
+                    startTime={Date.now() - timezone * 60 * 1000}
                     endTime={infor_auction?.registration_close}
                   />
                   <div className="flex justify-center mb-1">
@@ -333,7 +339,10 @@ export default function CustomerDetail({ params, searchParams }: any) {
               </Card>
 
               <div>
-                {timeSessionAuction && (
+                {CompareDate(
+                  Date.now() - timezone * 60 * 1000,
+                  infor_auction?.register_end
+                ) && (
                   <div className="mt-4">
                     {registered == "VERIFIED" && (
                       <div>
@@ -437,7 +446,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
                     )}
                     {registered != "VERIFIED" && (
                       <Button className="w-full">
-                        Đã quá thời hạn đăng kí tham gia
+                        Đã quá thời hạn đăng kí tham gia {timeSessionAuction}
                       </Button>
                     )}
                   </div>
@@ -446,7 +455,11 @@ export default function CustomerDetail({ params, searchParams }: any) {
                   !timeRegister &&
                   CompareDate(
                     infor_auction?.auction_start,
-                    Date.now() + 3600 * 7 * 1000
+                    Date.now() - timezone * 60 * 1000
+                  ) &&
+                  !CompareDate(
+                    infor_auction?.register_close,
+                    Date.now() - timezone * 60 * 1000
                   ) &&
                   (registered == "VERIFIED" ? (
                     <Button className="w-full">Đăng ký thành công</Button>
@@ -601,6 +614,8 @@ const CountTime: React.FC<{
 }> = ({ startTime, endTime }) => {
   const countRef = useRef<any>(null);
   const DateEnd = new Date(endTime);
+  const route = useRouter();
+  const pathName = usePathname();
   const DateStart = new Date(startTime);
   const [time, setTime] = useState<number>(0);
   useEffect(() => {
@@ -613,11 +628,16 @@ const CountTime: React.FC<{
         Math.floor(Math.abs(DateStart.getTime() - DateEnd.getTime()) / 1000)
       );
       countRef.current = setInterval(() => {
-        if (time == 0) clearInterval(countRef.current);
         setTime((time) => time - 1);
       }, 1000);
     }
   }, []);
+  useEffect(() => {
+    if (time < 0) {
+      clearInterval(countRef.current);
+      route.push(pathName);
+    }
+  }, [time]);
   return (
     <div className="row-span-2 flex flex-row justify-evenly text-center p-3">
       <div>
