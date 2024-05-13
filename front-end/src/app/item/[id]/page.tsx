@@ -91,7 +91,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
           )
       );
     }
-  });
+  }, []);
   useEffect(() => {
     const fetchData = async () => {
       const data_get = await viewAuctionInfo(id);
@@ -106,6 +106,13 @@ export default function CustomerDetail({ params, searchParams }: any) {
             Date.now() - timezone * 60 * 1000,
             data_use?.registration_close
           )
+      );
+      setTimeSessionAuction(
+        CompareDate(
+          Date.now() - timezone * 60 * 1000,
+          data_use?.auction_start
+        ) &&
+          !CompareDate(Date.now() - timezone * 60 * 1000, data_use?.auction_end)
       );
     };
     const checkStatusParticipation = async () => {
@@ -339,10 +346,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
               </Card>
 
               <div>
-                {CompareDate(
-                  Date.now() - timezone * 60 * 1000,
-                  infor_auction?.register_end
-                ) && (
+                {timeSessionAuction && (
                   <div className="mt-4">
                     {registered == "VERIFIED" && (
                       <div>
