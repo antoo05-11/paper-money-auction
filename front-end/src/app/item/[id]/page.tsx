@@ -55,7 +55,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
   const [timeSessionAuction, setTimeSessionAuction] = useState(false);
   const [timeRegister, setTimeRegister] = useState<boolean>();
   const [onSession, setOnSession] = useState<boolean>();
-  const [registered, setRegister] = useState<string>();
+  const [registered, setRegister] = useState<string>("NOT_REGISTERED_YET");
   const [auctionToken, setAuctionToken] = useState<string>();
   const [bidding_history, update_bidding_history] = useState<any>([]);
   const [list_bidder_attend, update_list_bidder_attend] = useState<any>([]);
@@ -78,8 +78,11 @@ export default function CustomerDetail({ params, searchParams }: any) {
   useEffect(() => {
     if (infor_auction) {
       setTimeSessionAuction(
-        CompareDate(Date.now(), infor_auction?.auction_start) &&
-          !CompareDate(Date.now(), infor_auction?.auction_end)
+        CompareDate(
+          Date.now() + 3600 * 7 * 1000,
+          infor_auction?.auction_start
+        ) &&
+          !CompareDate(Date.now() + 3600 * 7 * 1000, infor_auction?.auction_end)
       );
     }
   });
@@ -89,8 +92,14 @@ export default function CustomerDetail({ params, searchParams }: any) {
       const data_use = await data_get.data;
       set_infor_auction(data_use);
       setTimeRegister(
-        CompareDate(Date.now(), data_use?.registration_open) &&
-          !CompareDate(Date.now(), data_use?.registration_close)
+        CompareDate(
+          Date.now() + 3600 * 7 * 1000,
+          data_use?.registration_open
+        ) &&
+          !CompareDate(
+            Date.now() + 3600 * 7 * 1000,
+            data_use?.registration_close
+          )
       );
     };
     const checkStatusParticipation = async () => {
@@ -195,7 +204,10 @@ export default function CustomerDetail({ params, searchParams }: any) {
   };
   return (
     <div className="pt-24 container">
-      {!CompareDate(infor_auction?.auction_end, Date.now()) && (
+      {!CompareDate(
+        infor_auction?.auction_end,
+        Date.now() + 3600 * 7 * 1000
+      ) && (
         <Alert>
           <AlertTitle>Phiên đấu giá đã kết thúc</AlertTitle>
           <AlertDescription>
@@ -233,10 +245,13 @@ export default function CustomerDetail({ params, searchParams }: any) {
                 <>
                   {!timeSessionAuction &&
                     !timeRegister &&
-                    CompareDate(infor_auction?.auction_start, Date.now()) && (
+                    CompareDate(
+                      infor_auction?.auction_start,
+                      Date.now() + 3600 * 7 * 1000
+                    ) && (
                       <Card>
                         <CountTime
-                          startTime={Date.now()}
+                          startTime={Date.now() + 3600 * 7 * 1000}
                           endTime={infor_auction?.auction_start}
                         />
                         <div className="flex justify-center mb-1">
@@ -251,7 +266,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
               {timeSessionAuction && infor_auction?.auction_end && (
                 <Card>
                   <CountTime
-                    startTime={Date.now()}
+                    startTime={Date.now() + 3600 * 7 * 1000}
                     endTime={infor_auction?.auction_end}
                   />
                   <div className="flex justify-center mb-1">
@@ -264,7 +279,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
               {timeRegister && infor_auction?.registration_close && (
                 <Card>
                   <CountTime
-                    startTime={Date.now()}
+                    startTime={Date.now() + 3600 * 7 * 1000}
                     endTime={infor_auction?.registration_close}
                   />
                   <div className="flex justify-center mb-1">
@@ -429,7 +444,10 @@ export default function CustomerDetail({ params, searchParams }: any) {
                 )}
                 {!timeSessionAuction &&
                   !timeRegister &&
-                  CompareDate(infor_auction?.auction_start, Date.now()) &&
+                  CompareDate(
+                    infor_auction?.auction_start,
+                    Date.now() + 3600 * 7 * 1000
+                  ) &&
                   (registered == "VERIFIED" ? (
                     <Button className="w-full">Đăng ký thành công</Button>
                   ) : registered == "NOT_REGISTERED_YET" ? (
@@ -587,7 +605,10 @@ const CountTime: React.FC<{
   const [time, setTime] = useState<number>(0);
   useEffect(() => {
     if (startTime && endTime) {
-      console.log(123);
+      console.log("startTime");
+      console.log(DateStart);
+      console.log("endTime");
+      console.log(DateEnd);
       setTime(
         Math.floor(Math.abs(DateStart.getTime() - DateEnd.getTime()) / 1000)
       );

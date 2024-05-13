@@ -236,7 +236,10 @@ function CardItem({ infor_auction }: any) {
       infor_auction.asset?.pics[0]._id
     }${path.extname(infor_auction.asset?.pics[0].name)}`;
   }
-
+  const milisDateRes =
+    new Date(infor_auction.registration_open).getTime() - 3600 * 7000;
+  const milisDateAuc =
+    new Date(infor_auction.auction_start).getTime() - 3600 * 7000;
   const route = useRouter();
   const path_name = usePathname();
   return (
@@ -248,12 +251,10 @@ function CardItem({ infor_auction }: any) {
             Mô tả sản phẩm: {infor_auction?.asset?.description}
           </p>
           <p className="text-slate-500 dark:text-slate-400">
-            Thời gian mở đăng kí:{" "}
-            {new Date(infor_auction.registration_open).toLocaleString()}
+            Thời gian mở đăng kí: {new Date(milisDateRes).toLocaleString()}
           </p>
           <p className="text-slate-500 dark:text-slate-400">
-            Thời gian mở đấu giá:{" "}
-            {new Date(infor_auction.auction_start).toLocaleString()}
+            Thời gian mở đấu giá: {new Date(milisDateAuc).toLocaleString()}
           </p>
           <Button
             className="w-1/2 mt-3"
