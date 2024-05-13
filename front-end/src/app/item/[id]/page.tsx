@@ -77,7 +77,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
       infor_auction.asset?.pics[0]._id
     }${path.extname(infor_auction.asset?.pics[0].name)}`;
   }
-  const timezone = new Date().getTimezoneOffset();
+  const timezone = 0;
   useEffect(() => {
     if (infor_auction) {
       setTimeSessionAuction(

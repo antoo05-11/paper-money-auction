@@ -67,7 +67,7 @@ export default function AuctionDetail({ params }: any) {
   const [autionToken, setAutionToken] = useState<string>();
   const [list_bidder_attend, update_list_bidder_attend] = useState<any>([]);
   const [bidding_history, update_bidding_history] = useState<any>([]);
-  const timezone = new Date().getTimezoneOffset();
+  const timezone = 0;
   useEffect(() => {
     if (infor_auction) {
       setTimeSessionAuction(
