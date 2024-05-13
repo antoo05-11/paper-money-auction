@@ -76,14 +76,9 @@ export default function LoginForm() {
 
     const session = { token, id, name, role, isVerified };
     login(session);
-    switch (role) {
-      case ROLES.ADMIN:
-        router.push("/admin");
-      case ROLES.AUCTIONEER:
-        router.push("/auctioneer");
-      default:
-        router.push("/me");
-    }
+    if (role == ROLES.ADMIN) router.push("/admin");
+    if (role == ROLES.CUSTOMER) router.push("/me");
+    if (role == ROLES.AUCTIONEER) router.push("/auctioneer");
   }
 
   async function onSubmit(values: formData) {
