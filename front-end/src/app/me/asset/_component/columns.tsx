@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { assetData } from "@/lib/constant/dataInterface"
-import { ColumnDef } from "@tanstack/react-table"
+import { assetData } from "@/lib/constant/dataInterface";
+import { ColumnDef } from "@tanstack/react-table";
 
 export const columns: ColumnDef<assetData>[] = [
   {
@@ -10,7 +10,7 @@ export const columns: ColumnDef<assetData>[] = [
   },
   {
     accessorKey: "name",
-    header: "Name"
+    header: "Name",
   },
   {
     accessorKey: "description",
@@ -20,4 +20,4 @@ export const columns: ColumnDef<assetData>[] = [
     accessorKey: "verified",
     header: "Status",
   },
-]
+];

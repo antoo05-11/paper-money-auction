@@ -274,9 +274,9 @@ export default function CustomerDetail({ params, searchParams }: any) {
                 <CardContent className="p-4 flex-col flex">
                   <p className="font-bold flex p-2">
                     <text>Giá cao nhất hiện tại:</text>
-                    <div className="float-right">
+                    <span className="float-right">
                       {bidding_history[0]?.price}
-                    </div>
+                    </span>
                   </p>
                   <hr></hr>
                   <p className="font-bold p-2">
