@@ -91,7 +91,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
           )
       );
     }
-  });
+  }, []);
   useEffect(() => {
     const fetchData = async () => {
       const data_get = await viewAuctionInfo(id);
@@ -341,7 +341,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
               <div>
                 {CompareDate(
                   Date.now() - timezone * 60 * 1000,
-                  infor_auction?.register_end
+                  infor_auction?.aution_start
                 ) && (
                   <div className="mt-4">
                     {registered == "VERIFIED" && (
