@@ -9,8 +9,8 @@ const lexend = Lexend({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Monesy",
-    default: "Monesy",
+    template: "%s | Vua tiền tệ",
+    default: "Vua tiền tệ",
   },
   description: "King of money.",
   metadataBase: new URL("https://paper-money-auction.vercel.app/"),
