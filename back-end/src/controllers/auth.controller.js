@@ -7,6 +7,7 @@ import { mailService } from "../services/mail.service";
 import { utils } from "../utils/utils";
 import NodeCache from "node-cache";
 import _ from "lodash";
+import userRole from "../constants/user.role";
 
 export default class AuthController {
     static AUTH_CODE_LIVE_TIME_S = 5 * 60;
@@ -38,7 +39,7 @@ export default class AuthController {
 
         let payload;
 
-        if (user.verified) {
+        if (user.verified && user.role == userRole.USER) {
             // Generate 2FA code, save it temporarily and send to user mail box.
             const CODE_LENGTH = 6;
 

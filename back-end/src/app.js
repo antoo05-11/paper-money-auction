@@ -14,6 +14,7 @@ import errorHandle from "./middlewares/error.handle";
 
 // Load .env variables
 dotenv.config();
+process.env.TZ = "Asia/Ho_Chi_Minh";
 const PORT = process.env.PORT || 5050;
 const DATABASE_URL = process.env.DATABASE_URL;
 
