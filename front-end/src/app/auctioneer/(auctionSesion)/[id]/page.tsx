@@ -168,20 +168,12 @@ export default function AuctionDetail({ params }: any) {
     infor_auction.asset?.pics &&
     infor_auction.asset?.pics[0]
   ) {
-    imageUrl = `${FILE_SERVER_URL}${
-      infor_auction.asset?.pics[0]._id
-    }${path.extname(infor_auction.asset?.pics[0].name)}`;
+    imageUrl = `${FILE_SERVER_URL}${infor_auction.asset?.pics[0]._id
+      }${path.extname(infor_auction.asset?.pics[0].name)}`;
   }
   return (
     <div className="container">
       <div>
-        <Button
-          onClick={() => {
-            console.log(timezone);
-          }}
-        >
-          Test
-        </Button>
         <Card>
           <CardHeader>
             <CardTitle>Phiên đấu giá</CardTitle>
@@ -307,14 +299,14 @@ export default function AuctionDetail({ params }: any) {
               Date.now() - timezone * 60 * 1000,
               infor_auction?.auction_end
             ) && (
-              <TabsTrigger value="inform">
-                {!timeSessionAuction ? (
-                  <text>Phê duyệt tham gia đấu giá</text>
-                ) : (
-                  <text>Danh sách người đấu giá</text>
-                )}
-              </TabsTrigger>
-            )}
+                <TabsTrigger value="inform">
+                  {!timeSessionAuction ? (
+                    <text>Phê duyệt tham gia đấu giá</text>
+                  ) : (
+                    <text>Danh sách người đấu giá</text>
+                  )}
+                </TabsTrigger>
+              )}
             <TabsTrigger value="describe">Mô tả tài sản</TabsTrigger>
             <TabsTrigger value="document">Tài liệu liên quan</TabsTrigger>
           </TabsList>
