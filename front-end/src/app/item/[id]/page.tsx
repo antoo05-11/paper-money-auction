@@ -77,9 +77,8 @@ export default function CustomerDetail({ params, searchParams }: any) {
     infor_auction.asset?.pics &&
     infor_auction.asset?.pics[0]
   ) {
-    imageUrl = `${FILE_SERVER_URL}${
-      infor_auction.asset?.pics[0]._id
-    }${path.extname(infor_auction.asset?.pics[0].name)}`;
+    imageUrl = `${FILE_SERVER_URL}${infor_auction.asset?.pics[0]._id
+      }${path.extname(infor_auction.asset?.pics[0].name)}`;
   }
   const timezone = 0;
   useEffect(() => {
@@ -89,20 +88,20 @@ export default function CustomerDetail({ params, searchParams }: any) {
           Date.now() - timezone * 60 * 1000,
           infor_auction?.auction_start
         ) &&
-          !CompareDate(
-            Date.now() - timezone * 60 * 1000,
-            infor_auction?.auction_end
-          )
+        !CompareDate(
+          Date.now() - timezone * 60 * 1000,
+          infor_auction?.auction_end
+        )
       );
       setTimeRegister(
         CompareDate(
           Date.now() - timezone * 60 * 1000,
           infor_auction?.registration_open
         ) &&
-          !CompareDate(
-            Date.now() - timezone * 60 * 1000,
-            infor_auction?.registration_close
-          )
+        !CompareDate(
+          Date.now() - timezone * 60 * 1000,
+          infor_auction?.registration_close
+        )
       );
     }
   });
@@ -116,17 +115,17 @@ export default function CustomerDetail({ params, searchParams }: any) {
           Date.now() - timezone * 60 * 1000,
           data_use?.registration_open
         ) &&
-          !CompareDate(
-            Date.now() - timezone * 60 * 1000,
-            data_use?.registration_close
-          )
+        !CompareDate(
+          Date.now() - timezone * 60 * 1000,
+          data_use?.registration_close
+        )
       );
       setTimeSessionAuction(
         CompareDate(
           Date.now() - timezone * 60 * 1000,
           data_use?.auction_start
         ) &&
-          !CompareDate(Date.now() - timezone * 60 * 1000, data_use?.auction_end)
+        !CompareDate(Date.now() - timezone * 60 * 1000, data_use?.auction_end)
       );
     };
     const checkStatusParticipation = async () => {
@@ -161,7 +160,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
 
       socket.on("connect", onConnect);
       socket.on("disconnect", onDisconnect);
-      socket.on("socket_error", (message) => {});
+      socket.on("socket_error", (message) => { });
       socket.on("join_session_response", (response) => {
         if (response?.code == true) setOnSession(true);
         else {
@@ -220,25 +219,25 @@ export default function CustomerDetail({ params, searchParams }: any) {
   };
   return (
     <div className="pt-24 container">
-      <Button onClick={() => {}}>Test</Button>
+
       {!CompareDate(
         infor_auction?.auction_end,
         Date.now() - timezone * 60 * 1000
       ) && (
-        <Alert>
-          <AlertTitle>Phiên đấu giá đã kết thúc</AlertTitle>
-          <AlertDescription>
-            <p>
-              Nếu bạn là người trúng đấu giá vui lòng kiểm tra email để có thể
-              hoàn tất việc thanh toán cũng như nhận tài sản đấu giá
-            </p>
-            <p>
-              Nếu bạn không trúng đấu giá vui lòng kiểm tra email để có thể nhận
-              lại khoản tiền đặt cọc cho phiên đấu giá
-            </p>
-          </AlertDescription>
-        </Alert>
-      )}
+          <Alert>
+            <AlertTitle>Phiên đấu giá đã kết thúc</AlertTitle>
+            <AlertDescription>
+              <p>
+                Nếu bạn là người trúng đấu giá vui lòng kiểm tra email để có thể
+                hoàn tất việc thanh toán cũng như nhận tài sản đấu giá
+              </p>
+              <p>
+                Nếu bạn không trúng đấu giá vui lòng kiểm tra email để có thể nhận
+                lại khoản tiền đặt cọc cho phiên đấu giá
+              </p>
+            </AlertDescription>
+          </Alert>
+        )}
       <div>
         <Card>
           <CardHeader>
