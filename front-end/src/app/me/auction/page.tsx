@@ -69,12 +69,10 @@ export default function Page() {
       })
       .finally(() => {
         setLoading(false);
-        console.log(auction[0]?.asset?.name);
       });
   }, [debouncedFilter]);
 
   useEffect(() => {
-    console.log("change status");
     setFilter((prevFilter) => ({
       ...prevFilter,
       status: handleFilterVerified(filterActive, filterSuspend),
