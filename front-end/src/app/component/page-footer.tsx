@@ -32,20 +32,11 @@ export default function PageFooter() {
                         <h3 className="font-bold text-xl mb-2">Cuộc đấu giá</h3>
                         <ul>
                             <li className="mb-1">
-                                <Link href="/">
+                                <Link href="/item">
                                     Cuộc đáu giá đang diễn ra
                                 </Link>
                             </li>
-                            <li className="mb-1">
-                                <Link href="/customer/LockupTransaction">
-                                    Cuộc đấu giá sắp diễn ra
-                                </Link>
-                            </li>
-                            <li className="mb-1">
-                                <Link href="/customer/EstimateCost">
-                                    Cuộc đấu giá đã kết thúc
-                                </Link>
-                            </li>
+
                         </ul>
                     </div>
 

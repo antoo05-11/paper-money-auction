@@ -79,7 +79,7 @@ export const columns_auctions: ColumnDef<any>[] = [
     header: "Giờ mở đăng kí",
     cell: ({ row }) => {
       const date = row.getValue("registration_open") as Date;
-      const miliDate = new Date(date).getTime() - 3600 * 7000;
+      const miliDate = new Date(date).getTime();
       return (
         <div className="flex justify-center items-center">
           {new Date(miliDate).toLocaleString()}
@@ -92,7 +92,7 @@ export const columns_auctions: ColumnDef<any>[] = [
     header: "Giờ đóng đăng kí",
     cell: ({ row }) => {
       const date = row.getValue("registration_close") as Date;
-      const miliDate = new Date(date).getTime() - 3600 * 7000;
+      const miliDate = new Date(date).getTime();
       return (
         <div className="flex justify-center items-center">
           {new Date(miliDate).toLocaleString()}
@@ -105,7 +105,7 @@ export const columns_auctions: ColumnDef<any>[] = [
     header: "Giờ mở đấu giá",
     cell: ({ row }) => {
       const date = row.getValue("auction_start") as Date;
-      const miliDate = new Date(date).getTime() - 3600 * 7000;
+      const miliDate = new Date(date).getTime();
       return (
         <div className="flex justify-center items-center">
           {new Date(miliDate).toLocaleString()}
@@ -118,7 +118,7 @@ export const columns_auctions: ColumnDef<any>[] = [
     header: "Giờ kết thúc đấu giá",
     cell: ({ row }) => {
       const date = row.getValue("auction_end") as Date;
-      const miliDate = new Date(date).getTime() - 3600 * 7000;
+      const miliDate = new Date(date).getTime();
       return (
         <div className="flex justify-center items-center">
           {new Date(miliDate).toLocaleString()}

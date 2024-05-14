@@ -77,7 +77,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
       infor_auction.asset?.pics[0]._id
     }${path.extname(infor_auction.asset?.pics[0].name)}`;
   }
-  const timezone = new Date().getTimezoneOffset();
+  const timezone = 0;
   useEffect(() => {
     if (infor_auction) {
       setTimeSessionAuction(
@@ -228,6 +228,13 @@ export default function CustomerDetail({ params, searchParams }: any) {
   };
   return (
     <div className="pt-24 container">
+      <Button
+        onClick={() => {
+          console.log(timeRegister);
+        }}
+      >
+        Test
+      </Button>
       {!CompareDate(
         infor_auction?.auction_end,
         Date.now() - timezone * 60 * 1000
