@@ -11,7 +11,7 @@ export class AuctionSession {
     #auction; // ORM Auction.
 
     static MAX_RECENT_USER = 20;
-    static TIME_INTERVAL_BETWEEN_2_BIDDINGS = 30 * 1000;
+    static TIME_INTERVAL_BETWEEN_2_BIDDINGS = 10 * 1000;
 
     constructor(auction) {
         this.#auction = auction;
@@ -62,7 +62,7 @@ export class AuctionSession {
         }
         for (let i = this.#biddings.length - 1; i >= 0; i--) {
             if (!this.#biddings[i].user.isPenalty()) {
-                currentMinOffer = this.#biddings[this.#biddings.length - 1].offer + this.#auction.bidding_increment;
+                currentMinOffer = this.#biddings[i].offer + this.#auction.bidding_increment;
                 break;
             }
         }
