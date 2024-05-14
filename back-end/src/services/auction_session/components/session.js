@@ -62,7 +62,7 @@ export class AuctionSession {
         }
         for (let i = this.#biddings.length - 1; i >= 0; i--) {
             if (!this.#biddings[i].user.isPenalty()) {
-                currentMinOffer = this.#biddings[i].offer + this.#auction.bidding_increment;
+                currentMinOffer = Number(this.#biddings[i].offer) + Number(this.#auction.bidding_increment);
                 break;
             }
         }
