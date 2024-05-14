@@ -33,12 +33,12 @@ export default class TransactionController {
             auction: params.auctionId,
             bidder: user._id,
         });
-        if (!participation)
-            throw new HttpError({
-                ...errorCode.PARAMS_INVALID,
-                message: "You have not registered to the request auction yet.",
-                status: 403,
-            });
+        // if (!participation)
+        //     throw new HttpError({
+        //         ...errorCode.PARAMS_INVALID,
+        //         message: "You have not registered to the request auction yet.",
+        //         status: 403,
+        //     });
 
         data.bidder = user._id;
         data.auction = params.auctionId;
