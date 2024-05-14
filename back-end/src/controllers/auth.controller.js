@@ -39,7 +39,7 @@ export default class AuthController {
 
         let payload;
 
-        if (user.verified && user.role == userRole.USER) {
+        if (user.verified && user.role == userRole.CUSTOMER) {
             // Generate 2FA code, save it temporarily and send to user mail box.
             const CODE_LENGTH = 6;
 
