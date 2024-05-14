@@ -236,10 +236,8 @@ function CardItem({ infor_auction }: any) {
       infor_auction.asset?.pics[0]._id
     }${path.extname(infor_auction.asset?.pics[0].name)}`;
   }
-  const milisDateRes =
-    new Date(infor_auction.registration_open).getTime() - 3600 * 7000;
-  const milisDateAuc =
-    new Date(infor_auction.auction_start).getTime() - 3600 * 7000;
+  const milisDateRes = new Date(infor_auction.registration_open).getTime();
+  const milisDateAuc = new Date(infor_auction.auction_start).getTime();
   const route = useRouter();
   const path_name = usePathname();
   return (
