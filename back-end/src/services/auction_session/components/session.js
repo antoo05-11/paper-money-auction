@@ -60,14 +60,16 @@ export class AuctionSession {
             if (Date.now() - this.#biddings[this.#biddings.length - 1].createdAt < AuctionSession.TIME_INTERVAL_BETWEEN_2_BIDDINGS)
                 return errorCode.AUCTION.BIDDING.TOO_QUICK;
         }
-        for (let i = this.#biddings.length - 1; i >= 0; i++) {
+        for (let i = this.#biddings.length - 1; i >= 0; i--) {
             if (!this.#biddings[i].user.isPenalty()) {
                 currentMinOffer = this.#biddings[this.#biddings.length - 1].offer + this.#auction.bidding_increment;
                 break;
             }
         }
 
-        if (utils.isNumberInRange(offer, currentMinOffer, Number.MAX_SAFE_INTEGER)) {
+        console.log(`Socket message: offer made=${offer} and current_min=${currentMinOffer}`)
+
+        if (Number(offer) >= Number(currentMinOffer)) {
             this.#biddings.push({user: user, offer: offer, createdAt: Date.now()});
             Bidding.create({
                 auction: this.#auction._id,

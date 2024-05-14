@@ -16,7 +16,6 @@ export default [
                 httpMethod: "post",
                 path: "/payment/:auctionId",
                 method: "pay",
-                roles: [userRole.CUSTOMER],
                 schema: transactionValidation.payment,
             },
         ],
