@@ -49,7 +49,6 @@ export default function Page() {
     const fetchData = async () => {
       const data_get = await listAsset(debouncedFilter);
       const data_asset = await data_get.data.data.assets;
-      console.log(data_asset);
 
       setListAsset(data_asset);
     };
