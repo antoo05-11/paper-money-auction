@@ -41,19 +41,23 @@ import { DataTable } from "@/components/ui/data-table";
 import { attendees_bidding, bidding_act } from "../_component/columns";
 import path from "path";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { ROLES } from "@/lib/constant/constant";
+import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 const FILE_SERVER_URL =
   process.env.FILE_SERVER ||
   "https://muzik-files-server.000webhostapp.com/paper-money-auction-files/asset-docs/";
 
 export default function CustomerDetail({ params, searchParams }: any) {
   const { toast } = useToast();
+  const { user, login } = useAuth();
   const id = params.id;
   const [isConnected, setIsConnected] = useState(false);
   const [infor_auction, set_infor_auction] = useState<any>();
   const [timeSessionAuction, setTimeSessionAuction] = useState(false);
   const [timeRegister, setTimeRegister] = useState<boolean>();
   const [onSession, setOnSession] = useState<boolean>();
-  const [registered, setRegister] = useState<string>();
+  const [registered, setRegister] = useState<string>("NOT_REGISTERED_YET");
   const [auctionToken, setAuctionToken] = useState<string>();
   const [bidding_history, update_bidding_history] = useState<any>([]);
   const [list_bidder_attend, update_list_bidder_attend] = useState<any>([]);
@@ -73,12 +77,30 @@ export default function CustomerDetail({ params, searchParams }: any) {
       infor_auction.asset?.pics[0]._id
     }${path.extname(infor_auction.asset?.pics[0].name)}`;
   }
+  const timezone = new Date().getTimezoneOffset();
   useEffect(() => {
     if (infor_auction) {
       setTimeSessionAuction(
-        CompareDate(Date.now(), infor_auction?.auction_start) &&
-          !CompareDate(Date.now(), infor_auction?.auction_end)
+        CompareDate(
+          Date.now() - timezone * 60 * 1000,
+          infor_auction?.auction_start
+        ) &&
+          !CompareDate(
+            Date.now() - timezone * 60 * 1000,
+            infor_auction?.auction_end
+          )
       );
+      setTimeRegister(
+        CompareDate(
+          Date.now() - timezone * 60 * 1000,
+          infor_auction?.registration_open
+        ) &&
+          !CompareDate(
+            Date.now() - timezone * 60 * 1000,
+            infor_auction?.registration_close
+          )
+      );
+      console.log(timeRegister);
     }
   });
   useEffect(() => {
@@ -87,14 +109,29 @@ export default function CustomerDetail({ params, searchParams }: any) {
       const data_use = await data_get.data;
       set_infor_auction(data_use);
       setTimeRegister(
-        CompareDate(Date.now(), data_use?.registration_open) &&
-          !CompareDate(Date.now(), data_use?.registration_close)
+        CompareDate(
+          Date.now() - timezone * 60 * 1000,
+          data_use?.registration_open
+        ) &&
+          !CompareDate(
+            Date.now() - timezone * 60 * 1000,
+            data_use?.registration_close
+          )
+      );
+      setTimeSessionAuction(
+        CompareDate(
+          Date.now() - timezone * 60 * 1000,
+          data_use?.auction_start
+        ) &&
+          !CompareDate(Date.now() - timezone * 60 * 1000, data_use?.auction_end)
       );
     };
     const checkStatusParticipation = async () => {
-      const checkRegister = await checkParticipation(id);
-      const register_use = await checkRegister?.data?.status;
-      setRegister(register_use);
+      if (user?.role == ROLES.CUSTOMER) {
+        const checkRegister = await checkParticipation(id);
+        const register_use = await checkRegister?.data?.status;
+        setRegister(register_use);
+      }
     };
     fetchData().catch(console.error);
     checkStatusParticipation().catch(console.error);
@@ -191,7 +228,10 @@ export default function CustomerDetail({ params, searchParams }: any) {
   };
   return (
     <div className="pt-24 container">
-      {!CompareDate(infor_auction?.auction_end, Date.now()) && (
+      {!CompareDate(
+        infor_auction?.auction_end,
+        Date.now() - timezone * 60 * 1000
+      ) && (
         <Alert>
           <AlertTitle>Phiên đấu giá đã kết thúc</AlertTitle>
           <AlertDescription>
@@ -229,11 +269,16 @@ export default function CustomerDetail({ params, searchParams }: any) {
                 <>
                   {!timeSessionAuction &&
                     !timeRegister &&
-                    CompareDate(infor_auction?.auction_start, Date.now()) && (
+                    CompareDate(
+                      infor_auction?.auction_start,
+                      Date.now() - timezone * 60 * 1000
+                    ) && (
                       <Card>
                         <CountTime
-                          startTime={Date.now()}
+                          startTime={Date.now() - timezone * 60 * 1000}
                           endTime={infor_auction?.auction_start}
+                          setstate={setTimeSessionAuction}
+                          state={timeSessionAuction}
                         />
                         <div className="flex justify-center mb-1">
                           <Label className="italic">
@@ -247,8 +292,10 @@ export default function CustomerDetail({ params, searchParams }: any) {
               {timeSessionAuction && infor_auction?.auction_end && (
                 <Card>
                   <CountTime
-                    startTime={Date.now()}
+                    startTime={Date.now() - timezone * 60 * 1000}
                     endTime={infor_auction?.auction_end}
+                    setstate={setTimeSessionAuction}
+                    state={timeSessionAuction}
                   />
                   <div className="flex justify-center mb-1">
                     <Label className="italic">
@@ -260,8 +307,10 @@ export default function CustomerDetail({ params, searchParams }: any) {
               {timeRegister && infor_auction?.registration_close && (
                 <Card>
                   <CountTime
-                    startTime={Date.now()}
+                    startTime={Date.now() - timezone * 60 * 1000}
                     endTime={infor_auction?.registration_close}
+                    setstate={setTimeRegister}
+                    state={timeRegister}
                   />
                   <div className="flex justify-center mb-1">
                     <Label className="italic">
@@ -418,14 +467,21 @@ export default function CustomerDetail({ params, searchParams }: any) {
                     )}
                     {registered != "VERIFIED" && (
                       <Button className="w-full">
-                        Đã quá thời hạn đăng kí tham gia
+                        Đã quá thời hạn đăng kí tham gia {timeSessionAuction}
                       </Button>
                     )}
                   </div>
                 )}
                 {!timeSessionAuction &&
                   !timeRegister &&
-                  CompareDate(infor_auction?.auction_start, Date.now()) &&
+                  CompareDate(
+                    infor_auction?.auction_start,
+                    Date.now() - timezone * 60 * 1000
+                  ) &&
+                  !CompareDate(
+                    infor_auction?.register_close,
+                    Date.now() - timezone * 60 * 1000
+                  ) &&
                   (registered == "VERIFIED" ? (
                     <Button className="w-full">Đăng ký thành công</Button>
                   ) : registered == "NOT_REGISTERED_YET" ? (
@@ -576,23 +632,34 @@ export default function CustomerDetail({ params, searchParams }: any) {
 const CountTime: React.FC<{
   startTime: string | number;
   endTime: string | number;
-}> = ({ startTime, endTime }) => {
+  setstate: Function;
+  state: any;
+}> = ({ startTime, endTime, setstate, state }) => {
   const countRef = useRef<any>(null);
   const DateEnd = new Date(endTime);
+  const route = useRouter();
+  const pathName = usePathname();
   const DateStart = new Date(startTime);
   const [time, setTime] = useState<number>(0);
   useEffect(() => {
     if (startTime && endTime) {
-      console.log(123);
+      console.log("startTime");
+      console.log(DateStart);
+      console.log("endTime");
+      console.log(DateEnd);
       setTime(
         Math.floor(Math.abs(DateStart.getTime() - DateEnd.getTime()) / 1000)
       );
       countRef.current = setInterval(() => {
-        if (time == 0) clearInterval(countRef.current);
         setTime((time) => time - 1);
       }, 1000);
     }
   }, []);
+  useEffect(() => {
+    if (time < 0) {
+      setstate(!state);
+    }
+  }, [time]);
   return (
     <div className="row-span-2 flex flex-row justify-evenly text-center p-3">
       <div>

@@ -112,6 +112,10 @@ const CreateAuction: React.FC<{ asset_id: any }> = ({ asset_id }) => {
     resolver: zodResolver(FormSchema),
   });
   function onSubmit(data: z.infer<typeof FormSchema>) {
+    data.auction_end = String(Date.parse(data.auction_end));
+    data.registration_open = String(Date.parse(data.registration_open));
+    data.registration_close = String(Date.parse(data.registration_close));
+    data.auction_start = String(Date.parse(data.auction_start));
     const formData = new FormData();
     formData.append("data", JSON.stringify(data));
     formData.append("docs", JSON.stringify(docs));
@@ -119,8 +123,7 @@ const CreateAuction: React.FC<{ asset_id: any }> = ({ asset_id }) => {
       const res = await createAuction(formData);
       if (res.status == HTTP_STATUS.OK) {
         setOpenDialog(false);
-        route.push(window.location.href);
-        route.refresh();
+        route.push("/auctioneer/asset");
       } else {
         toast({
           title: "Tạo phiên đấu giá thất bại",
@@ -128,7 +131,7 @@ const CreateAuction: React.FC<{ asset_id: any }> = ({ asset_id }) => {
         });
       }
     };
-    // const result = create_auction().catch(console.error);
+    const result = create_auction().catch(console.error);
     console.log(data);
   }
   return (
