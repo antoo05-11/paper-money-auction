@@ -130,7 +130,7 @@ export function viewAuctionInfo(id: String) {
   return request.get(`api/auction/${id}`);
 }
 export function viewAuctionAct(id: String) {
-  return request.get(`api/auction/${id}/act`);
+  return request.get(`api/auction/${id}/activities`);
 }
 export function register_auction(id: String) {
   return request.post(`api/auction/${id}/register`);
