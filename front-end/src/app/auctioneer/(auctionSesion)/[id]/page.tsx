@@ -61,20 +61,25 @@ export default function AuctionDetail({ params }: any) {
   const [isConnected, setIsConnected] = useState(false);
   const id = params.id;
   const [infor_auction, set_infor_auction] = useState<any>();
-  const [timeSessionAuction, setTimeSessionAuction] = useState(true);
+  const [timeSessionAuction, setTimeSessionAuction] = useState(false);
   const [onSession, setOnSession] = useState(false);
   const [list_bidder, update_list_bidder] = useState<any>();
   const [autionToken, setAutionToken] = useState<string>();
   const [list_bidder_attend, update_list_bidder_attend] = useState<any>([]);
   const [bidding_history, update_bidding_history] = useState<any>([]);
-  const timezone = new Date().getTimezoneOffset();
+  // const timezone = new Date().getTimezoneOffset();
+  const timezone = 0;
   useEffect(() => {
     if (infor_auction) {
       setTimeSessionAuction(
         CompareDate(
           Date.now() - timezone * 60 * 1000,
           infor_auction?.auction_start
-        )
+        ) &&
+          !CompareDate(
+            Date.now() - timezone * 60 * 1000,
+            infor_auction?.auction_end
+          )
       );
     }
   });
@@ -93,7 +98,6 @@ export default function AuctionDetail({ params }: any) {
     };
     const result = fetchData().catch(console.error);
   }, []);
-  console.log(timeSessionAuction);
 
   useEffect(() => {
     const getAuctionToken = async (id: any) => {
@@ -112,36 +116,22 @@ export default function AuctionDetail({ params }: any) {
     }
     const result = getAuctionToken(id).catch(console.error);
     if (timeSessionAuction && autionToken != undefined) {
-      console.log(autionToken);
-
       socket.connect();
 
       socket.on("connect", onConnect);
       socket.on("disconnect", onDisconnect);
-      socket.on("socket_error", (message) => {
-        console.log("socket_error: ", message);
-      });
+      socket.on("socket_error", (message) => {});
       socket.on("join_session_response", (response) => {
-        console.log(response);
         if (response.code == true) setOnSession(true);
       });
       socket.on("attendees_update", (response) => {
-        console.log("attendees_update: " + response);
         update_list_bidder_attend(JSON.parse(response));
       });
-      socket.on("make_offer_response", (message) => {
-        console.log("make_offer_response");
-        console.log(message);
-      });
+      socket.on("make_offer_response", (message) => {});
       socket.on("biddings_update", (message) => {
-        console.log("biddings_update");
         update_bidding_history(message.reverse());
       });
-      socket.on("start_session_response", (message) => {
-        console.log("start_session_response");
-        console.log(message);
-      });
-      console.log("join session");
+      socket.on("start_session_response", (message) => {});
       socket.emit("join_session", autionToken);
       return () => {
         socket.off("connect", onConnect);
@@ -190,19 +180,21 @@ export default function AuctionDetail({ params }: any) {
               />
             </div>
             <div className="basis-2/3">
-              {infor_auction?.auction_start && !timeSessionAuction && (
-                <Card>
-                  <CountTime
-                    startTime={infor_auction?.auction_start}
-                    endTime={Date.now() - timezone * 60 * 1000}
-                    setstate={setTimeSessionAuction}
-                    state={timeSessionAuction}
-                  />
-                  <div className="flex justify-center mb-1">
-                    <Label>Thời gian bắt đầu phiên đấu giá còn</Label>
-                  </div>
-                </Card>
-              )}
+              {infor_auction?.auction_start &&
+                !timeSessionAuction &&
+                !CompareDate(Date.now(), infor_auction?.auction_start) && (
+                  <Card>
+                    <CountTime
+                      startTime={infor_auction?.auction_start}
+                      endTime={Date.now() - timezone * 60 * 1000}
+                      setstate={setTimeSessionAuction}
+                      state={timeSessionAuction}
+                    />
+                    <div className="flex justify-center mb-1">
+                      <Label>Thời gian bắt đầu phiên đấu giá còn</Label>
+                    </div>
+                  </Card>
+                )}
               {infor_auction?.auction_end && timeSessionAuction && (
                 <Card>
                   <CountTime
@@ -218,11 +210,17 @@ export default function AuctionDetail({ params }: any) {
               )}
               <Card className="row-span-4 mt-5">
                 <CardContent className="p-4">
-                  <p className="font-bold flex p-2">
+                  <p className="font-bold p-2">
                     <text>Giá cao nhất hiện tại:</text>
-                    <div className="float-right">
-                      {bidding_history[0]?.price}
-                    </div>
+                    {timeSessionAuction ? (
+                      <span className="float-right">
+                        {bidding_history[0]?.price} vnd
+                      </span>
+                    ) : (
+                      <span className="float-right">
+                        {infor_auction?.winning_bidding?.price} vnd
+                      </span>
+                    )}
                   </p>
                   <hr></hr>
                   <p className="font-bold p-2">
@@ -247,6 +245,16 @@ export default function AuctionDetail({ params }: any) {
                       {infor_auction?.deposit} vnd
                     </span>
                   </p>
+                  <hr></hr>
+                  {CompareDate(Date.now(), infor_auction?.auction_end) && (
+                    <p className="font-bold p-2">
+                      ID người trúng giá:{" "}
+                      <span className="font-normal  float-right">
+                        {" "}
+                        {infor_auction?.winning_bidding?._id}
+                      </span>
+                    </p>
+                  )}
                   <hr></hr>
                   {timeSessionAuction && (
                     <div className="w-full">
@@ -275,14 +283,28 @@ export default function AuctionDetail({ params }: any) {
                         </AlertDialog>
                       )}
                       {onSession && (
-                        <Button disabled>Phiên đấu giá đang diễn ra</Button>
+                        <Button className="w-full" disabled>
+                          Phiên đấu giá đang diễn ra
+                        </Button>
                       )}
                     </div>
                   )}
-                  {!timeSessionAuction && (
-                    <Button className="w-full">
-                      Chưa đến giờ bắt đầu phiên đấu giá
-                    </Button>
+                  {!timeSessionAuction && infor_auction && (
+                    <div className="w-full">
+                      {!CompareDate(
+                        Date.now(),
+                        infor_auction?.auction_start
+                      ) && (
+                        <Button disabled className="w-full">
+                          Chưa đến giờ bắt đầu phiên đấu giá
+                        </Button>
+                      )}
+                      {CompareDate(Date.now(), infor_auction?.auction_end) && (
+                        <Button disabled className="w-full">
+                          Đã kết thúc phiên đấu giá
+                        </Button>
+                      )}
+                    </div>
                   )}
                 </CardContent>
               </Card>
@@ -393,10 +415,6 @@ const CountTime: React.FC<{
   const [time, setTime] = useState<number>(0);
   useEffect(() => {
     if (startTime && endTime) {
-      console.log("startTime");
-      console.log(DateStart);
-      console.log("endTime");
-      console.log(DateEnd);
       setTime(
         Math.floor(Math.abs(DateStart.getTime() - DateEnd.getTime()) / 1000)
       );

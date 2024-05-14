@@ -44,6 +44,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ROLES } from "@/lib/constant/constant";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
+import { useCookie } from "@/lib/auth/useCookie";
 const FILE_SERVER_URL =
   process.env.FILE_SERVER ||
   "https://muzik-files-server.000webhostapp.com/paper-money-auction-files/asset-docs/";
@@ -52,6 +53,8 @@ export default function CustomerDetail({ params, searchParams }: any) {
   const { toast } = useToast();
   const { user, login } = useAuth();
   const id = params.id;
+  const cookie = useCookie();
+  const role = JSON.parse(cookie.getSessionCookie())?.role;
   const [isConnected, setIsConnected] = useState(false);
   const [infor_auction, set_infor_auction] = useState<any>();
   const [timeSessionAuction, setTimeSessionAuction] = useState(false);
@@ -66,7 +69,8 @@ export default function CustomerDetail({ params, searchParams }: any) {
   const [penalty, setPenalty] = useState<any>(false);
   const [alias, setAlias] = useState<string>();
   const [maxOffer, setMaxOffer] = useState<any>(0);
-
+  const route = useRouter();
+  const path_name = usePathname();
   let imageUrl = "";
   if (
     infor_auction &&
@@ -77,7 +81,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
       infor_auction.asset?.pics[0]._id
     }${path.extname(infor_auction.asset?.pics[0].name)}`;
   }
-  const timezone = new Date().getTimezoneOffset();
+  const timezone = 0;
   useEffect(() => {
     if (infor_auction) {
       setTimeSessionAuction(
@@ -100,7 +104,6 @@ export default function CustomerDetail({ params, searchParams }: any) {
             infor_auction?.registration_close
           )
       );
-      console.log(timeRegister);
     }
   });
   useEffect(() => {
@@ -127,7 +130,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
       );
     };
     const checkStatusParticipation = async () => {
-      if (user?.role == ROLES.CUSTOMER) {
+      if (role == ROLES.CUSTOMER) {
         const checkRegister = await checkParticipation(id);
         const register_use = await checkRegister?.data?.status;
         setRegister(register_use);
@@ -154,18 +157,12 @@ export default function CustomerDetail({ params, searchParams }: any) {
     }
     const result = getAuctionToken(id).catch(console.error);
     if (timeSessionAuction && auctionToken != undefined) {
-      console.log(auctionToken);
-
       socket.connect();
 
       socket.on("connect", onConnect);
       socket.on("disconnect", onDisconnect);
-      socket.on("socket_error", (message) => {
-        console.log("socket_error: ", message);
-      });
+      socket.on("socket_error", (message) => {});
       socket.on("join_session_response", (response) => {
-        console.log("join_session_response");
-        console.log(response?.code);
         if (response?.code == true) setOnSession(true);
         else {
           setOnSession(false);
@@ -178,19 +175,14 @@ export default function CustomerDetail({ params, searchParams }: any) {
         if (response?.joinInfo?.alias) setAlias(response.joinInfo.alias);
       });
       socket.on("attendees_update", (response) => {
-        console.log("attendees_update: " + response);
         update_list_bidder_attend(JSON.parse(response));
       });
       socket.on("make_offer_response", (message) => {
-        console.log("make_offer_response");
-        console.log(message.message);
         if (message.message) setOfferRes(message.message);
       });
       socket.on("biddings_update", (message) => {
-        console.log(message);
         update_bidding_history(message.reverse());
       });
-      console.log("join session hihi");
       if (timeSessionAuction) {
         socket.emit("join_session", auctionToken);
       }
@@ -206,7 +198,6 @@ export default function CustomerDetail({ params, searchParams }: any) {
       };
     }
   }, [auctionToken]);
-  console.log(infor_auction);
   useEffect(() => {
     if (bidding_history) {
       for (let i = 0; i < bidding_history.length; i++) {
@@ -219,15 +210,17 @@ export default function CustomerDetail({ params, searchParams }: any) {
     }
   }, [bidding_history]);
   const handleJoinSession = () => {
-    console.log("join session");
     socket.emit("join_session", auctionToken);
+    route.push(path_name);
   };
   const handleWithdrawOffer = () => {
     setPenalty(true);
     socket.emit("withdraw_offer", auctionToken);
+    route.push(path_name);
   };
   return (
     <div className="pt-24 container">
+      <Button onClick={() => {}}>Test</Button>
       {!CompareDate(
         infor_auction?.auction_end,
         Date.now() - timezone * 60 * 1000
@@ -321,11 +314,17 @@ export default function CustomerDetail({ params, searchParams }: any) {
               )}
               <Card className="row-span-4">
                 <CardContent className="p-4 flex-col flex">
-                  <p className="font-bold flex p-2">
+                  <p className="font-bold p-2">
                     <text>Giá cao nhất hiện tại:</text>
-                    <span className="float-right">
-                      {bidding_history[0]?.price}
-                    </span>
+                    {timeSessionAuction ? (
+                      <span className="float-right">
+                        {bidding_history[0]?.price} vnd
+                      </span>
+                    ) : (
+                      <span className="float-right">
+                        {infor_auction?.winning_bidding?.price} vnd
+                      </span>
+                    )}
                   </p>
                   <hr></hr>
                   <p className="font-bold p-2">
@@ -382,8 +381,6 @@ export default function CustomerDetail({ params, searchParams }: any) {
                                 <Button
                                   className="col-span-1"
                                   onClick={() => {
-                                    console.log(offer);
-
                                     if (onSession) {
                                       socket.emit(
                                         "make_offer",
@@ -643,10 +640,6 @@ const CountTime: React.FC<{
   const [time, setTime] = useState<number>(0);
   useEffect(() => {
     if (startTime && endTime) {
-      console.log("startTime");
-      console.log(DateStart);
-      console.log("endTime");
-      console.log(DateEnd);
       setTime(
         Math.floor(Math.abs(DateStart.getTime() - DateEnd.getTime()) / 1000)
       );
