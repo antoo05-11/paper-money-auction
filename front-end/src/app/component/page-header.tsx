@@ -88,7 +88,6 @@ export default function PageHeader() {
         <div className="flex justify-between gap-4">
           <ModeToggle />
           <div className="flex items-center gap-3">
-            <Logo />
           </div>
           <div className="flex flex-row">
             <NavigationMenu>
