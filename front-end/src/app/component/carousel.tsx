@@ -7,6 +7,7 @@ import Image from "next/image"
 import { useState, useEffect } from "react"
 import { listAuction } from "../api/apiEndpoints";
 import path from "path"
+import { useRouter } from "next/navigation"
 
 const FILE_SERVER_URL =
     process.env.FILE_SERVER ||
@@ -47,7 +48,7 @@ export default function MyCarousel() {
         fetchData();
     }, []);
 
-
+    const router = useRouter();
     return (
         <Carousel className="w-11/12">
             <CarouselContent className="-ml-1">
@@ -73,7 +74,11 @@ export default function MyCarousel() {
                                     <p className="text-slate-500 dark:text-slate-400">
                                         Mô tả sản phẩm: {item?.asset?.description}
                                     </p>
-                                    <Button className="mt-3 w-full">Chi tiết</Button>
+                                    <Button className="mt-3 w-full" onClick={() => {
+                                        router.push("/item/" + item._id)
+                                    }}>
+                                        Chi tiết
+                                    </Button>
                                 </CardContent>
                             </Card>
                         </div>
