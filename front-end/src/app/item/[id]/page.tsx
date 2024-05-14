@@ -69,7 +69,8 @@ export default function CustomerDetail({ params, searchParams }: any) {
   const [penalty, setPenalty] = useState<any>(false);
   const [alias, setAlias] = useState<string>();
   const [maxOffer, setMaxOffer] = useState<any>(0);
-
+  const route = useRouter();
+  const path_name = usePathname();
   let imageUrl = "";
   if (
     infor_auction &&
@@ -210,10 +211,12 @@ export default function CustomerDetail({ params, searchParams }: any) {
   }, [bidding_history]);
   const handleJoinSession = () => {
     socket.emit("join_session", auctionToken);
+    route.push(path_name);
   };
   const handleWithdrawOffer = () => {
     setPenalty(true);
     socket.emit("withdraw_offer", auctionToken);
+    route.push(path_name);
   };
   return (
     <div className="pt-24 container">
