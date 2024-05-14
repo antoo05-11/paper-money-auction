@@ -86,7 +86,7 @@ class SocketService extends Service {
                 socket.emit('start_session_response', errorCode.AUCTION.NOT_TIME_YET);
                 return;
             }
-            if (auction.auction_end - Date.now() < 5 * 60 * 1000) {
+            if (auction.auction_end < Date.now()) {
                 socket.emit('start_session_response', errorCode.AUCTION.ENDED);
                 return;
             }
