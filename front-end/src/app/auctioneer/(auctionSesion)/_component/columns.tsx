@@ -380,8 +380,6 @@ const VerifyBidder: React.FC<{ auction_id: any; bidder_id: any }> = ({
           <Button
             onClick={() => {
               const verify = async () => {
-                console.log(auction_id);
-
                 await verifyBidder(bidder_id, auction_id)
                   .then((res) => {
                     if (res.status == HTTP_STATUS.OK) {

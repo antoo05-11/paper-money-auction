@@ -379,9 +379,14 @@ export const bidding_act: ColumnDef<any>[] = [
       <div className="flex justify-center items-center">Bí danh</div>
     ),
     cell: ({ row }) => {
-      return (
+      // if (row.original?.user?.alias) setAlias(row.original?.user?.alias);
+      return row.original?.user?.alias ? (
         <div className="flex justify-center items-center">
           {row.original?.user?.alias}
+        </div>
+      ) : (
+        <div className="flex justify-center items-center">
+          {row.original?.bidder?.alias}
         </div>
       );
     },
