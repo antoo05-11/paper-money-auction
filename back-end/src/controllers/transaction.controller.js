@@ -25,6 +25,12 @@ export default class TransactionController {
     };
 
     pay = async (req, res) => {
+        return res.status(200).json({
+            ok: true,
+            data: {
+                deposit: 200000,
+            },
+        });
         const { user } = req;
         const { data } = req.body;
         const { params } = req;
