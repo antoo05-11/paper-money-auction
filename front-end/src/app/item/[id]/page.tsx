@@ -314,11 +314,17 @@ export default function CustomerDetail({ params, searchParams }: any) {
               )}
               <Card className="row-span-4">
                 <CardContent className="p-4 flex-col flex">
-                  <p className="font-bold flex p-2">
+                  <p className="font-bold p-2">
                     <text>Giá cao nhất hiện tại:</text>
-                    <span className="float-right">
-                      {bidding_history[0]?.price}
-                    </span>
+                    {timeSessionAuction ? (
+                      <span className="float-right">
+                        {bidding_history[0]?.price} vnd
+                      </span>
+                    ) : (
+                      <span className="float-right">
+                        {infor_auction?.winning_bidding?.price} vnd
+                      </span>
+                    )}
                   </p>
                   <hr></hr>
                   <p className="font-bold p-2">
