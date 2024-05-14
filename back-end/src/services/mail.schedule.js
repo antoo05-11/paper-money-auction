@@ -35,7 +35,7 @@ export default cron.schedule('* * * * *', () => {
                         });
 
                         // Send mail to other bidders for deposit reimbursement.
-                        Participation.find({bidder: {$ne: bidder._id}}).populate('bidder').then(participations => {
+                        Participation.find({bidder: {$ne: bidder._id}, auction: auction._id}).populate('bidder').then(participations => {
                             for (const participation of participations) {
                                 const otherBidder = participation.bidder;
                                 mailService.sendNotifyReimburseDeposit(otherBidder.email, otherBidder, auctioneer, winningBidding).then(() => {
