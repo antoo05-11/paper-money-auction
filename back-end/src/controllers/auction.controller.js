@@ -57,8 +57,8 @@ export default class AuctionController {
             await session.commitTransaction();
             await session.endSession();
 
-            if (req.activityLog)
-                writeLogStatus(req.activityLog, auction._id, true);
+            // if (req.activityLog)
+            //     writeLogStatus(req.activityLog, auction._id, true);
 
             const payload = auction;
             res.status(200).json({
@@ -579,7 +579,7 @@ export default class AuctionController {
                 ...errorCode.AUCTION.NOT_FOUND,
                 status: 400,
             });
-        if (req.activityLog) writeLogStatus(req.activityLog, auction._id, true);
+        // if (req.activityLog) writeLogStatus(req.activityLog, auction._id, true);
         return res.status(200).json(auction);
     };
 
@@ -728,8 +728,8 @@ export default class AuctionController {
                 biddings.push(bidding);
             }
         }
-        if (req.activityLog)
-            writeLogStatus(req.activityCode, auction._id, true);
+        // if (req.activityLog)
+        //     writeLogStatus(req.activityCode, auction._id, true);
         return res.status(200).json(biddings);
     };
 
@@ -753,8 +753,8 @@ export default class AuctionController {
                 .status(200)
                 .json({ status: participationStatus.NOT_REGISTERED_YET });
         }
-        if (req.activityLog)
-            writeLogStatus(req.activityLog, participation._id, true);
+        // if (req.activityLog)
+        //     writeLogStatus(req.activityLog, participation._id, true);
         if (participation.verified)
             return res
                 .status(200)
@@ -808,7 +808,7 @@ export default class AuctionController {
         };
         participation = await Participation.create(participation);
 
-        if (req.activityLog) writeLogStatus(req.activityLog, auction._id, true);
+        // if (req.activityLog) writeLogStatus(req.activityLog, auction._id, true);
 
         return res.status(200).json({
             ok: true,
@@ -876,7 +876,7 @@ export default class AuctionController {
             }
         }
 
-        if (req.activityLog) writeLogStatus(req.activityLog, auction._id, true);
+        // if (req.activityLog) writeLogStatus(req.activityLog, auction._id, true);
 
         const token = jwt.sign(
             { sessionId: auctionId, userId: user._id, role: role },
@@ -907,7 +907,7 @@ export default class AuctionController {
             });
 
         const participations = await Participation.find({ auction: auctionId });
-        if (req.activityLog) writeLogStatus(req.activityLog, auction._id, true);
+        // if (req.activityLog) writeLogStatus(req.activityLog, auction._id, true);
         return res.status(200).json({
             ok: true,
             data: participations,
@@ -939,8 +939,8 @@ export default class AuctionController {
         participation.verified = true;
         await participation.save();
 
-        if (req.activityLog)
-            writeLogStatus(req.activityLog, participation._id, true);
+        // if (req.activityLog)
+        //     writeLogStatus(req.activityLog, participation._id, true);
 
         return res.status(200).json({
             ok: true,
@@ -1055,7 +1055,7 @@ export default class AuctionController {
 
                             // Send mail to other bidders for deposit reimbursement.
                             Participation.find({
-                                bidder: { $ne: bidder._id },
+                                bidder: { $ne: bidder._id }, auction: auction._id
                             })
                                 .populate("bidder")
                                 .then((participations) => {

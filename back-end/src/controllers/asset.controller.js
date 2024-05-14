@@ -55,7 +55,7 @@ export default class AssetController {
             await session.commitTransaction();
             await session.endSession();
 
-            if(req.activityLog) writeLogStatus(req.activityLog, asset._id, true);
+            // if (req.activityLog) writeLogStatus(req.activityLog, asset._id, true);
 
             return res.status(200).json({
                 ok: true,
@@ -83,7 +83,7 @@ export default class AssetController {
             user.role === userRole.CUSTOMER &&
             asset.owner._id.toString() !== user._id.toString()
         ) {
-            if(req.activityLog) writeLogStatus(req.activityLog, asset._id, false);
+            // if (req.activityLog) writeLogStatus(req.activityLog, asset._id, false);
             throw new HttpError({
                 ...errorCode.AUTH.ROLE_INVALID,
                 status: 403,
@@ -91,7 +91,7 @@ export default class AssetController {
         }
 
 
-       if(req.activityLog)  writeLogStatus(req.activityLog, asset._id, true);
+        // if (req.activityLog) writeLogStatus(req.activityLog, asset._id, true);
 
         res.status(200).json({
             ok: true,
@@ -152,7 +152,7 @@ export default class AssetController {
             .populate({path: "owner", select: "email"})
             .populate({path: "auctioneer", select: "email"});
 
-      if(req.activityLog)   writeLogStatus(req.activityLog, null, true);
+        // if (req.activityLog) writeLogStatus(req.activityLog, null, true);
 
 
         const payload = {
@@ -183,7 +183,7 @@ export default class AssetController {
         if (!asset)
             throw new HttpError({...errorCode.ASSET.NOT_FOUND, status: 403});
 
-       if(req.activityLog)  writeLogStatus(req.activityLog, asset._id, true);
+        // if (req.activityLog) writeLogStatus(req.activityLog, asset._id, true);
 
         return res.status(200).json({
             ok: true,
