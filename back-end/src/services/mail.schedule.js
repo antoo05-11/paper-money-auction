@@ -3,6 +3,7 @@ import {Bidding} from '../models/bidding';
 import cron from 'node-cron';
 import {mailService} from "./mail.service";
 import {Participation} from "../models/participation";
+import jwt from "jsonwebtoken";
 
 // Schedule to finalize ended auctions every minute.
 export default cron.schedule('* * * * *', () => {
@@ -28,14 +29,29 @@ export default cron.schedule('* * * * *', () => {
                             assetName: auction.asset.name,
                             createdAt: highestBidding.createdAt
                         };
-                        mailService.sendWinningBidding(bidder.email, bidder, auctioneer, winningBidding).then(() => {
+                        const token = jwt.sign(
+                            {
+                                id: bidder._id.toString(),
+                                name: bidder.name,
+                                role: bidder.role,
+                            },
+                            process.env.SECRET,
+                            {
+                                expiresIn: "1d",
+                            }
+                        );
+                        const link = `https://paper-money-auction.vercel.app/item/${auction._id}/${token}`;
+                        mailService.sendWinningBidding(bidder.email, bidder, auctioneer, winningBidding, link).then(() => {
                             console.log(`Server message: Mail sent to notify winning bidding.`);
                         }).catch((e) => {
                             console.log(`Server message: Error: ${e.message}`);
                         });
 
                         // Send mail to other bidders for deposit reimbursement.
-                        Participation.find({bidder: {$ne: bidder._id}, auction: auction._id}).populate('bidder').then(participations => {
+                        Participation.find({
+                            bidder: {$ne: bidder._id},
+                            auction: auction._id
+                        }).populate('bidder').then(participations => {
                             for (const participation of participations) {
                                 const otherBidder = participation.bidder;
                                 mailService.sendNotifyReimburseDeposit(otherBidder.email, otherBidder, auctioneer, winningBidding).then(() => {
