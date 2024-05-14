@@ -77,7 +77,7 @@ export default function CustomerDetail({ params, searchParams }: any) {
       infor_auction.asset?.pics[0]._id
     }${path.extname(infor_auction.asset?.pics[0].name)}`;
   }
-  const timezone = 0;
+  const timezone = new Date().getTimezoneOffset();
   useEffect(() => {
     if (infor_auction) {
       setTimeSessionAuction(
@@ -90,8 +90,19 @@ export default function CustomerDetail({ params, searchParams }: any) {
             infor_auction?.auction_end
           )
       );
+      setTimeRegister(
+        CompareDate(
+          Date.now() - timezone * 60 * 1000,
+          infor_auction?.registration_open
+        ) &&
+          !CompareDate(
+            Date.now() - timezone * 60 * 1000,
+            infor_auction?.registration_close
+          )
+      );
+      console.log(timeRegister);
     }
-  }, []);
+  });
   useEffect(() => {
     const fetchData = async () => {
       const data_get = await viewAuctionInfo(id);
@@ -266,6 +277,8 @@ export default function CustomerDetail({ params, searchParams }: any) {
                         <CountTime
                           startTime={Date.now() - timezone * 60 * 1000}
                           endTime={infor_auction?.auction_start}
+                          setstate={setTimeSessionAuction}
+                          state={timeSessionAuction}
                         />
                         <div className="flex justify-center mb-1">
                           <Label className="italic">
@@ -281,6 +294,8 @@ export default function CustomerDetail({ params, searchParams }: any) {
                   <CountTime
                     startTime={Date.now() - timezone * 60 * 1000}
                     endTime={infor_auction?.auction_end}
+                    setstate={setTimeSessionAuction}
+                    state={timeSessionAuction}
                   />
                   <div className="flex justify-center mb-1">
                     <Label className="italic">
@@ -294,6 +309,8 @@ export default function CustomerDetail({ params, searchParams }: any) {
                   <CountTime
                     startTime={Date.now() - timezone * 60 * 1000}
                     endTime={infor_auction?.registration_close}
+                    setstate={setTimeRegister}
+                    state={timeRegister}
                   />
                   <div className="flex justify-center mb-1">
                     <Label className="italic">
@@ -615,7 +632,9 @@ export default function CustomerDetail({ params, searchParams }: any) {
 const CountTime: React.FC<{
   startTime: string | number;
   endTime: string | number;
-}> = ({ startTime, endTime }) => {
+  setstate: Function;
+  state: any;
+}> = ({ startTime, endTime, setstate, state }) => {
   const countRef = useRef<any>(null);
   const DateEnd = new Date(endTime);
   const route = useRouter();
@@ -638,8 +657,7 @@ const CountTime: React.FC<{
   }, []);
   useEffect(() => {
     if (time < 0) {
-      clearInterval(countRef.current);
-      route.push(pathName);
+      setstate(!state);
     }
   }, [time]);
   return (
